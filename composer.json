@@ -1,12 +1,12 @@
 {
     "name": "flutterwave/rave-php-sdk",
-    "description": "A simple SDK for integrating to Flutterwave's Rave payment gateway",
+    "description": "A simple SDK for integrating to Flutterwave's Rave payment",
     "type": "library",
     "keywords": ["rave", "flutterwave", "payment", "transfers", "africa"],
     "homepage": "https://github.com/Flutterwave/Flutterwave-Rave-PHP-SDK",
     "autoload": {
         "psr-4": {
-            "Flutterwave\\": "lib/Rave"
+            "Flutterwave\\": "library/Rave"
         }
     },
     "require": {
@@ -28,6 +28,10 @@
         {
             "name": "Emereuwaonu Eze",
             "email": "emereuwaonueze@gmail.com"
+        },
+        {
+            "name": "Olaobaju Abraham",
+            "email": "olaobajua@gmail.com"
         }
     ]
 }
