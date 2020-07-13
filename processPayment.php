@@ -3,27 +3,33 @@
 session_start() ;
 // session_destroy();
 // Prevent direct access to this class
+
+
+
 define("BASEPATH", 1);
 
-include('lib/rave.php');
-include('lib/raveEventHandlerInterface.php');
+include('library/rave.php');
+include('library/raveEventHandlerInterface.php');
+
 
 use Flutterwave\Rave;
 use Flutterwave\EventHandlerInterface;
 
+
+
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 $getData = $_GET;
 $postData = $_POST;
-$publicKey = $postData['publicKey'];
-$secretKey = $postData['secretKey'];
+$publicKey = $_SERVER['PUBLIC_KEY'];
+$secretKey = $_SERVER['SECRET_KEY'];
 $success_url = $postData['successurl'];
 $failure_url = $postData['failureurl'];
-//$env = $postData['env']; // Remember to change this to 'live' when you are going live
+$env = $_SERVER['ENV'];
 
 if($postData['amount']){
     $_SESSION['publicKey'] = $publicKey;
     $_SESSION['secretKey'] = $secretKey;
-    //$_SESSION['env'] = $env;
+    $_SESSION['env'] = $env;
     $_SESSION['successurl'] = $success_url;
     $_SESSION['failureurl'] = $failure_url;
     $_SESSION['currency'] = $postData['currency'];
@@ -39,7 +45,7 @@ if($postData['ref']){
     $overrideRef = true;
 }
 
-$payment = new Rave($_SESSION['publicKey'], $_SESSION['secretKey'], $prefix, $overrideRef);
+$payment = new Rave($_SESSION['secretKey'], $prefix, $overrideRef);
 
 function getURL($url,$data = array()){
     $urlArr = explode('?',$url);
@@ -170,19 +176,19 @@ if($postData['amount']){
     // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
     ->initialize();
 }else{
-    if($getData['cancelled'] && $getData['txref']){
+    if($getData['cancelled'] && $getData['tx_ref']){
         // Handle canceled payments
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['txref'])
-        ->paymentCanceled($getData['txref']);
-    }elseif($getData['txref']){
+        ->requeryTransaction($getData['tx_ref'])
+        ->paymentCanceled($getData['tx_ref']);
+    }elseif($getData['tx_ref']){
         // Handle completed payments
         $payment->logger->notice('Payment completed. Now requerying payment.');
         
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['txref']);
+        ->requeryTransaction($getData['tx_ref']);
     }else{
         $payment->logger->warn('Stop!!! Please pass the txref parameter!');
         echo 'Stop!!! Please pass the txref parameter!';
