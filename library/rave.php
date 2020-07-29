@@ -1017,21 +1017,24 @@ class Rave {
              //encrypt the required options to pass to the server
             $this->integrityHash = $this->encryption($this->json_options);
             $this->post_data = array(
-             'public_key' => $this->publicKey,
              'client' => $this->integrityHash
             );
 
             $result  = $this->postURL($this->post_data);
-
             $this->logger->notice('Payment requires validation..'); 
         // the result returned requires validation
         $result = json_decode($result, true);
+		$page_status = '';
+	if ($result['status'] == 'success') {
+        	$page_status = $result['data']['authorization']['mode'];
+        	
+    	}else{
+        	$msg_err = $res['message'];
+    	}
 
-        if(isset($result['data']['authModelUsed'])){
+        if(isset($result['data']['authorization']['mode'])){
             $this->logger->notice('Payment requires otp validation...');
-            $this->authModelUsed = $result['data']['authModelUsed'];
-            $this->flwRef = $result['data']['flw_ref'];
-            $this->txRef = $result['data']['tx_ref'];
+            $this->authModelUsed = $res['data']['authorization']['mode'];
         }
         //passes the result to the suggestedAuth function which re-initiates the charge 
         return $result;
