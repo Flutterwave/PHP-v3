@@ -1,4 +1,8 @@
-# Rave PHP SDK :sunglasses:
+<p align="center">
+    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo-colored.svg" width="50%"/>
+</p>
+
+# Flutterwave v3 PHP SDK
 
 Use this library to integrate your PHP app to Rave.
 
