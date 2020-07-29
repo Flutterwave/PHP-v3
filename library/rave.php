@@ -1024,14 +1024,6 @@ class Rave {
             $this->logger->notice('Payment requires validation..'); 
         // the result returned requires validation
         $result = json_decode($result, true);
-		$page_status = '';
-	if ($result['status'] == 'success') {
-        	$page_status = $result['data']['authorization']['mode'];
-        	
-    	}else{
-        	$msg_err = $res['message'];
-    	}
-
         if(isset($result['data']['authorization']['mode'])){
             $this->logger->notice('Payment requires otp validation...');
             $this->authModelUsed = $res['data']['authorization']['mode'];
