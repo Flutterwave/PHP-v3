@@ -104,6 +104,10 @@ class Card {
             //$result = $this->payment->chargePayment($array);
             
             $result = $this->payment->chargePayment($array);
+        
+            if(isset($this->payment->authModelUsed)){
+                this->validateTransaction($this->payment->authModelUsed, $this->payment->txref)
+            }
 
             return $result;
         }
