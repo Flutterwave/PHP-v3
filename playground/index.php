@@ -19,7 +19,7 @@ include('partials/header.php');//this is just to load the bootstrap and css.
       <div class="card-body">
       <ol>
           <li><a href="card.php">Charge a card using Flutterwave's APIs</a></li>
-          <li>Charge  bank accounts using Flutterwave- <a href="AccountCharge.php">Nigerian Account</a> or <a href="">UK account</a></li>
+          <li>Charge  bank accounts using Flutterwave- <a href="AccountPayment.php">Nigerian Account</a> or <a href="">UK account</a></li>
           <li><a href="Transfer.php">How to transfer or make payouts<a/></li>
           <li><a href="Ussd.php">how to collect payments via ussd</a></li>
           <li><a href="Mobilemoney.php">how to collect payments via mobile money.</a></li>

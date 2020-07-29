@@ -762,10 +762,10 @@ class Rave {
 
     }
 
-    function validateTransaction2($otp, $Ref){
+    function validateTransaction2($pin, $Ref){
         
-        $this->logger->notice('Validating otp...');
-                $this->setEndPoint("flwv3-pug/getpaidx/api/validate");
+        $this->logger->notice('Validating pin...');
+                $this->setEndPoint("v3/validate-charge");
                 $this->post_data = array(
                     'PBFPubKey' => $this->publicKey,
                     'transactionreference' => $Ref,
@@ -1024,12 +1024,82 @@ class Rave {
             $this->logger->notice('Payment requires validation..'); 
         // the result returned requires validation
         $result = json_decode($result, true);
-        if(isset($result['data']['authorization']['mode'])){
+            // echo '<pre>';
+            // print_r($result);
+            // echo '</pre>';
+
+            if($result['status'] == 'success' ){
+        if($result['meta']['authorization']['mode'] == 'pin' || $result['meta']['authorization']['mode'] == 'avs_noauth'){
             $this->logger->notice('Payment requires otp validation...');
-            $this->authModelUsed = $res['data']['authorization']['mode'];
+            $this->authModelUsed = $result['meta']['authorization']['mode'];
         }
+
+        if($result['meta']['authorization']['mode'] == 'redirect'){
+            header('Location:'.$result['meta']['authorization']['redirect']);
+        }
+
+        
+        if($this->authModelUsed == 'pin' && !isset($array['authorization']['pin'])){
+            return '<div class="alert alert-danger">Charge authorization data required.<strong></strong>
+            <pre>
+            "card_number"=> "5531886652142950",
+            "cvv"=> "564",
+            "expiry_month"=> "09",
+            "expiry_year"=> "22",
+            "currency"=> "NGN",
+            "amount"=> "1000",
+            "fullname"=> "Ekene Eze",
+            "email"=> "ekene@flw.com",
+            "phone_number"=> "0902620185",
+            "fullname"=> "temi desola",
+            //"tx_ref"=> "MC-3243e",// should be unique for every transaction
+            "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
+            "authorization"=> [
+                "mode"=> "pin",
+                "pin"=> "3310",
+            ]
+            </pre>
+            </div>';
+        }
+
+        if($this->authModelUsed == 'avs_noauth' && !isset($array['authorization'])){
+            return '<div class="alert alert-danger"> Charge authorization data required. <strong>Add data and and call the method cardCharge($card)</strong>
+            <pre>
+            "card_number"=> "4556052704172643",
+            "cvv" => "899",
+            "expiry_month"=> "01",
+            "expiry_year"=> "21",
+            "currency"=> "NGN",
+            "amount"=> "1000",
+            "fullname"=> "Ekene Eze",
+            "email"=> "ekene@flw.com",
+            "phone_number"=> "0902620185",
+            "fullname"=> "temi desola",
+            //"tx_ref"=> "MC-3243e",// should be unique for every transaction
+            "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
+            "authorization"=> [
+                "mode" => "avs_noauth",
+                "city"=> "Sampleville",
+                "address"=> "3310 sample street ",
+                "state"=> "Simplicity",
+                "country"=> "Simple",
+                "zipcode"=> "000000",
+            ]
+            </pre>
+            
+            </div>';
+        }
+
+
+            return $result;
+        }else{
+        
+        return '<div class="alert alert-danger">'.$result['message'].'</div>';
+    
+        }
+
         //passes the result to the suggestedAuth function which re-initiates the charge 
-        return $result;
+       
 
     }else if($this->type == "momo"){
         $result  = $this->postURL($array);
