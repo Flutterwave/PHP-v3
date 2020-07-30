@@ -217,6 +217,41 @@ $payment = new Account();
 $result = $payment->accountCharge($data);
 print_r($result);
 ```
+## Card Charge Sample implementation
+
+The following implementation shows how to initiate a card charge
+Use the Playground Directory to view an implementation Responses and samples of use.
+
+```php
+require("Flutterwave-Rave-PHP-SDK/library/CardPayment.php");
+use Flutterwave\Account;
+//The data variable holds the payload
+$data = array(
+            "card_number"=> "5531886652142950",
+            "cvv"=> "564",
+            "expiry_month"=> "09",
+            "expiry_year"=> "22",
+            "currency"=> "NGN",
+            "amount"=> "1000",
+            "fullname"=> "Ekene Eze",
+            "email"=> "ekene@flw.com",
+            "phone_number"=> "0902620185",
+            "fullname"=> "temi desola",
+            //"tx_ref"=> "MC-3243e",// should be unique for every transaction
+            "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
+           // "authorization"=> [
+               // "mode"=> "pin",
+                //"pin"=> "3310",
+           // ]
+    );
+
+$payment = new Card();
+$result = $payment->cardCharge($data);//use this method twice if you are not sure of the authorization mode.
+Add authorization to your data
+$validate = $payment->validateTransaction($otp,$flw_ref);
+print_r($result);
+```
+
 ## Mobile Money Payments
 
 The following implementation shows how to initiate a mobile money payment
