@@ -24,8 +24,6 @@ ENCRYPTION_KEY = "Encryption key"
 ENV = "staging or live"
 
 ```
-
-
 ## Sample implementation
 
 In this implementation, we are expecting a form encoded POST request to this script.
