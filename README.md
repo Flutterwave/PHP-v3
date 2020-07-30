@@ -1,4 +1,8 @@
-# Rave PHP SDK :sunglasses:
+<p align="center">
+    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo-colored.svg" width="50%"/>
+</p>
+
+# Flutterwave v3 PHP SDK
 
 Use this library to integrate your PHP app to Rave.
 
@@ -24,6 +28,8 @@ ENCRYPTION_KEY = "Encryption key"
 ENV = "staging or live"
 
 ```
+
+
 ## Sample implementation
 
 In this implementation, we are expecting a form encoded POST request to this script.
@@ -637,7 +643,7 @@ $data = array(
     "narration"=> "mndkn blls",
     "number_of_units"=> 2,//should be a string
     "currency"=> "NGN",
-    "amount"=> 200,//shoould be a string
+    "amount"=> 200,//should be a string
     "phone_number"=> "09384747474",
     "email"=>"jake@rad.com",
     "tx_ref"=> "akhlm-pstmn-1094434370393",
