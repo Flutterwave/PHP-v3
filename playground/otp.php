@@ -24,8 +24,8 @@
                             // <h1>Validate Result: </h1>
                             // <p><b> '.print_r($validate, true).'</b></p>
                             // </div>';
-                            echo $payment->return_txref();
-                        $verify = $payment->verifyTransaction();
+                            $id = $_GET['id'];
+                        $verify = $payment->verifyTransaction($id);
                         echo '<div class="alert alert-primary role="alert">
                         <h1>Verified Result: </h1>
                         <p><b> '.print_r($verify, true).'</b></p>

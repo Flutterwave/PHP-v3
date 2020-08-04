@@ -104,8 +104,10 @@ class Card {
             //$result = $this->payment->chargePayment($array);
             
             $result = $this->payment->chargePayment($array);
-
+            
             return $result;
+
+            //change this
         }
 
          /**you will need to validate and verify the charge
@@ -114,17 +116,21 @@ class Card {
              * You can write out your function to execute when the verification is successful in the onSuccessful function
          ***/
 
-        function validateTransaction($otp, $ref){
+        function validateTransaction($element, $ref){
              //validate the charge
-           return $this->payment->validateTransaction($otp, $ref, $this->payment->type);//Uncomment this line if you need it
+
+                return $this->payment->validateTransaction($element, $ref, $this->payment->type);//Uncomment this line if you need it    
+
+            
+
         }
 
         function return_txref(){
             return $this->payment->txref;
         }
-        function verifyTransaction(){
+        function verifyTransaction($id){
             //verify the charge
-            return $this->payment->verifyTransaction($this->payment->txref);//Uncomment this line if you need it
+            return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
 
         }
       

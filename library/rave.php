@@ -582,24 +582,16 @@ class Rave {
     function initialize(){
 
         $this->createCheckSum();
-        //$this->transactionData = array_merge($this->transactionData, array('integrity_hash' => $this->integrityHash), array('meta' => $this->meta));
-             
-            
-           
-            // "customizations" => [ 
-            //     "description" => $this->customDescription, 
-            //     "logo" => $this->customLogo, 
-            //     "title" => $this->customTitle,
-        //$json = json_encode($this->transactionData);
+
         echo '<html>';
         echo '<body>';
         echo '<center>Proccessing...<br /><img src="ajax-loader.gif" /></center>';
-        //'.$this->baseUrl.'/flwv3-pug/getpaidx/api/flwpbf-inline.js
-        //https://checkout.flutterwave.com/v3.js - inline
-        echo '<script type="text/javascript" src="https://ravemodal-dev.herokuapp.com/v3.js"></script>';
+        
+        
+        echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
+
         echo '<script>';
 	    echo 'document.addEventListener("DOMContentLoaded", function(event) {';
-        //echo 'var data = JSON.parse(\''.$json.'\');';
         echo 'FlutterwaveCheckout({
             public_key: "'.$this->publicKey.'",
             tx_ref: "'.$this->txref.'",
@@ -625,7 +617,7 @@ class Rave {
         echo '</script>';
         echo '</body>';
         echo '</html>';
-        // return $json;
+        
     }
 
     /**
@@ -731,9 +723,9 @@ class Rave {
      *  @param string
      *  @return object
      * */
-    function verifyTransaction(){
+    function verifyTransaction($id){
 
-        $url = "/".$this->txref."/verify";
+        $url = "/".$id."/verify";
         $this->logger->notice('Verifying transaction...');
         $this->setEndPoint("v3/transactions");
             $result  = $this->getURL($url);
@@ -762,10 +754,10 @@ class Rave {
 
     }
 
-    function validateTransaction2($otp, $Ref){
+    function validateTransaction2($pin, $Ref){
         
-        $this->logger->notice('Validating otp...');
-                $this->setEndPoint("flwv3-pug/getpaidx/api/validate");
+        $this->logger->notice('Validating pin...');
+                $this->setEndPoint("v3/validate-charge");
                 $this->post_data = array(
                     'PBFPubKey' => $this->publicKey,
                     'transactionreference' => $Ref,
@@ -1009,32 +1001,56 @@ class Rave {
         //remove the type param from the payload
        
         $this->options = $array;
-        
-        //For Card which is now a Copliance Approve Issue
-        if($this->type === 'card'){
+
+       
+         if($this->type === 'card'){
             $this->json_options = json_encode($this->options);
             $this->logger->notice('Checking payment details..');
              //encrypt the required options to pass to the server
             $this->integrityHash = $this->encryption($this->json_options);
             $this->post_data = array(
-             'public_key' => $this->publicKey,
              'client' => $this->integrityHash
             );
 
-            $result  = $this->postURL($this->post_data);
-
-            $this->logger->notice('Payment requires validation..'); 
+            $result  = $this->postURL($this->post_data); 
         // the result returned requires validation
         $result = json_decode($result, true);
+            // echo '<pre>';
+            // print_r($result);
+            // echo '</pre>';
 
-        if(isset($result['data']['authModelUsed'])){
-            $this->logger->notice('Payment requires otp validation...');
-            $this->authModelUsed = $result['data']['authModelUsed'];
-            $this->flwRef = $result['data']['flw_ref'];
-            $this->txRef = $result['data']['tx_ref'];
+            if($result['status'] == 'success' ){
+                if($result['meta']['authorization']['mode'] == 'pin' || $result['meta']['authorization']['mode'] == 'avs_noauth' 
+                || $result['meta']['authorization']['mode'] == 'redirect' || $result['meta']['authorization']['mode'] == 'otp'){
+                    $this->logger->notice('Payment requires otp validation...authmodel:'.$result['meta']['authorization']['mode']);
+                    $this->authModelUsed = $result['meta']['authorization']['mode'];
+
+
+                
+                    if($this->authModelUsed == 'redirect'){
+                        header('Location:'.$result['meta']['authorization']['redirect']);
+                    }
+                
+                    if($this->authModelUsed == 'pin' || $this->authModelUsed == 'avs_noauth'){
+                        return $result;
+                    }
+                
+                    if ($this->authModelUsed == 'otp'){
+                        $this->flwRef = $result['data']['flw_ref'];
+                        return ['data' => ["flw_ref" => $this->flwRef, "id" => $result['data']['id'],"auth_mode" => $result['meta']['authorization']['mode']]];
+                    }
+                
+                
+                }
+            
+        }else{
+        
+        return '<div class="alert alert-danger">'.$result['message'].'</div>';
+    
         }
+
         //passes the result to the suggestedAuth function which re-initiates the charge 
-        return $result;
+       
 
     }else if($this->type == "momo"){
         $result  = $this->postURL($array);
@@ -1062,8 +1078,7 @@ class Rave {
             $this->txref = $result['data']['tx_ref'];
         }
 
-        $this->flwRef = $result['data']['flw_ref'];
-        $this->txref = $result['data']['tx_ref'];
+        
 
 
         

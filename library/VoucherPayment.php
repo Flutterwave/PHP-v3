@@ -77,7 +77,7 @@ class voucherEventHandler implements EventHandlerInterface{
 class VoucherPayment {
     function __construct(){
         $this->payment = new Rave($_ENV['SECRET_KEY']);
-        $this->type = "voucher_payment";
+        
     }
 
     function voucher($array){
@@ -88,17 +88,14 @@ class VoucherPayment {
             $array['tx_ref'] = $this->payment->txref;
         }
 
-        if($array['type'] !== $this->type){
-            echo '<div class="alert alert-danger" role="alert">
-            The Type specified in the payload  is not <b> "'.$this->type.'"</b>
-          </div>';
-        }else{
+        $this->payment->type = 'voucher_payment';
+
             $this->payment->eventHandler(new voucherEventHandler)
             //set the endpoint for the api call
-            ->setEndPoint("v3/charges?type=".$this->type);
+            ->setEndPoint("v3/charges?type=".$this->payment->type);
             //returns the value from the results
             return $this->payment->chargePayment($array);
-        }
+        
         
        
     }
@@ -107,9 +104,9 @@ class VoucherPayment {
          * After validation then verify the charge with the txRef
          * You can write out your function to execute when the verification is successful in the onSuccessful function
      ***/
-    function verifyTransaction(){
+    function verifyTransaction($id){
         //verify the charge
-        return $this->payment->verifyTransaction($this->payment->txref);//Uncomment this line if you need it
+        return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
     }
 
 }

@@ -101,15 +101,15 @@ class Transactions{
         return $this->history->getTransactionFee($array);
     }
 
-    function verifyTransaction(){
+    function verifyTransaction($id){
 
-            $array['tx_ref'] = $this->history->txref;
+            
         
         $this->history->eventHandler(new transactionVerificationEventHandler)
         //set the endpoint for the api call
-        ->setEndPoint("v3/transactions/".$array['tx_ref']."/verify");
+        ->setEndPoint("v3/transactions/".$id."/verify");
         //returns the value from the results
-        return $this->history->verifyTransaction();
+        return $this->history->verifyTransaction($id);
     }
 
 
