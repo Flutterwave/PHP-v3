@@ -52,28 +52,52 @@ The request will contain the following parameters.
 // Prevent direct access to this class
 define("BASEPATH", 1);
 
-include('lib/rave.php');
-include('lib/raveEventHandlerInterface.php');
+include('library/rave.php');
+include('library/raveEventHandlerInterface.php');
+
 
 use Flutterwave\Rave;
-use Flutterwave\Rave\EventHandlerInterface;
+use Flutterwave\EventHandlerInterface;
 
-$URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI];
+
+
+$URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 $getData = $_GET;
 $postData = $_POST;
-$publicKey = $_SERVER['PUBLIC_KEY'];//make sure you have created  your .env file 
-$secretKey = $_SERVER['SECRET_KEY'];//make sure you have created your .env file
-$env = $_SERVER['RAVE_ENVIRONMENT']; // Remember to change this to 'live' when you are going live
-$prefix = 'MY_APP_NAME'; // Change this to the name of your business or app
+$publicKey = $_SERVER['PUBLIC_KEY'];
+$secretKey = $_SERVER['SECRET_KEY'];
+$success_url = $postData['successurl'];
+$failure_url = $postData['failureurl'];
+$env = $_SERVER['ENV'];
+
+if($postData['amount']){
+    $_SESSION['publicKey'] = $publicKey;
+    $_SESSION['secretKey'] = $secretKey;
+    $_SESSION['env'] = $env;
+    $_SESSION['successurl'] = $success_url;
+    $_SESSION['failureurl'] = $failure_url;
+    $_SESSION['currency'] = $postData['currency'];
+    $_SESSION['amount'] = $postData['amount'];
+}
+
+$prefix = 'RV'; // Change this to the name of your business or app
 $overrideRef = false;
 
 // Uncomment here to enforce the useage of your own ref else a ref will be generated for you automatically
-// if($postData['ref']){
-//     $prefix = $postData['ref'];
-//     $overrideRef = true;
-// }
+if($postData['ref']){
+    $prefix = $postData['ref'];
+    $overrideRef = true;
+}
 
-$payment = new Rave($secretKey, $prefix, $env, $overrideRef);
+$payment = new Rave($_SESSION['secretKey'], $prefix, $overrideRef);
+
+function getURL($url,$data = array()){
+    $urlArr = explode('?',$url);
+    $params = array_merge($_GET, $data);
+    $new_query_string = http_build_query($params).'&'.$urlArr[1];
+    $newUrl = $urlArr[0].'?'.$new_query_string;
+    return $newUrl;
+};
 
 
 // This is where you set how you want to handle the transaction at different stages
@@ -83,7 +107,6 @@ class myEventHandler implements EventHandlerInterface{
      * */
     function onInit($initializationData){
         // Save the transaction to your DB.
-        echo 'Payment started......'.json_encode($initializationData).'<br />'; //Remember to delete this line
     }
     
     /**
@@ -100,7 +123,24 @@ class myEventHandler implements EventHandlerInterface{
         // Give value for the transaction
         // Update the transaction to note that you have given value for the transaction
         // You can also redirect to your success page from here
-        echo 'Payment Successful!'.json_encode($transactionData).'<br />'; //Remember to delete this line
+        if($transactionData->chargecode === '00' || $transactionData->chargecode === '0'){
+          if($transactionData->currency == $_SESSION['currency'] && $transactionData->amount == $_SESSION['amount']){
+              
+              if($_SESSION['publicKey']){
+                    header('Location: '.getURL($_SESSION['successurl'], array('event' => 'successful')));
+                    $_SESSION = array();
+                    session_destroy();
+                }
+          }else{
+              if($_SESSION['publicKey']){
+                    header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'suspicious')));
+                    $_SESSION = array();
+                    session_destroy();
+                }
+          }
+      }else{
+          $this->onFailure($transactionData);
+      }
     }
     
     /**
@@ -110,7 +150,11 @@ class myEventHandler implements EventHandlerInterface{
         // Get the transaction from your DB using the transaction reference (txref)
         // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
         // You can also redirect to your failure page from here
-        echo 'Payment Failed!'.json_encode($transactionData).'<br />'; //Remember to delete this line
+        if($_SESSION['publicKey']){
+            header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'failed')));
+            $_SESSION = array();
+            session_destroy();
+        }
     }
     
     /**
@@ -118,7 +162,6 @@ class myEventHandler implements EventHandlerInterface{
      * */
     function onRequery($transactionReference){
         // Do something, anything!
-        echo 'Payment requeried......'.$transactionReference.'<br />'; //Remember to delete this line
     }
     
     /**
@@ -126,7 +169,6 @@ class myEventHandler implements EventHandlerInterface{
      * */
     function onRequeryError($requeryResponse){
         // Do something, anything!
-        echo 'An error occured while requeying the transaction...'.json_encode($requeryResponse).'<br />'; //Remember to delete this line
     }
     
     /**
@@ -135,7 +177,11 @@ class myEventHandler implements EventHandlerInterface{
     function onCancel($transactionReference){
         // Do something, anything!
         // Note: Somethings a payment can be successful, before a user clicks the cancel button so proceed with caution
-        echo 'Payment canceled by user......'.$transactionReference.'<br />'; //Remember to delete this line
+        if($_SESSION['publicKey']){
+            header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'canceled')));
+            $_SESSION = array();
+            session_destroy();
+        }
     }
     
     /**
@@ -145,7 +191,11 @@ class myEventHandler implements EventHandlerInterface{
         // Get the transaction from your DB using the transaction reference (txref)
         // Queue it for requery. Preferably using a queue system. The requery should be about 15 minutes after.
         // Ask the customer to contact your support and you should escalate this issue to the flutterwave support team. Send this as an email and as a notification on the page. just incase the page timesout or disconnects
-        echo 'Payment timeout......'.$transactionReference.' - '.json_encode($data).'<br />'; //Remember to delete this line
+        if($_SESSION['publicKey']){
+            header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'timedout')));
+            $_SESSION = array();
+            session_destroy();
+        }
     }
 }
 
@@ -154,7 +204,7 @@ if($postData['amount']){
     $payment
     ->eventHandler(new myEventHandler)
     ->setAmount($postData['amount'])
-    ->setPaymentMethod($postData['payment_method']) // value can be card, account or both
+    ->setPaymentOptions($postData['payment_options']) // value can be card, account or both
     ->setDescription($postData['description'])
     ->setLogo($postData['logo'])
     ->setTitle($postData['title'])
@@ -170,19 +220,19 @@ if($postData['amount']){
     // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
     ->initialize();
 }else{
-    if($getData['cancelled'] && $getData['txref']){
+    if($getData['cancelled'] && $getData['tx_ref']){
         // Handle canceled payments
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['txref'])
-        ->paymentCanceled($getData['txref']);
-    }elseif($getData['txref']){
+        ->requeryTransaction($getData['tx_ref'])
+        ->paymentCanceled($getData['tx_ref']);
+    }elseif($getData['tx_ref']){
         // Handle completed payments
         $payment->logger->notice('Payment completed. Now requerying payment.');
         
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['txref']);
+        ->requeryTransaction($getData['tx_ref']);
     }else{
         $payment->logger->warn('Stop!!! Please pass the txref parameter!');
         echo 'Stop!!! Please pass the txref parameter!';
@@ -203,10 +253,10 @@ use Flutterwave\Account;
 //The data variable holds the payload
 $data = array(
     "amount" => "3000",
-    "type" => "debit_ng_account",
+    "type" => "debit_ng_account",//debit_ng_account or debit_uk_account
     "account_bank" => "044",
     "account_number" => "0690000037",
-    "currency" => "NGN",
+    "currency" => "NGN",//NGN or GBP
     "email" => "olaobajua@gmail.com",
     "phone_number" => "07067965809",
     "fullname" => "Olaobaju Abraham",
@@ -219,8 +269,50 @@ $data = array(
 
 $payment = new Account();
 $result = $payment->accountCharge($data);
+
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
 print_r($result);
 ```
+
+## Ach Charge Sample implementation
+
+The following implementation shows how to accept payments directly from customers in the US and South Africa.
+Use the Playground DIrectory to view Responses and samples of use.
+
+```php
+require("Flutterwave-Rave-PHP-SDK/library/AchPayment.php");
+use Flutterwave\Ach;
+//The data variable holds the payload
+
+
+
+$data = array(
+    "tx_ref" =>  "MC-1585230ew9v5050e8",
+    "amount" => "100",
+    "type" => "ach_payment",
+    "currency" => "USD",
+    "country" => "US",
+    "email" => "ekene@gmail.com",
+    "phone_number" => "0902620185",
+    "fullname" => "Ekene Eze",
+    "redirect_url" => "http://ekene.com/u/payment-completed",
+    );
+
+$payment = new Ach();
+
+$result = $payment->achCharge($data);
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
+print_r($result);
+
+```
+
+
 ## Card Charge Sample implementation
 
 The following implementation shows how to initiate a card charge
@@ -228,32 +320,56 @@ Use the Playground Directory to view an implementation Responses and samples of 
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/CardPayment.php");
-use Flutterwave\Account;
+use Flutterwave\Card;
 //The data variable holds the payload
 $data = array(
-            "card_number"=> "5531886652142950",
-            "cvv"=> "564",
-            "expiry_month"=> "09",
-            "expiry_year"=> "22",
-            "currency"=> "NGN",
-            "amount"=> "1000",
-            "fullname"=> "Ekene Eze",
-            "email"=> "ekene@flw.com",
-            "phone_number"=> "0902620185",
-            "fullname"=> "temi desola",
-            //"tx_ref"=> "MC-3243e",// should be unique for every transaction
-            "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
-           // "authorization"=> [
-               // "mode"=> "pin",
-                //"pin"=> "3310",
-           // ]
+    "card_number"=> "5531886652142950",
+    "cvv"=> "564",
+    "expiry_month"=> "09",
+    "expiry_year"=> "22",
+    "currency"=> "NGN",
+    "amount" => "1000",
+    "fullname"=> "Ekene Eze",
+    "email"=> "ekene@flw.com",
+    "phone_number"=> "0902620185",
+    "fullname" => "temi desola",
+    //"tx_ref"=> "MC-3243e",// should be unique for every transaction
+    "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
+           
     );
 
 $payment = new Card();
-$result = $payment->cardCharge($data);//use this method twice if you are not sure of the authorization mode.
-Add authorization to your data
-$validate = $payment->validateTransaction($otp,$flw_ref);
-print_r($result);
+$res = $payment->cardCharge($data);//This call is to figure out the authmodel
+$data['authorization']['mode'] = $res['meta']['authorization']['mode'];
+
+if($res['meta']['authorization']['mode'] == 'pin'){
+
+    //Supply authorization pin here
+    $data['authorization']['pin'] = '3310';
+}
+
+if($res['meta']['authorization']['mode'] == 'avs_noauth'){
+    //supply avs details here
+    $data["authorization"] = array(
+            "mode" => "avs_noauth",
+            "city"=> "Sampleville",
+            "address"=> "3310 sample street ",
+            "state"=> "Simplicity",
+            "country"=> "Simple",
+            "zipcode"=> "000000",
+        );
+}
+
+$result = $payment->cardCharge($data);//charge with new fields
+// print_r($result);//this returns the an array
+
+if($result['data']['auth_mode'] == 'otp'){
+    $id = $result['data']['id'];
+    $flw_ref = $result['data']['flw_ref'];
+    $otp = '12345';
+    $validate = $payment->validateTransaction($otp,$flw_ref);// you can print_r($validate) to see the response
+    $verify = $payment->verifyTransaction($id);
+}
 ```
 
 ## Mobile Money Payments
@@ -282,7 +398,8 @@ $data = array(
 
 $payment = new MobileMoney();
 $result = $payment->mobilemoney($data);
-$verify = $payment->verifyTransaction();
+$id = $result['data']['id'];
+$verify = $payment->verifyTransaction($id);
 $print_r($result);
 ```
 
@@ -293,28 +410,28 @@ require("Flutterwave-Rave-PHP-SDK/library/Ussd.php");
 use Flutterwave\Ussd;
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
-        //"tx_ref": "MC-15852309v5050e8",
-     "order_id" => "USS_URG_8939829232323",
-     "account_bank" => "058",
-     "amount"=> "1500",
-     "type"=> "qr",
-     "currency"=> "NGN",
-     "email"=>"ekene@flw.com",
-     "phone_number" =>"0902620185",
-     "fullname" => "Ekene Eze",
-     "client_ip" =>"154.123.220.1",
-     "device_fingerprint" =>"62wd23423rq324323qew1",
-     "meta" => array(
-         "matricno"=> "877656"
-     )
+        "tx_ref" => "MC-15852309v5050e8",
+        "account_bank" => "058",
+        "amount" => "1500",
+        "currency" =>"NGN",
+        "email" =>"user@gmail.com",
+        "phone_number" =>"054709929220",
+        "fullname" => "John Madakin",
         
       
     );
 
 $payment = new Ussd();
 $result = $payment->ussd($data);//initiates the charge
-$verify = $payment->verifyTransaction();
+
+echo 'Dial '.$result['meta']['authorization']['note'].' to authorize your transaction';
+
+//A webhook notification would be sent to you....
+
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
 
 ```
 
@@ -342,7 +459,11 @@ $data = array(
 $payment = new Mpesa();
 
 $result = $payment->mpesa($data);
-$verify = $payment->verifyTransaction();
+print_r($result);
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
 ```
 ## Transfer Implementation
 
@@ -406,7 +527,10 @@ $result = $payment->singleTransfer($data);//initiate single transfer payment
 $createBulkTransfer = $payment->bulkTransfer($bulkdata);// get bulk result....
 $transfers = $payment->listTransfers($listdata);//you can add a payload for the page. you can remove the array if want to get it all.
 $getTransferFee = $payment->getTransferFee($feedata);
-$verify = $payment->verifyTransaction();
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
 
 ```
 
@@ -785,7 +909,10 @@ $data = array(
 
 $payment = new VoucherPayment();
 $result = $payment->voucher($data);
-$verify = $payment->verifyTransaction();
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
 print_r($result);
 ```
 

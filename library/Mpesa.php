@@ -92,16 +92,12 @@ class Mpesa {
         }
 
         
-        if($array['type'] !== $this->type){
-            return '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
-            The Type specified in the payload  is not <b> "'.$this->type.'"</b>
-          </div>';
-        }
+        $this->payment->type = 'mpesa';
         
         //set the payment handler 
         $this->payment->eventHandler(new mpesaEventHandler)
         //set the endpoint for the api call
-        ->setEndPoint("v3/charges?type=".$this->type);
+        ->setEndPoint("v3/charges?type=".$this->payment->type);
         //returns the value from the results
         return $this->payment->chargePayment($array);
     }

@@ -9,33 +9,29 @@ require("../library/Ussd.php");
 use Flutterwave\Ussd;
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
-        //"tx_ref": "MC-15852309v5050e8",
-     "order_id" => "USS_URG_8939829232323",
-     "account_bank" => "058",
-     "amount"=> "1500",
-     "type"=> "qr",
-     "currency"=> "NGN",
-     "email"=>"ekene@flw.com",
-     "phone_number" =>"0902620185",
-     "fullname" => "Ekene Eze",
-     "client_ip" =>"154.123.220.1",
-     "device_fingerprint" =>"62wd23423rq324323qew1",
-     "meta" => array(
-         "matricno"=> "877656"
-     )
+        "tx_ref" => "MC-15852309v5050e8",
+        "account_bank" => "058",
+        "amount" => "1500",
+        "currency" =>"NGN",
+        "email" =>"user@gmail.com",
+        "phone_number" =>"054709929220",
+        "fullname" => "John Madakin",
         
       
     );
 
 $payment = new Ussd();
 $result = $payment->ussd($data);//initiates the charge
-$verify = $payment->verifyTransaction();
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+}
+
 
 
 echo '<div class="alert alert-success role="alert">
-        <h1>Charge Result: </h1>
-        <p><b> '.print_r($result, true).'</b></p>
+        <h1>Authorize Ussd Transaction: </h1>
+        <p><b> Dial '.$result['meta']['authorization']['note'].'</b></p>
       </div>';
 
 echo '<div class="alert alert-primary role="alert">
