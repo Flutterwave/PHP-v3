@@ -1,8 +1,6 @@
 <?php
 namespace Flutterwave;
 
-define("BASEPATH", 1);
-
 //uncomment if you need this
 //define("BASEPATH", 1);//Allow direct access to rave.php and raveEventHandler.php
 
@@ -12,9 +10,12 @@ require_once('raveEventHandlerInterface.php');
 use Flutterwave\Rave;
 use Flutterwave\EventHandlerInterface;
 
-class transactionVerificationEventHandler implements EventHandlerInterface{
+
+
+class achEventHandler implements EventHandlerInterface{
     /**
-     * This is called only when a transaction is successful
+     * This is called only when a transaction is successful 
+     * @param array
      * */
     function onSuccessful($transactionData){
         // Get the transaction from your DB using the transaction reference (txref)
@@ -27,6 +28,11 @@ class transactionVerificationEventHandler implements EventHandlerInterface{
         // Give value for the transaction
         // Update the transaction to note that you have given value for the transaction
         // You can also redirect to your success page from here
+        if($transactionData["data"]["chargecode"] === '00' || $transactionData["data"]["chargecode"] === '0'){
+            echo "Transaction Completed";
+        }else{
+          $this->onFailure($transactionData);
+      }
     }
     
     /**
@@ -72,58 +78,46 @@ class transactionVerificationEventHandler implements EventHandlerInterface{
       
     }
 }
-class Transactions{
+
+class Ach {
+    protected $payment;
     function __construct(){
-        $this->history = new Rave($_ENV['SECRET_KEY']);
-    }
-    function viewTransactions(){
-        //set the payment handler 
-        $this->history->eventHandler(new transactionVerificationEventHandler)
-        //set the endpoint for the api call
-        ->setEndPoint("v3/transactions");
-        //returns the value from the results
-        return $this->history->getAllTransactions();
-    }
-
-    function getTransactionFee($array = array()){
-
-        if(!isset($array['amount'])){
-            return '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
-            The following query param  is required <b>  amount </b>
-          </div>';
-        }
+        $this->payment = new Rave($_ENV['SECRET_KEY']);
+        
         
 
-        $this->history->eventHandler(new transactionVerificationEventHandler)
-        //set the endpoint for the api call
-        ->setEndPoint("v3/transactions/fee");
-        //returns the value from the results
-        return $this->history->getTransactionFee($array);
     }
+    function achCharge($array){
 
-    function verifyTransaction($id){
-
+            if(!isset($array['tx_ref']) || empty($array['tx_ref'])){
+                $array['tx_ref'] = $this->payment->txref;
+            }else{
+                $this->payment->txref = $array['tx_ref'];
+            }
             
+            $this->payment->type = 'ach_payment';
+            //set the payment handler 
+            $this->payment->eventHandler(new achEventHandler)
+            //set the endpoint for the api call
+            ->setEndPoint("v3/charges?type=".$this->payment->type);
+            //returns the value from the results
+            //$result = $this->payment->chargePayment($array);
+            
+            $result = $this->payment->chargePayment($array);
+            
+            return $result;
+
+            //change this
+        }
+
         
-        $this->history->eventHandler(new transactionVerificationEventHandler)
-        //set the endpoint for the api call
-        ->setEndPoint("v3/transactions/".$id."/verify");
-        //returns the value from the results
-        return $this->history->verifyTransaction($id);
+        function verifyTransaction($id){
+            //verify the charge
+            return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
+
+        }
+      
+
     }
 
-
-    function viewTimeline($array = array()){
-        if(!isset($array['id'])){
-            return '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
-            Missing value for <b> id </b> in your payload
-          </div>';
-        }        
-
-        $this->history->eventHandler(new transactionVerificationEventHandler)
-        //set the endpoint for the api call
-        ->setEndPoint("v3/transactions/".$array['id']."/events");
-        //returns the value from the results
-        return $this->history->transactionTimeline();
-    }
-}
+?>

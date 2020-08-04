@@ -78,11 +78,11 @@ class TransactionVerification {
     function __construct(){
         $this->validate = new Rave($_ENV['SECRET_KEY']);
     }
-    function transactionVerify($txref){
+    function transactionVerify($id){
             //set the payment handler 
             $this->validate->eventHandler(new transactionVerificationEventHandler);
             //returns the value from the results
-            return $this->validate->verifyTransaction($txref);
+            return $this->validate->verifyTransaction($id);
         }
     }
     

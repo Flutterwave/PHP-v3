@@ -8,11 +8,17 @@ DEFINE('DS', DIRECTORY_SEPARATOR);
 require("../library/CardPayment.php");
 require("testcards.php");
 use Flutterwave\Card;
+
+//check the file testcards.php for the sample request...
 //The data variable holds the payload
 // $cards['card1'];
 // $cards['card2'];
 
 $payment = new Card();
+
+
+// $result = $payment->cardCharge($cards['card1']);
+// print_r($result);
 
 if (isset($_POST['charge'])){
 
@@ -29,7 +35,7 @@ if (isset($_POST['charge'])){
         fclose($fp);
         
     }
-    $url = 'otp2.php?ref='.$result['data']['flw_ref'];
+    $url = 'otp2.php?ref='.$result['data']['flw_ref']."&id=".$result['data']['id'];
         header( 'Location:'.$url);
 
 

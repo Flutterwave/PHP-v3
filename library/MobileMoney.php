@@ -92,7 +92,7 @@ class MobileMoney {
             $array['tx_ref'] = $this->payment->txref;
         }
 
-
+        $this->payment->type = 'momo';
         if(!in_array($array['type'], $this->type, true)){
             echo '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
             The Type specified in the payload  is not <b> "'.$this->type[0].' , '.$this->type[1].' , '.$this->type[2].' , '.$this->type[3].' or '.$this->type[4].'"</b>
@@ -147,9 +147,10 @@ class MobileMoney {
              * After validation then verify the charge with the txRef
              * You can write out your function to execute when the verification is successful in the onSuccessful function
          ***/
-        function verifyTransaction(){
+        function verifyTransaction($id){
             //verify the charge
-            return $this->payment->verifyTransaction($this->payment->txref);//Uncomment this line if you need it
+            return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
+
         }
       
 

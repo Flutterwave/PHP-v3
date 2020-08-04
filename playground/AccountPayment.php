@@ -8,6 +8,9 @@ DEFINE('DS', DIRECTORY_SEPARATOR);
 require("../library/AccountPayment.php");
 use Flutterwave\Account;
 //The data variable holds the payload
+
+
+
 $data = array(
     "amount" => "3000",
     "type" => "debit_ng_account",
@@ -42,7 +45,7 @@ echo '<div class="alert alert-success role="alert">
       </div>';
 
 //validating the charge by Entering otp.....
-echo '<iframe src = "otp.php?ref='.$result['data']['flw_ref'].'" width = "100%" height = "400" frameBorder="0">
+echo '<iframe src = "otp.php?ref='.$result['data']['flw_ref'].'&id='.$result['data']['id'].'" width = "100%" height = "400" frameBorder="0">
 Sorry your browser does not support inline frames.
 </iframe>';
 
