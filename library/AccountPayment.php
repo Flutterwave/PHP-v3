@@ -128,10 +128,11 @@ class Account {
         return $this->payment->txref;
     }
        
-       function verifyTransaction(){
+    function verifyTransaction($id){
         //verify the charge
-        return $this->payment->verifyTransaction($this->payment->txref);//Uncomment this line if you need it
-        }
+        return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
+
+    }
     }
 
     

@@ -25,17 +25,24 @@ $data = array(
 $payment = new Mpesa();
 
 $result = $payment->mpesa($data);
-$verify = $payment->verifyTransaction();
 
 echo '<div class="alert alert-success role="alert">
         <h1>Charge Result: </h1>
         <p><b> '.print_r($result, true).'</b></p>
       </div>';
 
-echo '<div class="alert alert-primary role="alert">
+if(isset($result['data'])){
+  $id = $result['data']['id'];
+  $verify = $payment->verifyTransaction($id);
+  echo '<div class="alert alert-primary role="alert">
         <h1>Verified Result: </h1>
         <p><b> '.print_r($verify, true).'</b></p>
       </div>';
+}
+
+
+
+
 
 
 

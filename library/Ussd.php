@@ -75,9 +75,11 @@ class Ussd {
     protected $ussd;
     function __construct(){
         $this->payment = new Rave($_ENV['SECRET_KEY']);
-        $this->type = "qr";
+        $this->type = "ussd";
     }
     function ussd($array){
+
+        $this->payment->type = 'ussd';
 
             //add tx_ref to the paylaod
             if(!isset($array['tx_ref']) || empty($array['tx_ref'])){
@@ -85,25 +87,19 @@ class Ussd {
             }
     
 
-
-        if($array['type'] !== $this->type){
-            return '<div class="alert alert-danger" role="alert">
-            The Type specified in the payload  is not <b> "'.$this->type.'"</b>
-          </div>';
-        }
-                 //set the payment handler 
+      //set the payment handler 
                  $this->payment->eventHandler(new ussdEventHandler)
                  //set the endpoint for the api call
-                 ->setEndPoint("v3/charges?type=".$this->type);
+                 ->setEndPoint("v3/charges?type=".$this->payment->type);
                  //returns the value from the results
                  return $this->payment->chargePayment($array);
         
            
     }
 
-    function verifyTransaction(){
+    function verifyTransaction($id){
         //verify the charge
-        return $this->payment->verifyTransaction($this->payment->txref);//Uncomment this line if you need it
+        return $this->payment->verifyTransaction($id);//Uncomment this line if you need it
     }
 
 }
