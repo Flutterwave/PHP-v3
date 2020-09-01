@@ -200,37 +200,37 @@ class myEventHandler implements EventHandlerInterface {
 if ($postData['amount']) {
     // Make payment
     $payment
-    ->eventHandler(new myEventHandler)
-    ->setAmount($postData['amount'])
-    ->setPaymentOptions($postData['payment_options']) // value can be card, account or both
-    ->setDescription($postData['description'])
-    ->setLogo($postData['logo'])
-    ->setTitle($postData['title'])
-    ->setCountry($postData['country'])
-    ->setCurrency($postData['currency'])
-    ->setEmail($postData['email'])
-    ->setFirstname($postData['firstname'])
-    ->setLastname($postData['lastname'])
-    ->setPhoneNumber($postData['phonenumber'])
-    ->setPayButtonText($postData['pay_button_text'])
-    ->setRedirectUrl($URL)
-    // ->setMetaData(array('metaname' => 'SomeDataName', 'metavalue' => 'SomeValue')) // can be called multiple times. Uncomment this to add meta datas
-    // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
-    ->initialize();
+        ->eventHandler(new myEventHandler)
+        ->setAmount($postData['amount'])
+        ->setPaymentOptions($postData['payment_options']) // value can be card, account or both
+        ->setDescription($postData['description'])
+        ->setLogo($postData['logo'])
+        ->setTitle($postData['title'])
+        ->setCountry($postData['country'])
+        ->setCurrency($postData['currency'])
+        ->setEmail($postData['email'])
+        ->setFirstname($postData['firstname'])
+        ->setLastname($postData['lastname'])
+        ->setPhoneNumber($postData['phonenumber'])
+        ->setPayButtonText($postData['pay_button_text'])
+        ->setRedirectUrl($URL)
+        // ->setMetaData(array('metaname' => 'SomeDataName', 'metavalue' => 'SomeValue')) // can be called multiple times. Uncomment this to add meta datas
+        // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
+        ->initialize();
 } else {
     if ($getData['cancelled'] && $getData['tx_ref']) {
         // Handle canceled payments
         $payment
-        ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['tx_ref'])
-        ->paymentCanceled($getData['tx_ref']);
+            ->eventHandler(new myEventHandler)
+            ->requeryTransaction($getData['tx_ref'])
+            ->paymentCanceled($getData['tx_ref']);
     } elseif($getData['tx_ref']) {
         // Handle completed payments
         $payment->logger->notice('Payment completed. Now requerying payment.');
         
         $payment
-        ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['tx_ref']);
+            ->eventHandler(new myEventHandler)
+            ->requeryTransaction($getData['tx_ref']);
     } else {
         $payment->logger->warn('Stop!!! Please pass the txref parameter!');
         echo 'Stop!!! Please pass the txref parameter!';
@@ -248,6 +248,7 @@ Use the Playground DIrectory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AccountPayment.php");
 use Flutterwave\Account;
+
 //The data variable holds the payload
 $data = array(
     "amount" => "3000",
@@ -262,16 +263,17 @@ $data = array(
     "device_fingerprint" => "62wd23423rq324323qew1",
     "meta" => [
         "flightID" => "213213AS"
-        ]       
-    );
+    ]       
+);
 
 $payment = new Account();
 $result = $payment->accountCharge($data);
 
-if(isset($result['data'])){
+if (isset($result['data'])) {
   $id = $result['data']['id'];
   $verify = $payment->verifyTransaction($id);
 }
+
 print_r($result);
 ```
 
@@ -283,10 +285,8 @@ Use the Playground DIrectory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AchPayment.php");
 use Flutterwave\Ach;
+
 //The data variable holds the payload
-
-
-
 $data = array(
     "tx_ref" =>  "MC-1585230ew9v5050e8",
     "amount" => "100",
@@ -297,15 +297,17 @@ $data = array(
     "phone_number" => "0902620185",
     "fullname" => "Ekene Eze",
     "redirect_url" => "http://ekene.com/u/payment-completed",
-    );
+);
 
 $payment = new Ach();
 
 $result = $payment->achCharge($data);
-if(isset($result['data'])){
+
+if (isset($result['data'])) {
   $id = $result['data']['id'];
   $verify = $payment->verifyTransaction($id);
 }
+
 print_r($result);
 
 ```
@@ -330,38 +332,35 @@ $data = array(
     "fullname"=> "Ekene Eze",
     "email"=> "ekene@flw.com",
     "phone_number"=> "0902620185",
-    "fullname" => "temi desola",
     //"tx_ref"=> "MC-3243e",// should be unique for every transaction
-    "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",
-           
-    );
+    "redirect_url"=> "https://webhook.site/3ed41e38-2c79-4c79-b455-97398730866c",   
+);
 
 $payment = new Card();
 $res = $payment->cardCharge($data);//This call is to figure out the authmodel
 $data['authorization']['mode'] = $res['meta']['authorization']['mode'];
 
-if($res['meta']['authorization']['mode'] == 'pin'){
-
+if ($res['meta']['authorization']['mode'] == 'pin') {
     //Supply authorization pin here
     $data['authorization']['pin'] = '3310';
 }
 
-if($res['meta']['authorization']['mode'] == 'avs_noauth'){
+if ($res['meta']['authorization']['mode'] == 'avs_noauth') {
     //supply avs details here
     $data["authorization"] = array(
-            "mode" => "avs_noauth",
-            "city"=> "Sampleville",
-            "address"=> "3310 sample street ",
-            "state"=> "Simplicity",
-            "country"=> "Simple",
-            "zipcode"=> "000000",
-        );
+        "mode" => "avs_noauth",
+        "city"=> "Sampleville",
+        "address"=> "3310 sample street ",
+        "state"=> "Simplicity",
+        "country"=> "Simple",
+        "zipcode"=> "000000",
+    );
 }
 
 $result = $payment->cardCharge($data);//charge with new fields
 // print_r($result);//this returns the an array
 
-if($result['data']['auth_mode'] == 'otp'){
+if ($result['data']['auth_mode'] == 'otp') {
     $id = $result['data']['id'];
     $flw_ref = $result['data']['flw_ref'];
     $otp = '12345';
@@ -376,7 +375,9 @@ The following implementation shows how to initiate a mobile money payment
 Use the Playground Directory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/MobileMoney.php");
+
 use Flutterwave\MobileMoney;
+
 //The data variable holds the payload
 $data = array(
     "order_id" => "USS_URG_89245453s2323",
@@ -389,35 +390,34 @@ $data = array(
     "client_ip" => "154.123.220.1",
     "device_fingerprint" => "62wd23423rq324323qew1",
     "meta" => [
-        "flightID" => "213213AS"
-        ]       
-    );
-
+        "flightID" => "213213AS",
+    ]
+);
 
 $payment = new MobileMoney();
 $result = $payment->mobilemoney($data);
 $id = $result['data']['id'];
 $verify = $payment->verifyTransaction($id);
-$print_r($result);
+print_r($result);
 ```
 
 ## USSD Implementation
 Collect payments via ussd
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Ussd.php");
+
 use Flutterwave\Ussd;
+
 //The data variable holds the payload
 $data = array(
-        "tx_ref" => "MC-15852309v5050e8",
-        "account_bank" => "058",
-        "amount" => "1500",
-        "currency" =>"NGN",
-        "email" =>"user@gmail.com",
-        "phone_number" =>"054709929220",
-        "fullname" => "John Madakin",
-        
-      
-    );
+    "tx_ref" => "MC-15852309v5050e8",
+    "account_bank" => "058",
+    "amount" => "1500",
+    "currency" =>"NGN",
+    "email" =>"user@gmail.com",
+    "phone_number" =>"054709929220",
+    "fullname" => "John Madakin",
+);
 
 $payment = new Ussd();
 $result = $payment->ussd($data);//initiates the charge
@@ -426,11 +426,10 @@ echo 'Dial '.$result['meta']['authorization']['note'].' to authorize your transa
 
 //A webhook notification would be sent to you....
 
-if(isset($result['data'])){
+if (isset($result['data'])) {
   $id = $result['data']['id'];
   $verify = $payment->verifyTransaction($id);
 }
-
 ```
 
 ## Mpesa Implementation
@@ -438,6 +437,7 @@ Collect payments from your customers via Mpesa.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Mpesa.php");
+
 use Flutterwave\Mpesa;
 
 $data = array(
@@ -450,15 +450,17 @@ $data = array(
     "client_ip" => "154.123.220.1",
     "device_fingerprint" => "62wd23423rq324323qew1",
     "meta" => [
-        "flightID" => "213213AS"
-        ]       
-    );
+        "flightID" => "213213AS",
+    ]
+);
 
 $payment = new Mpesa();
 
 $result = $payment->mpesa($data);
+
 print_r($result);
-if(isset($result['data'])){
+
+if (isset($result['data'])) {
   $id = $result['data']['id'];
   $verify = $payment->verifyTransaction($id);
 }
@@ -468,9 +470,10 @@ if(isset($result['data'])){
 How to make a transfer payment
 
 ```php
-
 require("Flutterwave-Rave-PHP-SDK/library/Transfer.php");
+
 use Flutterwave\Transfer;
+
 //sample payload for payBill()
 $data = array(
     "account_bank"=> "044",
@@ -485,30 +488,31 @@ $data = array(
 
 //sample payload for bulkBill()
 $bulkdata = array(
-  "title"=> "Staff salary",
-  "bulk_data"=> array(
-      array(
-          "bank_code"=> "044",
-          "account_number"=> "0690000032",
-          "amount"=> 45000,
-          "currency"=> "NGN",
-          "narration"=> "akhlm blktrnsfr",
-          "reference"=> "akhlm-blktrnsfr-xx03"
-      ),
-      array(
-          "bank_code"=> "044",
-          "account_number"=> "0690000034",
-          "amount"=> 5000,
-          "currency"=> "NGN",
-          "narration"=> "akhlm blktrnsfr",
-          "reference"=> "akhlm-blktrnsfr-xy03"
-      ))
+    "title"=> "Staff salary",
+    "bulk_data"=> array(
+        array(
+            "bank_code"=> "044",
+            "account_number"=> "0690000032",
+            "amount"=> 45000,
+            "currency"=> "NGN",
+            "narration"=> "akhlm blktrnsfr",
+            "reference"=> "akhlm-blktrnsfr-xx03",
+        ),
+        array(
+            "bank_code"=> "044",
+            "account_number"=> "0690000034",
+            "amount"=> 5000,
+            "currency"=> "NGN",
+            "narration"=> "akhlm blktrnsfr",
+            "reference"=> "akhlm-blktrnsfr-xy03",
+        ),
+    ),
 );
 
 $getdata = array(
     //"reference"=>"edf-12de5223d2f32434753432"
      "id"=>"BIL136",
-     "product_id"=>"OT150"
+     "product_id"=>"OT150",
 );
 
 $listdata = array(
@@ -516,8 +520,8 @@ $listdata = array(
 );
 
 $feedata = array(
-'currency'=> 'NGN', //if currency is omitted. the default currency of NGN would be used.
-'amount'=> 1000
+    'currency'=> 'NGN', //if currency is omitted. the default currency of NGN would be used.
+    'amount'=> 1000,
 );
 
 $payment = new Transfer();
@@ -525,22 +529,23 @@ $result = $payment->singleTransfer($data);//initiate single transfer payment
 $createBulkTransfer = $payment->bulkTransfer($bulkdata);// get bulk result....
 $transfers = $payment->listTransfers($listdata);//you can add a payload for the page. you can remove the array if want to get it all.
 $getTransferFee = $payment->getTransferFee($feedata);
-if(isset($result['data'])){
+
+if (isset($result['data'])) {
   $id = $result['data']['id'];
   $verify = $payment->verifyTransaction($id);
 }
-
 ```
 
 
 
-## Create Vitual Cards
+## Create Virtual Cards
 
 The following implementation shows how to create virtual cards on rave
 Use the Playground Directory to view Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VirtualCards.php");
+
 use Flutterwave\VirtualCard;
 
 $data = array(
@@ -553,25 +558,25 @@ $data = array(
     "billing_postal_code"=>"000009",
     "billing_country"=>"NG",
     "callback_url"=>"https://webhook.site/96374895-154d-4aa0-99b5-709a0a128674"
-    );
+);
 
-    $trns_data = array('id'=> 'a41de883-c8da-45a0-9b23-37780c88285f');
-    $getCardData = array('id'=>'7a81d279-a07a-4775-a55a-5fa2c98e20ae');
-    $terminate_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb');
-    $fund_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'amount'=>'2000', 'debit_currency'=>'NGN');
-    $withdraw_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'amount'=>'500');
-    $blockCard_data = array('id' => '1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'status_action'=>'block');
+$trns_data = array('id'=> 'a41de883-c8da-45a0-9b23-37780c88285f');
+$getCardData = array('id'=>'7a81d279-a07a-4775-a55a-5fa2c98e20ae');
+$terminate_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb');
+$fund_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'amount'=>'2000', 'debit_currency'=>'NGN');
+$withdraw_data = array('id'=>'1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'amount'=>'500');
+$blockCard_data = array('id' => '1cb36826-8e05-40d6-8b9e-7f7439a141cb', 'status_action'=>'block');
 
-    $card = new VirtualCard();
-    $createCard = $card->createCard($data);//initiates the charge
-    $getCard = $card->getCard($getCardData);
-    $getCards = $card->listCards();
-    $terminate = $card->terminateCard($terminate_data);
-    $fund = $card->fundCard($fund_data);
-    $transactions = $card->cardTransactions($trns_data);
-    $withdraw = $card->cardWithdrawal($withdraw_data);
-    $block_unblock = $card->block_unblock_card($blockCard_data);
-    print_r($createCard);
+$card = new VirtualCard();
+$createCard = $card->createCard($data);//initiates the charge
+$getCard = $card->getCard($getCardData);
+$getCards = $card->listCards();
+$terminate = $card->terminateCard($terminate_data);
+$fund = $card->fundCard($fund_data);
+$transactions = $card->cardTransactions($trns_data);
+$withdraw = $card->cardWithdrawal($withdraw_data);
+$block_unblock = $card->block_unblock_card($blockCard_data);
+print_r($createCard);
 ```
 
 
@@ -580,8 +585,9 @@ $data = array(
 The following implementation shows how to verify a Bank Verification Number
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bvn.php");
+
 use Flutterwave\Bvn;
-//The data variable holds the payload
+
 $bvn_number = "123456789";
 $bvn = new Bvn();
 $result = $bvn->verifyBVN($bvn_number);
@@ -594,15 +600,17 @@ The following implementation shows how to create a payment plan on the rave dash
 Use the Playground Directory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/PaymentPlan.php");
+
 use Flutterwave\PaymentPlan;
 
-//sample payload for payBill()
+//sample payload for PaymentPlan()
 $data = array(
     "amount"=> 2000,
     "name"=> "plan 2",
     "interval"=> "monthly",
     "duration"=> 48
 );
+
 $update = array( "id" => "5356","name" => "The Game","status" => "Active");
 $getdata = array("id"=>"5116");
 
@@ -614,12 +622,14 @@ $aPlan = $payment->get_a_plan($getdata);//get a payment plans....
 print_r($result);
 ```
 
-## Create a Subaccount Sample implementation
+## Create a Sub-account Sample implementation
 
-The following implementation shows how to create a subaccount on the rave dashboard
+The following implementation shows how to create a sub-account on the rave dashboard
 Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Subaccount.php");
+
 use Flutterwave\Subaccount;
 
 $data = array(
@@ -652,12 +662,15 @@ $fetchSubaccount = $subaccount->fetchSubaccount($fetch_data);
 $updateSubaccount = $subaccount->updateSubaccount($update_data);
 print_r($createSubaccount);
 ```
+
 ## Create Transfer Recipient Sample implementation
 
 The following implementation shows how to create a transfer recipient on the rave dashboard
 Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Recipient.php");
+
 use Flutterwave\Recipient;
 
 $data = array(
@@ -682,11 +695,13 @@ print_r($recipient1);
 ## Subscriptions Sample implementation
 
 The following implementation shows how to activate a subscription, fetch a subscription, get all subscription
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Subscription.php");
+
 use Flutterwave\Subscription;
 
-$id = 1112 //Id of subscription plan
+$id = 1112; //Id of subscription plan
 //$cid = 2222
 $subscription = new Subscription();
 $resultGet = $subscription->getAllSubscription();//gets all existing subscription
@@ -694,24 +709,27 @@ $resultActivate = $subscription->activateSubscription($id);// activates a subscr
 $resultCancel = $subscription->cancelSubscription($cid);// activates a subscription plan
 
 //returns the result 
-print_r($result);
+print_r($resultGet);
 ```
+
 ## Bill Sample implementation
 
 The following implementation shows how to pay for any kind of bill from Airtime to DSTv payments to Tolls.
-Please view the rave documentation section on Bill payment for different types of bill services you can pass into the ```payBill``` method as an```$array```.
-visit: https://developer.flutterwave.com/v3.0/reference#buy-airtime-bill
+Please view the rave documentation section on Bill payment for different types of bill services you can pass into the `payBill()` method as an array.
+Visit [the official documentation](https://developer.flutterwave.com/v3.0/reference#buy-airtime-bill) to learn more.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bill.php");
+
 use Flutterwave\Bill;
 
 $data = array(
     "country"=> "NG",
-	"customer"=> "+23490803840303",
-	"amount"=> 500,
-	"recurrence"=> "ONCE",
-	"type"=> "AIRTIME",
-	"reference"=> "9300049645534545454332433"
+    "customer"=> "+23490803840303",
+    "amount"=> 500,
+    "recurrence"=> "ONCE",
+    "type"=> "AIRTIME",
+    "reference"=> "9300049645534545454332433",
 );
 
 //sample payload for bulkBill()
@@ -720,21 +738,21 @@ $bulkdata = array(
     "callback_url"=>"https://webhook.site/96374895-154d-4aa0-99b5-709a0a128674",
     "bulk_data"=> array(
         array(
-        "country"=> "NG",
-        "customer"=> "+23490803840303",
-        "amount"=> 500,
-        "recurrence"=> "WEEKLY",
-        "type"=> "AIRTIME",
-        "reference"=>"930049200929"
+            "country"=> "NG",
+            "customer"=> "+23490803840303",
+            "amount"=> 500,
+            "recurrence"=> "WEEKLY",
+            "type"=> "AIRTIME",
+            "reference"=>"930049200929"
         ),
         array(
-        "country"=>"NG",
-        "customer"=> "+23490803840304",
-        "amount"=> 500,
-        "recurrence"=> "WEEKLY",
-        "type"=>"AIRTIME",
-        "reference"=>"930004912332434232"
-        )
+            "country"=>"NG",
+            "customer"=> "+23490803840304",
+            "amount"=> 500,
+            "recurrence"=> "WEEKLY",
+            "type"=>"AIRTIME",
+            "reference"=>"930004912332434232"
+        ),
     ),
 );
 
@@ -759,6 +777,7 @@ The following implementation shows how to create a electronic receipt.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Ebill.php");
+
 use Flutterwave\Ebill;
 
 $data = array(
@@ -786,35 +805,38 @@ $updateResult = $payment->updateOrder($update);//create bulk bill payment....
 print_r($result);
 ```
 
-## VirtualAccount Sample implementation
+## Virtual Account Sample implementation
 
-The following implementation shows how to create a virtual Account.
-Please view the documentation for more options that can be added in the payload
-https://developer.flutterwave.com/reference#create-a-virtual-account-number
+The following implementation shows how to create a virtual account.
+Please view the documentation for more options that can be added in the payload. Visit [the official documentation](https://developer.flutterwave.com/reference#create-a-virtual-account-number) to learn more.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VirtualAccount.php");
+
 use Flutterwave\VirtualAccount;
 
-//sample payload for payBill()
+// sample payload for createVirtualAccount()
 $data = array(
-  "email"=> "johnmadakin@allstar.com",
-  "duration"=> 5,
-  "frequency"=> 5,
-  "amount"=>"22000",
-  "is_permanent"=> true,
-  "tx_ref"=> "jhn-mdkn-101923123463"
+    "email"=> "johnmadakin@allstar.com",
+    "duration"=> 5,
+    "frequency"=> 5,
+    "amount"=>"22000",
+    "is_permanent"=> true,
+    "tx_ref"=> "jhn-mdkn-101923123463"
 );
 
+// sample payload for createBulkAccounts()
 $bulkdata = array(
-  "accounts"=> 5,
-  "email"=> "sam@son.com",
-  "is_permanent"=> true,
-  "tx_ref"=> "jhn-mndkn-012439283422"
+    "accounts"=> 5,
+    "email"=> "sam@son.com",
+    "is_permanent"=> true,
+    "tx_ref"=> "jhn-mndkn-012439283422"
 );
 
+// sample payload for getBulkAccounts()
 $batch = array('batch_id' => 'RND_2641579516055928');
 
+// sample payload for getAccountNumber()
 $getdata = array(
     "order_ref"=>"URF_1590362018488_8875935"
 );
@@ -832,6 +854,7 @@ Once the charge and validation leg is complete for the first charge on the card,
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/TokenizedCharge.php");
+
 use Flutterwave\TokenizedCharge;
 
 $data = array(
@@ -844,14 +867,14 @@ $data = array(
      "last_name"=> "customer",
      "client_ip" =>"154.123.220.1",
      "device_fingerprint" =>"62wd23423rq324323qew1" 
-    );
+);
 
-$payment = new TokinizedCharge();
+$payment = new TokenizedCharge();
 $result = $payment->tokenCharge($data);//initiates the charge
 $verify = $payment->verifyTransaction();
 print_r($result);
 ```
-## view Transactions Sample implementation
+## View Transactions Sample implementation
 
  list all transactions on your account. You could do a specific query using ```customer_email``` or ```customer_fullname``` to make specifc search. View all successfull or failed transactions for a particular period, month or year.
  Please read the MISCELLANEOUS section of the Api documentation for more option to pass.
@@ -859,16 +882,17 @@ print_r($result);
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Transactions.php");
+
 use Flutterwave\Transactions;
 
 $data = array(
-'amount'=> 1000
+    'amount'=> 1000
 );
 $fetch_data = array(
-'id'=>'345522'
+    'id'=>'345522'
 );
 $time_data = array(
-  'id'=>'3434'
+    'id'=>'3434'
 );
 
 $history = new Transactions();
@@ -878,6 +902,7 @@ $verifyTransaction = $history->verifyTransaction($fetch_data);
 $timeline = $history->viewTimeline($time_data);
 print_r($transactions);
 ```
+
 ## Voucher payment Sample Implementation
 
 Collect ZAR payments offline using Vouchers
@@ -886,35 +911,36 @@ Collect ZAR payments offline using Vouchers
 require("Flutterwave-Rave-PHP-SDK/library/VoucherPayment.php");
 
 use Flutterwave\VoucherPayment;
+
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
-        //"tx_ref": "MC-15852309v5050e8",
-        "amount"=> "100",
-        "type"=> "voucher_payment",
-        "currency"=> "ZAR",
-        "pin"=> "19203804939000",
-        "email"=>"ekene@flw.com",
-        "phone_number" =>"0902620185",
-        "account_bank" => "058",
-        "fullname" => "Ekene Eze",
-        "client_ip" =>"154.123.220.1",
-        "device_fingerprint" =>"62wd23423rq324323qew1",
-        "meta" => array(
-            "flightID"=> "123949494DC"
-        )     
-    );
+    //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
+    //"tx_ref": "MC-15852309v5050e8",
+    "amount"=> "100",
+    "type"=> "voucher_payment",
+    "currency"=> "ZAR",
+    "pin"=> "19203804939000",
+    "email"=>"ekene@flw.com",
+    "phone_number" =>"0902620185",
+    "account_bank" => "058",
+    "fullname" => "Ekene Eze",
+    "client_ip" =>"154.123.220.1",
+    "device_fingerprint" =>"62wd23423rq324323qew1",
+    "meta" => array(
+        "flightID"=> "123949494DC",
+    ),
+);
 
 $payment = new VoucherPayment();
 $result = $payment->voucher($data);
-if(isset($result['data'])){
-  $id = $result['data']['id'];
-  $verify = $payment->verifyTransaction($id);
+if (isset($result['data'])) {
+    $id = $result['data']['id'];
+    $verify = $payment->verifyTransaction($id);
 }
 print_r($result);
 ```
 
-You can also find the class documentation in the docs folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
+You can also find the class documentation in the `docs` folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
 
 Enjoy... :v:
 
