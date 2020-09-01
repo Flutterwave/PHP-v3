@@ -41,13 +41,13 @@
             <input type="hidden" name="currency" value="NGN" /> <!-- Replace the value with your transaction currency -->
             <input type="hidden" name="email" value="busa@yahoo.com" /> <!-- Replace the value with your customer email -->
             <input type="hidden" name="firstname" value="Olaobaju" /> <!-- Replace the value with your customer firstname (optional) -->
-            <input type="hidden" name="lastname"value="Abraham" /> <!-- Replace the value with your customer lastname (optional) -->
+            <input type="hidden" name="lastname" value="Abraham" /> <!-- Replace the value with your customer lastname (optional) -->
             <input type="hidden" name="phonenumber" value="08098787676" /> <!-- Replace the value with your customer phonenumber (optional if email is passes) -->
             <input type="hidden" name="pay_button_text" value="Complete Payment" /> <!-- Replace the value with the payment button text you prefer (optional) -->
             <input type="hidden" name="ref" value="MY_NAME_5a22a7f270abc8879" /> <!-- Replace the value with your transaction reference. It must be unique per transaction. You can delete this line if you want one to be generated for you. -->
             <input type="hidden" name="successurl" value="http://request.lendlot.com/13b9gxc1?status=success"> <!-- Put your success url here -->
             <input type="hidden" name="failureurl" value="http://request.lendlot.com/13b9gxc1?status=failed"> <!-- Put your failure url here -->
-            <center><input id="btn-of-destiny" class="btn btn-warning"type="submit" value="Pay Now" /></center>
+            <center><input id="btn-of-destiny" class="btn btn-warning" type="submit" value="Pay Now" /></center>
         </form>
 
 

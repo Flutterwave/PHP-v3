@@ -53,7 +53,7 @@ function getURL($url,$data = array()){
     $new_query_string = http_build_query($params).'&'.$urlArr[1];
     $newUrl = $urlArr[0].'?'.$new_query_string;
     return $newUrl;
-};
+}
 
 
 // This is where you set how you want to handle the transaction at different stages
