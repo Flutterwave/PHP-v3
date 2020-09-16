@@ -22,11 +22,14 @@ $getData = $_GET;
 $postData = $_POST;
 $publicKey = $_SERVER['PUBLIC_KEY'];
 $secretKey = $_SERVER['SECRET_KEY'];
-$success_url = $postData['successurl'];
-$failure_url = $postData['failureurl'];
+if(isset($_POST) && isset($postData['successurl']) && isset($postData['failureurl'])){
+    $success_url = $postData['successurl'];
+    $failure_url = $postData['failureurl'];
+}
+
 $env = $_SERVER['ENV'];
 
-if($postData['amount']){
+if(isset($postData['amount'])){
     $_SESSION['publicKey'] = $publicKey;
     $_SESSION['secretKey'] = $secretKey;
     $_SESSION['env'] = $env;
@@ -40,7 +43,7 @@ $prefix = 'RV'; // Change this to the name of your business or app
 $overrideRef = false;
 
 // Uncomment here to enforce the useage of your own ref else a ref will be generated for you automatically
-if($postData['ref']){
+if(isset($postData['ref'])){
     $prefix = $postData['ref'];
     $overrideRef = true;
 }
@@ -124,7 +127,7 @@ class myEventHandler implements EventHandlerInterface{
      * This is called a transaction requery returns with an error
      * */
     function onRequeryError($requeryResponse){
-        // Do something, anything!
+        echo 'the transaction was not found';
     }
     
     /**
@@ -155,7 +158,7 @@ class myEventHandler implements EventHandlerInterface{
     }
 }
 
-if($postData['amount']){
+if(isset($postData['amount'])){
     // Make payment
     $payment
     ->eventHandler(new myEventHandler)
@@ -176,19 +179,17 @@ if($postData['amount']){
     // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
     ->initialize();
 }else{
-    if($getData['cancelled'] && $getData['tx_ref']){
+    if(isset($getData['cancelled'])){
         // Handle canceled payments
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['tx_ref'])
-        ->paymentCanceled($getData['tx_ref']);
-    }elseif($getData['tx_ref']){
+        ->paymentCanceled($getData['cancelled']);
+    }elseif(isset($getData['tx_ref'])){
         // Handle completed payments
         $payment->logger->notice('Payment completed. Now requerying payment.');
-        
         $payment
         ->eventHandler(new myEventHandler)
-        ->requeryTransaction($getData['tx_ref']);
+        ->requeryTransaction($getData['transaction_id']);
     }else{
         $payment->logger->warn('Stop!!! Please pass the txref parameter!');
         echo 'Stop!!! Please pass the txref parameter!';
