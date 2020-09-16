@@ -72,6 +72,9 @@ class myEventHandler implements EventHandlerInterface{
      * This is called only when a transaction is successful
      * */
     function onSuccessful($transactionData){
+        echo "<br /><br /><br />";
+        print_r($transactionData);
+        exit;
         // Get the transaction from your DB using the transaction reference (txref)
         // Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue
         // Comfirm that the transaction is successful
@@ -82,7 +85,7 @@ class myEventHandler implements EventHandlerInterface{
         // Give value for the transaction
         // Update the transaction to note that you have given value for the transaction
         // You can also redirect to your success page from here
-        if($transactionData->chargecode === '00' || $transactionData->chargecode === '0'){
+        if($transactionData->status === 'successful'){
           if($transactionData->currency == $_SESSION['currency'] && $transactionData->amount == $_SESSION['amount']){
               
               if($_SESSION['publicKey']){
