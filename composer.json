@@ -1,5 +1,5 @@
 {
-    "name": "flutterwavedev/flutterwavev3",
+    "name": "flutterwavedev/flutterwave-v3",
     "description": "A simple SDK for integrating to Flutterwave's Rave payment",
     "type": "library",
     "keywords": ["rave", "flutterwave", "payment", "transfers", "africa"],
