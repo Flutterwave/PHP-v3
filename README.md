@@ -4,14 +4,32 @@
 
 # Flutterwave v3 PHP SDK
 
-![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3?style=flat-square)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Flutterwave/Flutterwave-PHP-v3?style=flat-square)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Flutterwave/Flutterwave-PHP-v3?)
+![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3?)
 
 Use this library to integrate your PHP app to Rave.
+
+## Table of Contents
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Running tests](#test)
+- [Deployment](#deployment)
+- [Built Using](#build-tools)
+- [References](#references)
+
+<a id="getting-started"></a>
+
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+
+See [references](#references) for links to dashboard and API documentation.
 
 Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
 
 Simply redirect to the `paymentForm.php` file on your browser to process a payment.
+
+### Installing
 
 The vendor folder is committed into the project to allow easy installation for those who do not have composer installed.
 It is recommended to update the project dependencies using:
@@ -19,7 +37,9 @@ It is recommended to update the project dependencies using:
 ```shell
 $ composer install
 ```
-# Setting Up Environment Variables
+
+### Setting Up Environment Variables
+
 Create a .env file and follow the format of the .env.example file
 Save your PUBLIC_KEY, SECRET_KEY, ENV in the .env file
 
@@ -32,8 +52,9 @@ ENV = "staging or live"
 
 ```
 
+<a id="usage"></a>
 
-## Sample implementation
+## Usage
 
 In this implementation, we are expecting a form encoded POST request to this script.
 The request will contain the following parameters.
@@ -243,12 +264,9 @@ if($postData['amount']){
 }
 ```
 
+### Account Charge
 
-
-## Account Charge Sample implementation
-
-The following implementation shows how to initiate a direct bank charge
-Use the Playground DIrectory to view Responses and samples of use.
+The following implementation shows how to initiate a direct bank charge. Use the Playground DIrectory to view Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AccountPayment.php");
@@ -280,10 +298,9 @@ if(isset($result['data'])){
 print_r($result);
 ```
 
-## Ach Charge Sample implementation
+### ACH Charge
 
-The following implementation shows how to accept payments directly from customers in the US and South Africa.
-Use the Playground DIrectory to view Responses and samples of use.
+The following implementation shows how to accept payments directly from customers in the US and South Africa. Use the Playground DIrectory to view Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AchPayment.php");
@@ -315,11 +332,9 @@ print_r($result);
 
 ```
 
+### Card Charge
 
-## Card Charge Sample implementation
-
-The following implementation shows how to initiate a card charge
-Use the Playground Directory to view an implementation Responses and samples of use.
+The following implementation shows how to initiate a card charge. Use the Playground Directory to view an implementation Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/CardPayment.php");
@@ -375,10 +390,9 @@ if($result['data']['auth_mode'] == 'otp'){
 }
 ```
 
-## Mobile Money Payments
+### Mobile Money Payments
 
-The following implementation shows how to initiate a mobile money payment
-Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to initiate a mobile money payment. Use the Playground Directory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/MobileMoney.php");
 use Flutterwave\MobileMoney;
@@ -406,8 +420,10 @@ $verify = $payment->verifyTransaction($id);
 $print_r($result);
 ```
 
-## USSD Implementation
+### USSD
+
 Collect payments via ussd
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Ussd.php");
 use Flutterwave\Ussd;
@@ -438,7 +454,8 @@ if(isset($result['data'])){
 
 ```
 
-## Mpesa Implementation
+### Mpesa
+
 Collect payments from your customers via Mpesa.
 
 ```php
@@ -468,7 +485,8 @@ if(isset($result['data'])){
   $verify = $payment->verifyTransaction($id);
 }
 ```
-## Transfer Implementation
+
+### Transfer Implementation
 
 How to make a transfer payment
 
@@ -537,12 +555,9 @@ if(isset($result['data'])){
 
 ```
 
+### Vitual Cards
 
-
-## Create Vitual Cards
-
-The following implementation shows how to create virtual cards on rave
-Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VirtualCards.php");
@@ -579,10 +594,10 @@ $data = array(
     print_r($createCard);
 ```
 
+### BVN Verification
 
-## BVN Verification Sample implementation
+The following implementation shows how to verify a Bank Verification Number.
 
-The following implementation shows how to verify a Bank Verification Number
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bvn.php");
 use Flutterwave\Bvn;
@@ -593,10 +608,10 @@ $result = $bvn->verifyBVN($bvn_number);
 print_r($result);
 ```
 
-## Create a Payment Plan Sample implementation
+### Payment Plans
 
-The following implementation shows how to create a payment plan on the rave dashboard
-Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to create a payment plan on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/PaymentPlan.php");
 use Flutterwave\PaymentPlan;
@@ -619,7 +634,7 @@ $aPlan = $payment->get_a_plan($getdata);//get a payment plans....
 print_r($result);
 ```
 
-## Create a Subaccount Sample implementation
+### Subaccount Management
 
 The following implementation shows how to create a subaccount on the rave dashboard
 Use the Playground Directory to view Responses and samples of use.
@@ -657,10 +672,11 @@ $fetchSubaccount = $subaccount->fetchSubaccount($fetch_data);
 $updateSubaccount = $subaccount->updateSubaccount($update_data);
 print_r($createSubaccount);
 ```
-## Create Transfer Recipient Sample implementation
 
-The following implementation shows how to create a transfer recipient on the rave dashboard
-Use the Playground Directory to view Responses and samples of use.
+### Transfer Recipient 
+
+The following implementation shows how to create a transfer recipient on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Recipient.php");
 use Flutterwave\Recipient;
@@ -684,9 +700,10 @@ $deleteRecipient = $payment->deleteBeneficiary($deldata);//delete recipient
 print_r($recipient1);
 ```
 
-## Subscriptions Sample implementation
+## Subscriptions
 
-The following implementation shows how to activate a subscription, fetch a subscription, get all subscription
+The following implementation shows how to activate a subscription, fetch a subscription, get all subscriptions.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Subscription.php");
 use Flutterwave\Subscription;
@@ -701,11 +718,13 @@ $resultCancel = $subscription->cancelSubscription($cid);// activates a subscript
 //returns the result 
 print_r($result);
 ```
-## Bill Sample implementation
 
-The following implementation shows how to pay for any kind of bill from Airtime to DSTv payments to Tolls.
-Please view the rave documentation section on Bill payment for different types of bill services you can pass into the ```payBill``` method as an```$array```.
+### Bills
+
+The following implementation shows how to pay for any kind of bill from Airtime to DSTv payments to Tolls. Please view the rave documentation section on Bill payment for different types of bill services you can pass into the ```payBill``` method as an```$array```.
+
 visit: https://developer.flutterwave.com/v3.0/reference#buy-airtime-bill
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bill.php");
 use Flutterwave\Bill;
@@ -758,7 +777,7 @@ $getBillCategories = $payment->getBillCategories();
 print_r($result);
 ```
 
-## Ebill Sample implementation
+### Ebills
 
 The following implementation shows how to create a electronic receipt.
 
@@ -791,10 +810,9 @@ $updateResult = $payment->updateOrder($update);//create bulk bill payment....
 print_r($result);
 ```
 
-## VirtualAccount Sample implementation
+### Virtual Accounts
 
-The following implementation shows how to create a virtual Account.
-Please view the documentation for more options that can be added in the payload
+The following implementation shows how to create a virtual Account. Please view the documentation for more options that can be added in the payload
 https://developer.flutterwave.com/reference#create-a-virtual-account-number
 
 ```php
@@ -831,7 +849,8 @@ $virtualAccounts = $account->getBulkAccounts($batch);//list all bulk accounts
 $virtualAccount = $account->getAccountNumber($getdata);//get an account.
 print_r($result);
 ```
-## Tokenized Charge Sample implementation
+
+### Tokenized Charge
 
 Once the charge and validation leg is complete for the first charge on the card, you can make use of the token for subsequent charges.
 
@@ -856,7 +875,8 @@ $result = $payment->tokenCharge($data);//initiates the charge
 $verify = $payment->verifyTransaction();
 print_r($result);
 ```
-## view Transactions Sample implementation
+
+### view Transactions
 
  list all transactions on your account. You could do a specific query using ```customer_email``` or ```customer_fullname``` to make specifc search. View all successfull or failed transactions for a particular period, month or year.
  Please read the MISCELLANEOUS section of the Api documentation for more option to pass.
@@ -883,7 +903,8 @@ $verifyTransaction = $history->verifyTransaction($fetch_data);
 $timeline = $history->viewTimeline($time_data);
 print_r($transactions);
 ```
-## Voucher payment Sample Implementation
+
+### Voucher payment
 
 Collect ZAR payments offline using Vouchers
 
@@ -922,7 +943,24 @@ print_r($result);
 You can also find the class documentation in the docs folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
 
 
-## ToDo
+<a id="deployment"></a>
 
-- Write Unit Test
-- Support Tokenized payment
+## Deployment
+
+- Switch to Live Mode on the Dashboard settings page
+- Use the Live Public API key 
+
+<a id="build-tools"></a>
+
+##  Built Using
+
+- PHP
+
+
+<a id="references"></a>
+
+## Flutterwave API  References
+
+- [Flutterwave API Doc](https://developer.flutterwave.com/docs)
+- [Flutterwave Inline Payment Doc](https://developer.flutterwave.com/docs/flutterwave-inline)
+- [Flutterwave Dashboard](https://dashboard.flutterwave.com/login)  
