@@ -5,6 +5,7 @@
 # Flutterwave v3 PHP SDK
 
 ![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3?style=flat-square)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Flutterwave/Flutterwave-PHP-v3?style=flat-square)
 
 Use this library to integrate your PHP app to Rave.
 
