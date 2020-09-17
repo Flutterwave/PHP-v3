@@ -16,7 +16,7 @@ It is recommended to update the project dependencies using:
 ```shell
 $ composer install
 ```
-# Setting Up ENVIRONMENT Variables
+# Setting Up Environment Variables
 Create a .env file and follow the format of the .env.example file
 Save your PUBLIC_KEY, SECRET_KEY, ENV in the .env file
 
