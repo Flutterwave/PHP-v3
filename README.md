@@ -918,7 +918,6 @@ print_r($result);
 
 You can also find the class documentation in the docs folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
 
-Enjoy... :v:
 
 ## ToDo
 
