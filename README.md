@@ -4,6 +4,9 @@
 
 # Flutterwave v3 PHP SDK
 
+[![Latest Stable Version](https://poser.pugx.org/flutterwave/flutterwave-v3/v1.0.0)](https://packagist.org/packages/flutterwavedev/flutterwave-v3)
+[![License](https://poser.pugx.org/flutterwave/flutterwave-v3/license)](https://packagist.org/packages/flutterwavedev/flutterwave-v3)
+
 Use this library to integrate your PHP app to Rave.
 
 Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
