@@ -521,20 +521,19 @@ class Rave {
         }
 
         $data = array(
-            'txref' => $this->txref,
-            'SECKEY' => $this->secretKey,
-            'last_attempt' => '1'
+            'id' => (int)$referenceNumber
             // 'only_successful' => '1'
         );
-
+        
         // make request to endpoint using unirest.
-        $headers = array('Content-Type' => 'application/json');
+        $headers = array('Content-Type' => 'application/json', 'Authorization' => $this->secretKey);
         $body = Body::json($data);
-        $url = $this->baseUrl.'/flwv3-pug/getpaidx/api/xrequery';
-
+        $url = $this->baseUrl.'/v3/transactions/'.$data['id'].'/verify';
         // Make `POST` request and handle response with unirest
-        $response = Request::post($url, $headers, $body);
+        $response = Request::get($url, $headers);
 
+        print_r($response);
+  
         //check the status is success
         if ($response->body && $response->body->status === "success") {
             if($response->body && $response->body->data && $response->body->data->status === "successful"){
@@ -591,7 +590,7 @@ class Rave {
         echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
 
         echo '<script>';
-	    echo 'document.addEventListener("DOMContentLoaded", function(event) {';
+        echo 'document.addEventListener("DOMContentLoaded", function(event) {';
         echo 'FlutterwaveCheckout({
             public_key: "'.$this->publicKey.'",
             tx_ref: "'.$this->txref.'",
@@ -608,6 +607,9 @@ class Rave {
             callback: function (data) {
               console.log(data);
             },
+            onclose: function() {
+                window.location = "?cancelled=cancelled";
+              },
             customizations: {
               title: "'.$this->customTitle.'",
               description: "'.$this->customDescription.'",
@@ -1172,10 +1174,10 @@ class Rave {
      * @return object
      * */
     function paymentCanceled($referenceNumber){
-        $this->txref = $referenceNumber;
+
         $this->logger->notice('Payment was canceled by user..'.$this->txref);
         if(isset($this->handler)){
-            $this->handler->onCancel($this->txref);
+            $this->handler->onCancel($referenceNumber);
         }
         return $this;
     }
