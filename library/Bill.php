@@ -83,7 +83,7 @@ class Bill {
 
     function __construct(){
         $this->payment = new Rave($_ENV['SECRET_KEY']);
-        $this->type = array('AIRTIME','DSTV','DSTV BOX OFFICE');
+        $this->type = array('AIRTIME','DSTV','DSTV BOX OFFICE', 'Postpaid', 'Prepaid', 'AIRTEL', 'IKEDC TOP UP','EKEDC POSTPAID TOPUP', 'EKEDC PREPAID TOPUP', 'LCC', 'KADUNA TOP UP');
     }
    
     function payBill($array){
@@ -100,20 +100,57 @@ class Bill {
         }
         switch ($array['type']) {
             case 'DSTV':
-                //set type to ugx_momo
+                //set type to dstv
 
                 $this->type = 'DSTV';
 
                 break;
+            
+            case 'EKEDC POSTPAID TOPUP':
+                //set type to ekedc
+
+                $this->type = 'EKEDC POSTPAID TOPUP';
+
+                break;
+            case 'LCC':
+                //set type to lcc
+
+                $this->type = 'LCC';
+
+                break;
+            case 'AIRTEL':
+                //set type to airtel
+
+                $this->type = 'AIRTEL';
+
+                break;
+            case 'Postpaid':
+                //set type to postpaid
+
+                $this->type = 'Postpaid';
+
+                break;
+            case 'IKEDC TOP UP':
+                //set type to ikedc
+
+                $this->type = 'IKEDC TOP UP';
+
+                break;
+            case 'KADUNA TOP UP':
+                //set type to kaduna top up
+
+                $this->type = 'KADUNA TOP UP';
+
+                break;
 
             case 'DSTV BOX OFFICE':
-                //set type to xar_momo
+                //set type to dstv box office
                 $this->type = 'DSTV BOX OFFICE';
 
                 break;
             
             default:
-                //set type to momo
+                //set type to airtime
             $this->type = 'AIRTIME';
                 
                 break;
