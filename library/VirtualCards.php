@@ -110,10 +110,10 @@ class VirtualCard
         }
         $this->vc->setEndPoint("v3/virtual-cards/" . $array['id'] . "/fund");
 
-        $data = array(
+        $data = [
             "amount" => $array['amount'],
             "debit_currency" => $array['currency']
-        );
+        ];
 
         self::startRecording();
         $response = $this->vc->vcPostRequest($data);

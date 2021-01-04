@@ -72,7 +72,7 @@ class ebillEventHandler implements EventHandlerInterface{
 class Ebill {
     function __construct(){
         $this->eb = new Rave($_ENV['SECRET_KEY']);
-        $this->keys = array('amount', 'phone_number','country', 'ip','email');
+        $this->keys = ['amount', 'phone_number','country', 'ip','email'];
     }
     function order($array){
 

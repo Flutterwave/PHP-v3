@@ -121,7 +121,7 @@ class Transfer
         return $response;
     }
 
-    function listTransfers($array = array('url' => 'blank'))
+    function listTransfers($array = ['url' => 'blank'])
     {
         $this->transfer->eventHandler(new transferEventHandler)
             //set the endpoint for the api call
@@ -173,7 +173,7 @@ class Transfer
     }
 
 
-    function getBanksForTransfer($data = array("country" => 'NG'))
+    function getBanksForTransfer($data = ["country" => 'NG'])
     {
 
         //set the payment handler

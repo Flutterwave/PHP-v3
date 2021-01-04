@@ -30,7 +30,7 @@ class Rave
     protected $integrityHash;
     protected $payButtonText = 'Proceed with Payment';
     protected $redirectUrl;
-    protected $meta = array();
+    protected $meta = [];
     //protected $env;
     protected $transactionPrefix;
     // public $logger;
@@ -117,7 +117,7 @@ class Rave
     function createCheckSum()
     {
         $this->logger->notice('Generating Checksum....');
-        $options = array(
+        $options = [
             "public_key" => $this->publicKey,
             "amount" => $this->amount,
             "tx_ref" => $this->txref,
@@ -134,7 +134,7 @@ class Rave
                 "logo" => $this->customLogo,
                 "title" => $this->customTitle,
             ]
-        );
+        ];
 
         ksort($options);
 
@@ -563,13 +563,13 @@ class Rave
             $this->handler->onRequery($this->txref);
         }
 
-        $data = array(
+        $data = [
             'id' => (int)$referenceNumber
             // 'only_successful' => '1'
-        );
+        ];
 
         // make request to endpoint using unirest.
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $this->secretKey);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $this->secretKey];
         $body = Body::json($data);
         $url = $this->baseUrl . '/v3/transactions/' . $data['id'] . '/verify';
         // Make `POST` request and handle response with unirest
@@ -727,7 +727,7 @@ class Rave
         // make request to endpoint using unirest
 
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         $body = Body::json($data);
         $url = $this->baseUrl . '/' . $this->end_point;
         $response = Request::post($url, $headers, $body);
@@ -738,7 +738,7 @@ class Rave
     function putURL($data)
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         $body = Body::json($data);
         $url = $this->baseUrl . '/' . $this->end_point;
         $response = Request::put($url, $headers, $body);
@@ -748,7 +748,7 @@ class Rave
     function delURL($url)
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         //$body = Body::json($data);
         $path = $this->baseUrl . '/' . $this->end_point;
         $response = Request::delete($path . $url, $headers);
@@ -766,7 +766,7 @@ class Rave
     {
         // make request to endpoint using unirest.
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         //$body = Body::json($data);
         $path = $this->baseUrl . '/' . $this->end_point;
         $response = Request::get($path . $url, $headers);
@@ -801,11 +801,11 @@ class Rave
 
         $this->logger->notice('Validating otp...');
         $this->setEndPoint("v3/validate-charge");
-        $this->post_data = array(
+        $this->post_data = [
             'type' => $type,//type can be card or account
             'flw_ref' => $ref,
             'otp' => $otp,
-        );
+        ];
         $result = $this->postURL($this->post_data);
         return $result;
 
@@ -816,10 +816,10 @@ class Rave
 
         $this->logger->notice('Validating pin...');
         $this->setEndPoint("v3/validate-charge");
-        $this->post_data = array(
+        $this->post_data = [
             'PBFPubKey' => $this->publicKey,
             'transactionreference' => $Ref,
-            'otp' => $otp);
+            'otp' => $otp];
         $result = $this->postURL($this->post_data);
         return $result;
 
@@ -908,7 +908,7 @@ class Rave
     function cancelSubscription()
     {
         $this->logger->notice('Canceling Subscription...');
-        $data = array();
+        $data = [];
         $result = $this->putURL($data);
         return json_decode($result, true);
     }
@@ -934,7 +934,7 @@ class Rave
     function activateSubscription()
     {
         $this->logger->notice('Activating Subscription...');
-        $data = array();
+        $data = [];
         return $this->putURL($data);
     }
 
@@ -1091,9 +1091,9 @@ class Rave
             $this->logger->notice('Checking payment details..');
             //encrypt the required options to pass to the server
             $this->integrityHash = $this->encryption($this->json_options);
-            $this->post_data = array(
+            $this->post_data = [
                 'client' => $this->integrityHash
-            );
+            ];
 
             $result = $this->postURL($this->post_data);
             // the result returned requires validation
@@ -1194,7 +1194,7 @@ class Rave
     }
 
 
-    function vcPutRequest($array = array())
+    function vcPutRequest($array = [])
     {
         $result = $this->putURL($array);
         $result = json_decode($result, true);
@@ -1244,7 +1244,7 @@ class Rave
         return $result;
     }
 
-    function deleteSubaccount($array = array())
+    function deleteSubaccount($array = [])
     {
         $this->logger->notice('deleting  Sub account...');
         //pass $this->options to the postURL function to call the api
@@ -1334,7 +1334,7 @@ class Rave
             $array['number_of_units'] = "1";
         }
 
-        $data = array(
+        $data = [
             'narration' => $array['narration'],
             'number_of_units' => $array['number_of_units'],
             'currency' => $array['currency'],
@@ -1345,7 +1345,7 @@ class Rave
             'ip' => $array['ip'],
             'country' => $array['country'],
             'custom_business_name' => $array['custom_business_name']
-        );
+        ];
         $result = $this->postURL($data);
         $result = json_decode($result, true);
         return $result;
@@ -1360,10 +1360,10 @@ class Rave
     {
         $this->logger->notice('updating Ebill order..');
 
-        $data = array(
+        $data = [
             'amount' => $array['amount'],
             'currency' => "NGN"// only NGN can be passed
-        );
+        ];
 
 
         $result = $this->putURL($data);
@@ -1381,13 +1381,13 @@ class Rave
     {
 
         if (!isset($array['type'])) {
-            $error = array('Type' => 'Missing the type property in the payload');
+            $error = ['Type' => 'Missing the type property in the payload'];
             return $error;
         }
 
         $this->logger->notice($array['type'] . ' Billing ...');
 
-        $data = array();
+        $data = [];
         $data["type"] = $array["type"];
         $data["country"] = $array["country"];
         $data["customer"] = $array["customer"];
@@ -1459,7 +1459,7 @@ class Rave
         if (!isset($data['token']) && !isset($data['currency']) &&
             !isset($data['country']) && !isset($data['amount']) &&
             !isset($data['tx_ref']) && !isset($data['email'])) {
-            $error = array('error' => 'Your payload is missing all properties');
+            $error = ['error' => 'Your payload is missing all properties'];
             return $error;
         }
 
@@ -1541,9 +1541,9 @@ class Rave
         if (empty($array['currency'])) {
             $array['currency'] == 'NGN';
         }
-        $data = array(
+        $data = [
             "currency" => $array['currency']
-        );
+        ];
         return $this->postURL($data);
     }
 
@@ -1557,10 +1557,10 @@ class Rave
     {
 
         $this->logger->notice('Verifying transfer recipents account...');
-        $data = array(
+        $data = [
             "account_number" => $array['account_number'],
             "account_bank" => $array['account_bank']
-        );
+        ];
         return $this->postURL($data);
 
     }
@@ -1589,11 +1589,11 @@ class Rave
     function captureFunds($array)
     {
         $this->logger->notice('capturing funds for flwRef: ' . $array['flwRef'] . ' ...');
-        $data = array(
+        $data = [
             "flwRef" => $array['flwRef'],
             "amount" => $array['amount']
 
-        );
+        ];
         return $this->postURL($data);
 
     }
@@ -1616,11 +1616,11 @@ class Rave
     {
         $this->logger->notice($array['action'] . 'ing a captured fund with the flwRef=' . $array['flwRef']);
 
-        $data = array(
+        $data = [
             "ref" => $array['flwRef'],
             "action" => $array['action'],
             "SECKEY" => $this->secretkey
-        );
+        ];
         return $this->postURL($data);
     }
 

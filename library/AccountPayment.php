@@ -94,7 +94,7 @@ class Account
     function __construct()
     {
         $this->payment = new Rave($_ENV['SECRET_KEY']);
-        $this->type = array('debit_uk_account', 'debit_ng_account');
+        $this->type = ['debit_uk_account', 'debit_ng_account'];
         $this->valType = "account";
     }
 

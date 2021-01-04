@@ -95,7 +95,7 @@ class Transactions{
         return $response;
     }
 
-    function getTransactionFee($array = array()){
+    function getTransactionFee($array = []){
 
         if(!isset($array['amount'])){
             return '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
@@ -131,7 +131,7 @@ class Transactions{
     }
 
 
-    function viewTimeline($array = array()){
+    function viewTimeline($array = []){
         if(!isset($array['id'])){
             return '<div class="alert alert-danger" role="alert"> <b>Error:</b> 
             Missing value for <b> id </b> in your payload

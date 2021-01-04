@@ -94,7 +94,7 @@ class MobileMoney
     function __construct()
     {
         $this->payment = new Rave($_ENV['SECRET_KEY']);
-        $this->type = array("mobile_money_ghana", "mobile_money_uganda", "mobile_money_zambia", "mobile_money_rwanda", "mobile_money_franco");
+        $this->type = ["mobile_money_ghana", "mobile_money_uganda", "mobile_money_zambia", "mobile_money_rwanda", "mobile_money_franco"];
     }
 
     function mobilemoney($array)
