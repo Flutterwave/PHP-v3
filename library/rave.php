@@ -12,7 +12,7 @@ use Monolog\Logger;
 use Unirest\Request;
 use Unirest\Request\Body;
 
-$dotenv = new Dotenv\Dotenv(__DIR__ . '/../');
+$dotenv = new Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 /**
