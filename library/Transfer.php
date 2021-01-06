@@ -180,7 +180,7 @@ class Transfer
         $this->transfer->eventHandler(new transferEventHandler)
             //set the endpoint for the api call
 
-            ->setEndPoint("v2/banks/" . $data['country'] . "/");
+            ->setEndPoint("v3/banks/" . $data['country'] . "/");
 
         transferEventHandler::startRecording();
         $response= $this->transfer->getBanksForTransfer();
