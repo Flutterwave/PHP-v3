@@ -9,7 +9,7 @@ require("../library/VoucherPayment.php");
 use Flutterwave\VoucherPayment;
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
+        //"public_key": "FLWPUBK-xxxxxxxxxxxxxxxxxxxxx-X"//you can ommit the public key as the key is take from your .env file
         //"tx_ref": "MC-15852309v5050e8",
         "amount"=> "100",
         "type"=> "voucher_payment",
