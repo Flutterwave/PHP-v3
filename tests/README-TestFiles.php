@@ -4,7 +4,7 @@
     // use Flutterwave\Account;
 
     // $array = array(
-    //     "PBFPubKey" =>"FLWPUBK-3e20938934b74d294ddfe4c87e746100-X",
+    //     "PBFPubKey" =>"FLWPUBK-xxxxxxxxxx-X",
     //     //"accountbank"=> "058",// get the bank code from the bank list endpoint.
     //     "accountbank"=> "011",
     //     //"accountnumber" => "0255597451",
@@ -41,7 +41,7 @@
 // use Flutterwave\MobileMoney;
 
 // $array = array(
-//     "PBFPubKey" =>"FLWPUBK-b55586524308f4b77b5523a59ebd66cf-X",
+//     "PBFPubKey" =>"FLWPUBK-xxxxxxxxxx-X",
 //     "currency"=> "GHS",
 //     "payment_type" => "mobilemoneygh",
 //     "country" => "GH",
@@ -71,7 +71,7 @@
 // use Flutterwave\VirtualCard;
 
 // $array = array(
-//     "secret_key"=>"FLWSECK-c481f575f255c9344dc128b12e5146c8-X",
+//     "secret_key"=>"FLWSECK-xxxxxxxxxx-X",
 // 	"currency"=> "NGN",
 // 	"amount"=>"200",
 // 	"billing_name"=> "Mohammed Lawal",
@@ -94,7 +94,7 @@
 //     "PageIndex"=> 0,
 //     "PageSize"=> 20,
 //     "CardId"=> "20975b22-8219-4b18-92d5-9e19c5890497 ",
-//     "secret_key"=>"FLWSECK-c481f575f255c9344dc128b12e5146c8-X",
+//     "secret_key"=>"FLWSECK-xxxxxxxxxx-X",
 //     // "id"=> "20975b22-8219-4b18-92d5-9e19c5890497",
 //     // "amount"=> "200",
 //     // "debit_currency"=> "NGN",
@@ -107,7 +107,7 @@
 // require("Flutterwave-Rave-PHP-SDK/lib/CardPayment.php");
 // use Flutterwave\Card;
 // $array = array(
-//     "PBFPubKey" => "FLWPUBK-3b89b62623a703ab8fbc72741402c011-X",
+//     "PBFPubKey" => "FLWPUBK-xxxxxxxxxx-X",
 //             "cardno" =>"5438898014560229",
 //             "cvv" => "564",
 //             "expirymonth"=> "10",
@@ -161,7 +161,7 @@ print_r($result);
 //      "name"=> "The Premium Plan",
 //      "interval"=> "monthly",
 //      "duration"=> "12",
-//      "seckey" => "FLWSECK-c789df9e4953611f46cc13126e84f006-X"
+//      "seckey" => "FLWSECK-xxxxxxxxxx-X"
 // );
 
 // $plan = new PaymentPlan();
@@ -195,7 +195,7 @@ print_r($result);
 // $array = array(
 //     "account_number"=>"0690000030",
 // 	"account_bank"=>"044",
-// 	"seckey"=>"FLWSECK-c789df9e4953611f46cc13126e84f006-X"
+// 	"seckey"=>"FLWSECK-xxxxxxxxxx-X"
 // );
 
 // $recipient = new Recipient();
@@ -207,7 +207,7 @@ print_r($result);
 
 // $array = array(
 //     "ref"=>"ACHG-1540381755976",
-// 	"seckey"=>"FLWSECK-c789df9e4953611f46cc13126e84f006-X"
+// 	"seckey"=>"FLWSECK-xxxxxxxxxx-X"
 // );
 
 // $refund = new Refund();
@@ -246,7 +246,7 @@ print_r($result);
 // require("Flutterwave-Rave-PHP-SDK/lib/TransactionVerification.php");
 // use Flutterwave\TransactionVerification;
 
-// $verify = new TransactionVerification("FLWPUBK-3b89b62623a703ab8fbc72741402c011-X","FLWSECK-c789df9e4953611f46cc13126e84f006-X","staging");
+// $verify = new TransactionVerification("FLWPUBK-xxxxxxxxxx-X","FLWSECK-xxxxxxxxxx-X","staging");
 // $result = $verify->verifyTransaction();
 // print_r($result);
 
@@ -257,7 +257,7 @@ print_r($result);
 //         "account_bank"=>"044",
 //         "account_number"=> "0690000044",
 //         "amount"=> "500",
-//         "seckey"=>"FLWSECK-c481f575f255c9344dc128b12e5146c8-X",
+//         "seckey"=>"FLWSECK-xxxxxxxxxx-X",
 //         "narration"=> "New transfer",
 //         "currency"=>"NGN",
 //         "reference"=> "mk-".time()
