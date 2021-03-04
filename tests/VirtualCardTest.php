@@ -22,7 +22,7 @@ class VirtualCardTest extends TestCase
     public function test_card_is_created_when_payload_is_posted()
     {
         $array = array(
-            "secret_key"=>"FLWSECK-c481f575f255c9344dc128b12e5146c8-X",
+            "secret_key"=>"FLWSECK-xxxxxxxxxxxxxxxxxxxxx-X",
             "currency"=> "NGN",
             "amount"=>"200",
             "billing_name"=> "Mohammed Lawal",
