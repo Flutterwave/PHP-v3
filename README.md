@@ -557,7 +557,7 @@ if(isset($result['data'])){
 
 ```
 
-### Vitual Cards
+### Virtual Cards
 
 The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
 
@@ -916,7 +916,7 @@ require("Flutterwave-Rave-PHP-SDK/library/VoucherPayment.php");
 use Flutterwave\VoucherPayment;
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
+        //"public_key": "FLWPUBK-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-X"//you can ommit the public key as the key is take from your .env file
         //"tx_ref": "MC-15852309v5050e8",
         "amount"=> "100",
         "type"=> "voucher_payment",
