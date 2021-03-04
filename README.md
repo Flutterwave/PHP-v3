@@ -23,6 +23,8 @@ Use this library to integrate your PHP app to Rave.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
+> :warning: **Please note that PCI-DSS certification is required for card payment method to be enabled on this v3 SDK**
+
 See [references](#references) for links to dashboard and API documentation.
 
 Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
