@@ -575,7 +575,7 @@ class Rave
         // Make `POST` request and handle response with unirest
         $response = Request::get($url, $headers);
 
-        print_r($response);
+//         print_r($response);
 
         //check the status is success
         if ($response->body && $response->body->status === "success") {
