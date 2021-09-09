@@ -641,7 +641,7 @@ class Rave
             amount: ' . $this->amount . ',
             currency: "' . $this->currency . '",
             country: "' . $this->country . '",
-            payment_options: "card,mobilemoney,ussd",
+            payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,banktransfer,account",
             redirect_url:"' . $this->redirectUrl . '",
             customer: {
               email: "' . $this->customerEmail . '",
