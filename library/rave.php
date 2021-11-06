@@ -1587,7 +1587,8 @@ class Rave
 
     function captureFunds($array)
     {
-        $this->logger->notice('capturing funds for flwRef: ' . $array['flw_ref'] . ' ...');
+        $this->logger->notice('capturing funds for flw_ref: ' . $array['flw_ref'] . ' ...');
+        unset($array['flw_ref']);
         $data = array(
             "amount" => $array['amount']
         );
@@ -1609,9 +1610,10 @@ class Rave
      * @return object
      * */
 
-    function void()
+    function void($array)
     {
         $this->logger->notice('voided a captured fund with the flw_ref=' . $array['flw_ref']);
+        unset($array['flw_ref']);
         $data = array();
         return $this->postURL($data);
     }
@@ -1625,7 +1627,7 @@ class Rave
     function preRefund($array)
     {
         $this->logger->notice('refunding a captured fund with the flw_ref=' . $array['flw_ref']);
-
+        unset($array['flw_ref']);
         $data = array(
             "amount" => $array['amount']
         );

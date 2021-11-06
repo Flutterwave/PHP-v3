@@ -97,8 +97,11 @@ class Preauth
     function captureFunds($array)
     {
 
-        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+        if(isset($array['flw_ref']) && !empty($array['flw_ref'])){
             $flw_ref = $array['flw_ref'];
+        }else{
+            $result['message'] = "Please pass the transaction flw_ref ";
+            return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
         $this->preauthPayment->eventHandler(new preEventHandler)
@@ -109,13 +112,16 @@ class Preauth
         $response = $this->preauthPayment->captureFunds($array);
         preEventHandler::sendAnalytics('Initiate-Capture-Funds');
 
-        return $response;
+        return json_decode($response);
     }
 
     function voidFunds($array)
     {
-        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+        if(isset($array['flw_ref']) && !empty($array['flw_ref'])){
             $flw_ref = $array['flw_ref'];
+        }else{
+            $result['message'] = "Please pass the transaction flw_ref ";
+            return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
         $this->preauthPayment->eventHandler(new preEventHandler)
@@ -123,17 +129,20 @@ class Preauth
             ->setEndPoint("v3/charges/$flw_ref/void");
         //returns the value from the results
         preEventHandler::startRecording();
-        $response = $this->preauthPayment->void();
+        $response = $this->preauthPayment->void($array);
         preEventHandler::sendAnalytics('Initiate-Preauth-Void');
 
-        return $response;
+        return json_decode($response);
 
     }
 
     function reFunds($array)
     {
-        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+        if(isset($array['flw_ref']) && !empty($array['flw_ref'])){
             $flw_ref = $array['flw_ref'];
+        }else{
+            $result['message'] = "Please pass the transaction flw_ref ";
+            return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
         $this->preauthPayment->eventHandler(new preEventHandler)
@@ -144,7 +153,7 @@ class Preauth
         $response = $this->preauthPayment->preRefund($array);
         preEventHandler::sendAnalytics('Initiate-Preauth-Refund');
 
-        return $response;
+        return json_decode($response);
 
     }
 
