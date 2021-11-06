@@ -96,12 +96,14 @@ class Card
         $this->payment = new Rave($_ENV['SECRET_KEY']);
         $this->valType = "card";
 
-
     }
 
     function cardCharge($array)
     {
-
+        // echo "<pre>";
+        // print_r($array);
+        // echo "</pre>";
+        // exit;
         if (!isset($array['tx_ref']) || empty($array['tx_ref'])) {
             $array['tx_ref'] = $this->payment->txref;
         } else {

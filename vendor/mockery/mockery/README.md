@@ -1,9 +1,8 @@
 Mockery
 =======
 
-[![Build Status](https://travis-ci.org/mockery/mockery.svg?branch=master)](https://travis-ci.org/mockery/mockery)
+[![Build Status](https://github.com/mockery/mockery/actions/workflows/tests.yml/badge.svg)](https://github.com/mockery/mockery/actions)
 [![Latest Stable Version](https://poser.pugx.org/mockery/mockery/v/stable.svg)](https://packagist.org/packages/mockery/mockery)
-[![Coverage Status](https://coveralls.io/repos/github/mockery/mockery/badge.svg)](https://coveralls.io/github/mockery/mockery)
 [![Total Downloads](https://poser.pugx.org/mockery/mockery/downloads.svg)](https://packagist.org/packages/mockery/mockery)
 
 Mockery is a simple yet flexible PHP mock object framework for use in unit testing
@@ -33,6 +32,14 @@ use this README file as a starting point for Mockery, but do read the documentat
 to learn how to use Mockery.
 
 The current version can be seen at [docs.mockery.io](http://docs.mockery.io).
+
+## PHPUnit Integration
+
+Mockery ships with some helpers if you are using PHPUnit. You can extend the
+[`Mockery\Adapter\Phpunit\MockeryTestCase`](library/Mockery/Adapter/Phpunit/MockeryTestCase.php)
+class instead of `PHPUnit\Framework\TestCase`, or if you are already using a
+custom base class for your tests, take a look at the traits available in the
+[`Mockery\Adapter\Phpunit`](library/Mockery/Adapter/Phpunit) namespace.
 
 ## Test Doubles
 
@@ -268,7 +275,7 @@ versioning scheme.
 
 ### Alternative Runtimes
 
-Mockery will attempt to continue support HHVM, but will not make any guarantees.
+Mockery 1.3 was the last version to support HHVM 3 and PHP 5. There is no support for HHVM 4+.
 
 ## A new home for Mockery
 

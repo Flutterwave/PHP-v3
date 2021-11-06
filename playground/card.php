@@ -14,18 +14,19 @@ use Flutterwave\Card;
 // $cards['card1'];
 // $cards['card2'];
 
-$payment = new Card();
-
-
-// $result = $payment->cardCharge($cards['card1']);
-// print_r($result);
-
 if (isset($_POST['charge'])){
-
-
     $card_option = $_POST['token'];
 
+    $payment = new Card();
+
     $result = $payment->cardCharge($cards[$card_option]);
+    if(gettype($result) == 'string'){
+        echo "<pre>";
+        print_r($result);
+        echo "</pre>";
+        exit;
+    }
+
     $sera = serialize($payment);
 
     $filePath = getcwd().DS."payment.txt";
@@ -45,7 +46,7 @@ include('partials/footer.php');//this is just to load the jquery and js scripts.
 
 ?>
 
-<div class="container" style="text-align:center">
+<div id="paymentOptions" class="container-fluid d-none" style="text-align:center;">
 <h1>Card payment Implementation </h1>
 <ul class="list-group col-md-6"><li class="list-group-item">
                                 <form method="POST" action="">
@@ -62,6 +63,34 @@ include('partials/footer.php');//this is just to load the jquery and js scripts.
                             </li></ul> 
 
     </div>
+
+    <div class="shadow main-section mt-4 pt-4 pb-4 mx-4">
+        <div class="cta-1 text-center mt-4 pt-4">
+            <img class="" src="./uber/assets/images/car.svg" width="50px" height="50px" />
+        </div>
+
+        <div>
+            <h4 class="text-center mt-4">Request a ride</h4>
+        </div>
+
+        <div class="text-center">
+            <button id="showPaymentCards" class="btn btn-warning" >Proceed</button>
+        </div>
+    </div>
+
+    <script>
+
+        var spc = document.querySelector('#showPaymentCards');
+        var main = document.querySelector('.main-section');
+        var pm = document.querySelector('#paymentOptions');
+        spc.addEventListener('click', function(){
+            main.classList.add('d-none');
+            pm.classList.remove('d-none');
+
+        })
+    </script>
+
+
 
 
 

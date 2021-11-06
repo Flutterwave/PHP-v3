@@ -35,13 +35,9 @@ class Reflector
      */
     public static function isArray(\ReflectionParameter $param)
     {
-        if (\PHP_VERSION_ID < 70100) {
-            return $param->isArray();
-        }
-
         $type = $param->getType();
 
-        return $type instanceof \ReflectionNamedType ? $type->getName() === 'array' : false;
+        return $type instanceof \ReflectionNamedType && $type->getName();
     }
 
     /**
@@ -54,13 +50,6 @@ class Reflector
      */
     public static function getTypeHint(\ReflectionParameter $param, $withoutNullable = false)
     {
-        // returns false if we are running PHP 7+
-        $typeHint = self::getLegacyTypeHint($param);
-
-        if ($typeHint !== false) {
-            return $typeHint;
-        }
-
         if (!$param->hasType()) {
             return null;
         }
@@ -69,8 +58,7 @@ class Reflector
         $declaringClass = $param->getDeclaringClass();
         $typeHint = self::typeToString($type, $declaringClass);
 
-        // PHP 7.1+ supports nullable types via a leading question mark
-        return (!$withoutNullable && \PHP_VERSION_ID >= 70100 && $type->allowsNull()) ? self::formatNullableType($typeHint) : $typeHint;
+        return (!$withoutNullable && $type->allowsNull()) ? self::formatNullableType($typeHint) : $typeHint;
     }
 
     /**
@@ -83,126 +71,120 @@ class Reflector
      */
     public static function getReturnType(\ReflectionMethod $method, $withoutNullable = false)
     {
-        // Strip all return types for HHVM and skip PHP 5.
-        if (method_exists($method, 'getReturnTypeText') || \PHP_VERSION_ID < 70000 || !$method->hasReturnType()) {
+        $type = $method->getReturnType();
+
+        if (is_null($type) && method_exists($method, 'getTentativeReturnType')) {
+            $type = $method->getTentativeReturnType();
+        }
+
+        if (is_null($type)) {
             return null;
         }
 
-        $type = $method->getReturnType();
-        $declaringClass = $method->getDeclaringClass();
-        $typeHint = self::typeToString($type, $declaringClass);
+        $typeHint = self::typeToString($type, $method->getDeclaringClass());
 
-        // PHP 7.1+ supports nullable types via a leading question mark
-        return (!$withoutNullable && \PHP_VERSION_ID >= 70100 && $type->allowsNull()) ? self::formatNullableType($typeHint) : $typeHint;
+        return (!$withoutNullable && $type->allowsNull()) ? self::formatNullableType($typeHint) : $typeHint;
     }
 
     /**
-     * Compute the legacy type hint.
-     *
-     * We return:
-     *   - string: the legacy type hint
-     *   - null: if there is no legacy type hint
-     *   - false: if we must check for PHP 7+ typing
-     *
-     * @param \ReflectionParameter $param
-     *
-     * @return string|null|false
-     */
-    private static function getLegacyTypeHint(\ReflectionParameter $param)
-    {
-        // Handle HHVM typing
-        if (\method_exists($param, 'getTypehintText')) {
-            if ($param->isArray()) {
-                return 'array';
-            }
-
-            if ($param->isCallable()) {
-                return 'callable';
-            }
-
-            $typeHint = $param->getTypehintText();
-
-            // throw away HHVM scalar types
-            if (\in_array($typeHint, array('int', 'integer', 'float', 'string', 'bool', 'boolean'), true)) {
-                return null;
-            }
-
-            return sprintf('\\%s', $typeHint);
-        }
-
-        // Handle PHP 5 typing
-        if (\PHP_VERSION_ID < 70000) {
-            if ($param->isArray()) {
-                return 'array';
-            }
-
-            if ($param->isCallable()) {
-                return 'callable';
-            }
-
-            $typeHint = self::getLegacyClassName($param);
-
-            return $typeHint === null ? null : sprintf('\\%s', $typeHint);
-        }
-
-        return false;
-    }
-
-    /**
-     * Compute the class name using legacy APIs, if possible.
-     *
-     * This method MUST only be called on PHP 5.
+     * Compute the string representation for the simplest return type.
      *
      * @param \ReflectionParameter $param
      *
      * @return string|null
      */
-    private static function getLegacyClassName(\ReflectionParameter $param)
+    public static function getSimplestReturnType(\ReflectionMethod $method)
     {
-        try {
-            $class = $param->getClass();
+        $type = $method->getReturnType();
 
-            $typeHint = $class === null ? null : $class->getName();
-        } catch (\ReflectionException $e) {
-            $typeHint = null;
+        if (is_null($type) && method_exists($method, 'getTentativeReturnType')) {
+            $type = $method->getTentativeReturnType();
         }
 
-        if ($typeHint === null) {
-            if (preg_match('/^Parameter #[0-9]+ \[ \<(required|optional)\> (?<typehint>\S+ )?.*\$' . $param->getName() . ' .*\]$/', (string) $param, $typehintMatch)) {
-                if (!empty($typehintMatch['typehint']) && $typehintMatch['typehint']) {
-                    $typeHint = $typehintMatch['typehint'];
-                }
+        if (is_null($type) || $type->allowsNull()) {
+            return null;
+        }
+
+        $typeInformation = self::getTypeInformation($type, $method->getDeclaringClass());
+
+        // return the first primitive type hint
+        foreach ($typeInformation as $info) {
+            if ($info['isPrimitive']) {
+                return $info['typeHint'];
             }
         }
 
-        return $typeHint;
+        // if no primitive type, return the first type
+        foreach ($typeInformation as $info) {
+            return $info['typeHint'];
+        }
+
+        return null;
     }
 
     /**
      * Get the string representation of the given type.
      *
-     * This method MUST only be called on PHP 7+.
-     *
-     * @param \ReflectionType  $type
-     * @param \ReflectionClass $declaringClass
+     * @param \ReflectionType $type
+     * @param string $declaringClass
      *
      * @return string|null
      */
     private static function typeToString(\ReflectionType $type, \ReflectionClass $declaringClass)
     {
+        return \implode('|', \array_map(function (array $typeInformation) {
+            return $typeInformation['typeHint'];
+        }, self::getTypeInformation($type, $declaringClass)));
+    }
+
+    /**
+     * Get the string representation of the given type.
+     *
+     * @param \ReflectionType  $type
+     * @param \ReflectionClass $declaringClass
+     *
+     * @return list<array{typeHint: string, isPrimitive: bool}>
+     */
+    private static function getTypeInformation(\ReflectionType $type, \ReflectionClass $declaringClass)
+    {
         // PHP 8 union types can be recursively processed
         if ($type instanceof \ReflectionUnionType) {
-            return \implode('|', \array_map(function (\ReflectionType $type) use ($declaringClass) {
-                return self::typeToString($type, $declaringClass);
-            }, $type->getTypes()));
+            $types = [];
+
+            foreach ($type->getTypes() as $innterType) {
+                foreach (self::getTypeInformation($innterType, $declaringClass) as $info) {
+                    if ($info['typeHint'] === 'null' && $info['isPrimitive']) {
+                        continue;
+                    }
+
+                    $types[] = $info;
+                }
+            }
+
+            return $types;
         }
 
-        // PHP 7.0 doesn't have named types, but 7.1+ does
-        $typeHint = $type instanceof \ReflectionNamedType ? $type->getName() : (string) $type;
+        // $type must be an instance of \ReflectionNamedType
+        $typeHint = $type->getName();
 
-        // builtins and 'static' can be returned as is
-        if (($type->isBuiltin() || $typeHint === 'static')) {
-            return $typeHint;
+        // builtins can be returned as is
+        if ($type->isBuiltin()) {
+            return [
+                [
+                    'typeHint' => $typeHint,
+                    'isPrimitive' => in_array($typeHint, ['array', 'bool', 'int', 'float', 'null', 'object', 'string']),
+                ],
+            ];
+        }
+
+        // 'static' can be returned as is
+        if ($typeHint === 'static') {
+            return [
+                [
+                    'typeHint' => $typeHint,
+                    'isPrimitive' => false,
+                ],
+            ];
         }
 
         // 'self' needs to be resolved to the name of the declaring class
@@ -216,13 +198,16 @@ class Reflector
         }
 
         // class names need prefixing with a slash
-        return sprintf('\\%s', $typeHint);
+        return [
+            [
+                'typeHint' => sprintf('\\%s', $typeHint),
+                'isPrimitive' => false,
+            ],
+        ];
     }
 
     /**
      * Format the given type as a nullable type.
-     *
-     * This method MUST only be called on PHP 7.1+.
      *
      * @param string $typeHint
      *

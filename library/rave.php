@@ -12,7 +12,8 @@ use Monolog\Logger;
 use Unirest\Request;
 use Unirest\Request\Body;
 
-$dotenv = new Dotenv\Dotenv(__DIR__ . '/../');
+$main_path = __DIR__;
+$dotenv = Dotenv\Dotenv::createImmutable("$main_path/../");
 $dotenv->load();
 
 /**
@@ -24,8 +25,8 @@ $dotenv->load();
 class Rave
 {
     //Api keys
-    protected $publicKey;
-    protected $secretKey;
+    public $publicKey;
+    public $secretKey;
     public $txref;
     protected $integrityHash;
     protected $payButtonText = 'Proceed with Payment';
@@ -84,8 +85,8 @@ class Rave
     function __construct($secretKey, $prefix = 'RV', $overrideRefWithPrefix = false)
     {
         $this->secretKey = $secretKey;
-        $this->publicKey = getenv('PUBLIC_KEY');
-        $this->env = getenv('ENV');
+        $this->publicKey = $_ENV['PUBLIC_KEY'];
+        $this->env = $_ENV['ENV'];
         $this->transactionPrefix = $overrideRefWithPrefix ? $prefix : $prefix . '_';
         $this->overrideTransactionReference = $overrideRefWithPrefix;
         // create a log channel
@@ -569,7 +570,7 @@ class Rave
         );
 
         // make request to endpoint using unirest.
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $this->secretKey);
+        $headers = array('Content-Type' => 'application/json', 'Authorization' => "Bearer ".$this->secretKey);
         $body = Body::json($data);
         $url = $this->baseUrl . '/v3/transactions/' . $data['id'] . '/verify';
         // Make `POST` request and handle response with unirest
@@ -696,8 +697,6 @@ class Rave
     {
         $encData = openssl_encrypt($data, 'DES-EDE3', $key, OPENSSL_RAW_DATA);
         return base64_encode($encData);
-
-
     }
 
     /**
@@ -709,7 +708,7 @@ class Rave
     function encryption($options)
     {
         //encrypt and return the key using the secrekKey
-        $this->key = getenv('ENCRYPTION_KEY');
+        $this->key = $_ENV['ENCRYPTION_KEY'];
         //set the data to transactionData
         $this->transactionData = $options;
         //encode the data and the
@@ -1127,7 +1126,7 @@ class Rave
 
             } else {
 
-                return '<div class="alert alert-danger">' . $result['message'] . '</div>';
+                return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';
 
             }
 
@@ -1138,7 +1137,7 @@ class Rave
             $result = $this->postURL($array);
             $result = json_decode($result, true);
 
-            print_r($result['meta']);
+            // print_r($result['meta']);
             //echo "momo payment";
             if (isset($result['meta']['authorization'])) {
                 header('Location:' . $result['meta']['authorization']['redirect']);
@@ -1588,11 +1587,9 @@ class Rave
 
     function captureFunds($array)
     {
-        $this->logger->notice('capturing funds for flwRef: ' . $array['flwRef'] . ' ...');
+        $this->logger->notice('capturing funds for flwRef: ' . $array['flw_ref'] . ' ...');
         $data = array(
-            "flwRef" => $array['flwRef'],
             "amount" => $array['amount']
-
         );
         return $this->postURL($data);
 
@@ -1607,19 +1604,30 @@ class Rave
     }
 
     /**
-     * Refund or Void a fund with this method
+     * Void a Preauthorized fund with this method
      * @param string $array
      * @return object
      * */
 
-    function refundOrVoid($array)
+    function void()
     {
-        $this->logger->notice($array['action'] . 'ing a captured fund with the flwRef=' . $array['flwRef']);
+        $this->logger->notice('voided a captured fund with the flw_ref=' . $array['flw_ref']);
+        $data = array();
+        return $this->postURL($data);
+    }
+
+    /**
+     * Refund a Preauthorized fund with this method
+     * @param string $array
+     * @return object
+     * */
+
+    function preRefund($array)
+    {
+        $this->logger->notice('refunding a captured fund with the flw_ref=' . $array['flw_ref']);
 
         $data = array(
-            "ref" => $array['flwRef'],
-            "action" => $array['action'],
-            "SECKEY" => $this->secretkey
+            "amount" => $array['amount']
         );
         return $this->postURL($data);
     }

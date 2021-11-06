@@ -2,8 +2,8 @@
 
 namespace Flutterwave;
 
-require("lib/rave.php");
-require("lib/raveEventHandlerInterface.php");
+require("rave.php");
+require("raveEventHandlerInterface.php");
 require_once('EventTracker.php');
 
 class preEventHandler implements EventHandlerInterface
@@ -46,21 +46,44 @@ class Preauth
 {
     function __construct()
     {
-        $this->preauthPayment = new Rave();
+        $this->preauthPayment = new Rave($_ENV['SECRET_KEY']);
     }
 
-    function accountCharge($array)
+    function cardCharge($array)
     {
+        // echo "<pre>";
+        // print_r($array);
+        // echo "</pre>";
+        // exit;
+        $mode = "";
+        if(!isset($array['preauthorize'])|| empty($array['preauthorize']))
+        {
+            $array['preauthorize'] = true;
+        }
+
+        if(isset($array['usesecureauth']) && $array['usesecureauth'])
+        {
+            $mode = "VBVSECURECODE";
+        }
+
+        if (!isset($array['tx_ref']) || empty($array['tx_ref'])) {
+            $array['tx_ref'] = $this->preauthPayment->txref;
+        } else {
+            $this->preauthPayment->txref = $array['tx_ref'];
+
+        }
+
+        $this->preauthPayment->type = 'card';
         //set the payment handler
-        $this->payment->eventHandler(new preEventHandler)
-            //set the endpoint for the api call
-            ->setEndPoint("");
+        $this->preauthPayment->eventHandler(new preEventHandler)
+        //set the endpoint for the api call
+        ->setEndPoint("v3/charges?type=" . $this->preauthPayment->type);
         //returns the value from the results
         //you can choose to store the returned value in a variable and validate within this function
-        $this->payment->setAuthModel("AUTH");
+        $this->preauthPayment->setAuthModel("AUTH");
 
         preEventHandler::startRecording();
-        $response = $this->payment->chargePayment($array);
+        $response = $this->preauthPayment->chargePayment($array);
         preEventHandler::sendAnalytics('Initiate-Preauth');
 
         return $response;
@@ -73,29 +96,53 @@ class Preauth
 
     function captureFunds($array)
     {
+
+        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+            $flw_ref = $array['flw_ref'];
+        }
         //set the payment handler
-        $this->plan->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new preEventHandler)
             //set the endpoint for the api call
-            ->setEndPoint("flwv3-pug/getpaidx/api/capture");
+            ->setEndPoint("v3/charges/$flw_ref/capture");
         //returns the value from the results
         preEventHandler::startRecording();
-        $response = $this->plan->captureFunds($array);
+        $response = $this->preauthPayment->captureFunds($array);
         preEventHandler::sendAnalytics('Initiate-Capture-Funds');
 
         return $response;
     }
 
-    function refundOrVoid($array)
+    function voidFunds($array)
     {
-
+        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+            $flw_ref = $array['flw_ref'];
+        }
         //set the payment handler
-        $this->plan->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new preEventHandler)
             //set the endpoint for the api call
-            ->setEndPoint("flwv3-pug/getpaidx/api/refundorvoid");
+            ->setEndPoint("v3/charges/$flw_ref/void");
         //returns the value from the results
         preEventHandler::startRecording();
-        $response = $this->plan->refundOrVoid($array);
-        preEventHandler::sendAnalytics('Initiate-Refund-or-Void');
+        $response = $this->preauthPayment->void();
+        preEventHandler::sendAnalytics('Initiate-Preauth-Void');
+
+        return $response;
+
+    }
+
+    function reFunds($array)
+    {
+        if(isset($array['flw_ref']) && empty($array['flw_ref'])){
+            $flw_ref = $array['flw_ref'];
+        }
+        //set the payment handler
+        $this->preauthPayment->eventHandler(new preEventHandler)
+            //set the endpoint for the api call
+            ->setEndPoint("v3/charges/$flw_ref/refund");
+        //returns the value from the results
+        preEventHandler::startRecording();
+        $response = $this->preauthPayment->preRefund($array);
+        preEventHandler::sendAnalytics('Initiate-Preauth-Refund');
 
         return $response;
 
