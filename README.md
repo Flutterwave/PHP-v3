@@ -1,35 +1,51 @@
 <p align="center">
-    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo-colored.svg" width="50%"/>
+    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo/full.svg" width="50%"/>
 </p>
 
-# Flutterwave v3 PHP SDK
+# Flutterwave v3 PHP SDK.
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Flutterwave/Flutterwave-PHP-v3?)
-![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3?)
+![Packagist Downloads](https://img.shields.io/packagist/dt/flutterwavedev/flutterwave-v3)
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/flutterwavedev/flutterwave-v3)
+![GitHub stars](https://img.shields.io/github/stars/Flutterwave/Flutterwave-PHP-v3)
+![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3)
 
-Use this library to integrate your PHP app to Rave.
+ This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from php apps. It abstracts the complexity involved in direct integration and allows you to make quick calls to the APIs.
+ 
+ Available features include:
+ 
+ - Collections: Card, Account, Mobile money, Bank Transfers, USSD, Barter, NQR.
+ - Payouts and Beneficiaries.
+ - Recurring payments: Tokenization and Subscriptions.
+ - Split payments
+ - Card issuing
+ - Transactions dispute management: Refunds.
+ - Transaction reporting: Collections, Payouts, Settlements, and Refunds.
+ - Bill payments: Airtime, Data bundle, Cable, Power, Toll, E-bills, and Remitta.
+ - Identity verification: Resolve bank account, resolve BVN information.
 
 ## Table of Contents
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-- [Running tests](#test)
-- [Deployment](#deployment)
-- [Built Using](#build-tools)
-- [References](#references)
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Initialization](#initialization)
+4. [Usage](#usage)
+5. [Testing](#testing)
+6. [Debugging Errors](#debugging-errors)
+7. [Support](#support)
+8. [Contribution guidelines](#contribution-guidelines)
+9. [License](#license)
+10. [Changelog](#changelog)
 
-<a id="getting-started"></a>
+<a id="requirements"></a>
 
-## Getting Started
+## Requirements
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+1. Flutterwave for business [API Keys](https://developer.flutterwave.com/docs/integration-guides/authentication)
+2. Acceptable PHP versions: >= 5.4.0
 
-See [references](#references) for links to dashboard and API documentation.
 
-Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
+<a id="installation"></a>
 
-Simply redirect to the `paymentForm.php` file on your browser to process a payment.
-
-### Installing
+## Installation
 
 The vendor folder is committed into the project to allow easy installation for those who do not have composer installed.
 It is recommended to update the project dependencies using:
@@ -38,23 +54,33 @@ It is recommended to update the project dependencies using:
 $ composer install flutterwavedev/flutterwave-v3
 ```
 
-### Setting Up Environment Variables
+<a id="initialization"></a>
+
+## Initialization
 
 Create a .env file and follow the format of the .env.example file
 Save your PUBLIC_KEY, SECRET_KEY, ENV in the .env file
 
 ```env
 
-PUBLIC_KEY = "****YOUR**PUBLIC**KEY****"
-SECRET_KEY = "****YOUR**SECRET**KEY****"
+PUBLIC_KEY = "****YOUR**PUBLIC**KEY****" // can be gotten from the dashboard
+SECRET_KEY = "****YOUR**SECRET**KEY****" // can be gotten from the dashboard
 ENCRYPTION_KEY = "Encryption key"
-ENV = "staging or live"
+ENV = "development/production"
 
 ```
+
 
 <a id="usage"></a>
 
 ## Usage
+
+### Card Charge
+This is used to facilitate card transactions.
+
+Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
+
+Simply redirect to the `paymentForm.php` file on your browser to process a payment.
 
 In this implementation, we are expecting a form encoded POST request to this script.
 The request will contain the following parameters.
@@ -82,7 +108,6 @@ include('library/raveEventHandlerInterface.php');
 
 use Flutterwave\Rave;
 use Flutterwave\EventHandlerInterface;
-
 
 
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -122,59 +147,67 @@ function getURL($url,$data = array()){
     $newUrl = $urlArr[0].'?'.$new_query_string;
     return $newUrl;
 };
+```
 
+In order to handle events that at occurs at different transaction stages. You define a class that implements the ```EventHandlerInterface```
 
-// This is where you set how you want to handle the transaction at different stages
+```php
 class myEventHandler implements EventHandlerInterface{
     /**
      * This is called when the Rave class is initialized
-     * */
+     **/
     function onInit($initializationData){
         // Save the transaction to your DB.
     }
     
     /**
      * This is called only when a transaction is successful
-     * */
-    function onSuccessful($transactionData){
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue
-        // Comfirm that the transaction is successful
-        // Confirm that the chargecode is 00 or 0
-        // Confirm that the currency on your db transaction is equal to the returned currency
-        // Confirm that the db transaction amount is equal to the returned amount
-        // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
-        // Give value for the transaction
-        // Update the transaction to note that you have given value for the transaction
-        // You can also redirect to your success page from here
-        if($transactionData->chargecode === '00' || $transactionData->chargecode === '0'){
-          if($transactionData->currency == $_SESSION['currency'] && $transactionData->amount == $_SESSION['amount']){
+     **/
+
+    function onSuccessful($transactionData) {
+        /** 
+        * Get the transaction from your DB using the transaction reference (txref). 
+        * Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue. 
+        * Comfirm that the transaction is successful
+        * Confirm that the currency on your db transaction is equal to the returned currency
+        * Confirm that the db transaction amount is equal to the returned amount
+        * Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
+        * Give value for the transaction
+        * Update the transaction to note that you have given value for the transaction
+        * You can also redirect to your success page from here
+        **/
+
+        if ($transactionData->status == 'success'){
+          if ($transactionData->currency == $_SESSION['currency'] && $transactionData->amount == $_SESSION['amount']){
               
-              if($_SESSION['publicKey']){
+              if ($_SESSION['publicKey']){
                     header('Location: '.getURL($_SESSION['successurl'], array('event' => 'successful')));
                     $_SESSION = array();
                     session_destroy();
                 }
-          }else{
+          } else {
               if($_SESSION['publicKey']){
                     header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'suspicious')));
                     $_SESSION = array();
                     session_destroy();
                 }
           }
-      }else{
+      } else {
           $this->onFailure($transactionData);
       }
     }
     
     /**
      * This is called only when a transaction failed
-     * */
+     **/
     function onFailure($transactionData){
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
-        // You can also redirect to your failure page from here
-        if($_SESSION['publicKey']){
+        /**
+        * Get the transaction from your DB using the transaction reference (txref)
+        * Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
+        * You can also redirect to your failure page from here
+        **/
+
+        if ($_SESSION['publicKey']) {
             header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'failed')));
             $_SESSION = array();
             session_destroy();
@@ -183,21 +216,21 @@ class myEventHandler implements EventHandlerInterface{
     
     /**
      * This is called when a transaction is requeryed from the payment gateway
-     * */
+     **/
     function onRequery($transactionReference){
         // Do something, anything!
     }
     
     /**
      * This is called a transaction requery returns with an error
-     * */
+     **/
     function onRequeryError($requeryResponse){
         // Do something, anything!
     }
     
     /**
      * This is called when a transaction is canceled by the user
-     * */
+     **/
     function onCancel($transactionReference){
         // Do something, anything!
         // Note: Somethings a payment can be successful, before a user clicks the cancel button so proceed with caution
@@ -210,11 +243,13 @@ class myEventHandler implements EventHandlerInterface{
     
     /**
      * This is called when a transaction doesn't return with a success or a failure response. This can be a timedout transaction on the Rave server or an abandoned transaction by the customer.
-     * */
+     **/
     function onTimeout($transactionReference, $data){
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Queue it for requery. Preferably using a queue system. The requery should be about 15 minutes after.
-        // Ask the customer to contact your support and you should escalate this issue to the flutterwave support team. Send this as an email and as a notification on the page. just incase the page timesout or disconnects
+        /**
+        * Get the transaction from your DB using the transaction reference (txref)
+        * Queue it for requery. Preferably using a queue system. The requery should be about 15 minutes after.
+        * Ask the customer to contact your support and you should escalate this issue to the flutterwave support team. Send this as an email and as a notification on the page. just incase the page timesout or disconnects
+        **/
         if($_SESSION['publicKey']){
             header('Location: '.getURL($_SESSION['failureurl'], array('event' => 'timedout')));
             $_SESSION = array();
@@ -263,6 +298,7 @@ if($postData['amount']){
     }
 }
 ```
+<br>
 
 ### Account Charge
 
@@ -271,6 +307,7 @@ The following implementation shows how to initiate a direct bank charge. Use the
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AccountPayment.php");
 use Flutterwave\Account;
+
 //The data variable holds the payload
 $data = array(
     "amount" => "3000",
@@ -297,6 +334,7 @@ if(isset($result['data'])){
 }
 print_r($result);
 ```
+<br>
 
 ### ACH Charge
 
@@ -305,10 +343,8 @@ The following implementation shows how to accept payments directly from customer
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AchPayment.php");
 use Flutterwave\Ach;
-//The data variable holds the payload
 
-
-
+// The data variable holds the payload
 $data = array(
     "tx_ref" =>  "MC-1585230ew9v5050e8",
     "amount" => "100",
@@ -332,13 +368,16 @@ print_r($result);
 
 ```
 
-### Card Charge
+<br>
+
+### Direct Card Charge
 
 The following implementation shows how to initiate a card charge. Use the Playground Directory to view an implementation Responses and samples of use.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/CardPayment.php");
 use Flutterwave\Card;
+
 //The data variable holds the payload
 $data = array(
     "card_number"=> "5531886652142950",
@@ -395,8 +434,9 @@ if($result['data']['auth_mode'] == 'otp'){
 The following implementation shows how to initiate a mobile money payment. Use the Playground Directory to view Responses and samples of use.
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/MobileMoney.php");
-use Flutterwave\MobileMoney;
-//The data variable holds the payload
+use Flutterwave\MobileMoney
+
+// The data variable holds the payload
 $data = array(
     "order_id" => "USS_URG_89245453s2323",
     "amount" => "1500",
@@ -454,6 +494,8 @@ if(isset($result['data'])){
 
 ```
 
+<br>
+
 ### Mpesa
 
 Collect payments from your customers via Mpesa.
@@ -494,7 +536,8 @@ How to make a transfer payment
 
 require("Flutterwave-Rave-PHP-SDK/library/Transfer.php");
 use Flutterwave\Transfer;
-//sample payload for payBill()
+
+// sample payload for payBill()
 $data = array(
     "account_bank"=> "044",
     "account_number"=> "0690000040",
@@ -555,6 +598,8 @@ if(isset($result['data'])){
 
 ```
 
+<br>
+
 ### Vitual Cards
 
 The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
@@ -608,6 +653,8 @@ $result = $bvn->verifyBVN($bvn_number);
 print_r($result);
 ```
 
+<br>
+
 ### Payment Plans
 
 The following implementation shows how to create a payment plan on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
@@ -633,6 +680,8 @@ $paymentPlans = $payment->getPlans();//list all payment plans....
 $aPlan = $payment->get_a_plan($getdata);//get a payment plans....
 print_r($result);
 ```
+
+<br>
 
 ### Subaccount Management
 
@@ -673,6 +722,8 @@ $updateSubaccount = $subaccount->updateSubaccount($update_data);
 print_r($createSubaccount);
 ```
 
+<br>
+
 ### Transfer Recipient 
 
 The following implementation shows how to create a transfer recipient on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
@@ -700,7 +751,9 @@ $deleteRecipient = $payment->deleteBeneficiary($deldata);//delete recipient
 print_r($recipient1);
 ```
 
-## Subscriptions
+<br>
+
+### Subscriptions
 
 The following implementation shows how to activate a subscription, fetch a subscription, get all subscriptions.
 
@@ -849,10 +902,11 @@ $virtualAccounts = $account->getBulkAccounts($batch);//list all bulk accounts
 $virtualAccount = $account->getAccountNumber($getdata);//get an account.
 print_r($result);
 ```
+<br>
 
 ### Tokenized Charge
 
-Once the charge and validation leg is complete for the first charge on the card, you can make use of the token for subsequent charges.
+Once the charge and validation process is complete for the first charge on the card, you can make use of the token for subsequent charges.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/TokenizedCharge.php");
@@ -875,12 +929,11 @@ $result = $payment->tokenCharge($data);//initiates the charge
 $verify = $payment->verifyTransaction();
 print_r($result);
 ```
+<br>
 
-### view Transactions
+### View Transactions
 
- list all transactions on your account. You could do a specific query using ```customer_email``` or ```customer_fullname``` to make specifc search. View all successfull or failed transactions for a particular period, month or year.
- Please read the MISCELLANEOUS section of the Api documentation for more option to pass.
- https://developer.flutterwave.com/reference#list-transactions 
+ List all transactions on your account. You could do a specific query using ```customer_email``` or ```customer_fullname``` to make specifc search. View all successfull or failed transactions for a particular period, month or year
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Transactions.php");
@@ -903,6 +956,7 @@ $verifyTransaction = $history->verifyTransaction($fetch_data);
 $timeline = $history->viewTimeline($time_data);
 print_r($transactions);
 ```
+<br>
 
 ### Voucher payment
 
@@ -943,24 +997,62 @@ print_r($result);
 You can also find the class documentation in the docs folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
 
 
-<a id="deployment"></a>
+## Testing
 
-## Deployment
+All of the SDK's tests are written with PHP's ```phpunit``` module. The tests currently test:
+```Account```,
+```Card```,
+```Transfer```,
+```Preauth```,
+```Subaccount```,
+```Subscriptions``` and 
+```Paymentplan```
 
-- Switch to Live Mode on the Dashboard settings page
-- Use the Live Public API key 
+They can be run like so:
 
-<a id="build-tools"></a>
+```sh
+phpunit
+```
 
-##  Built Using
+>**NOTE:** If the test fails for creating a subaccount, just change the ```account_number``` ```account_bank```  and ```businesss_email``` to something different
 
-- PHP
+>**NOTE:** The test may fail for account validation - ``` Pending OTP validation``` depending on whether the service is down or not
+<br>
+
+
+<a id="debugging errors"></a>
+
+## Debugging Errors
+We understand that you may run into some errors while integrating our library. You can read more about our error messages [here](https://developer.flutterwave.com/docs/integration-guides/errors).
+
+For `authorization` and `validation` error responses, double-check your API keys and request. If you get a `server` error, kindly engage the team for support.
+
+
+<a id="support"></a>
+
+## Support
+For additional assistance using this library, contact the developer experience (DX) team via [email](mailto:developers@flutterwavego.com) or on [slack](https://bit.ly/34Vkzcg). 
+
+You can also follow us [@FlutterwaveEng](https://twitter.com/FlutterwaveEng) and let us know what you think 😊.
+
+
+<a id="contribution-guidelines"></a>
+
+## Contribution guidelines
+Read more about our community contribution guidelines [here](/CONTRIBUTING.md)
+
+<a id="license"></a>
+
+## License
+
+By contributing to this library, you agree that your contributions will be licensed under its [MIT license](/LICENSE).
+
+Copyright (c) Flutterwave Inc.
 
 
 <a id="references"></a>
 
 ## Flutterwave API  References
 
-- [Flutterwave API Doc](https://developer.flutterwave.com/docs)
-- [Flutterwave Inline Payment Doc](https://developer.flutterwave.com/docs/flutterwave-inline)
-- [Flutterwave Dashboard](https://dashboard.flutterwave.com/login)  
+- [Flutterwave API Documentation](https://developer.flutterwave.com)
+- [Flutterwave Dashboard](https://app.flutterwave.com)  
