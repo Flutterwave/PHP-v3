@@ -3,7 +3,9 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/Subaccount.php");
-use Flutterwave\Subaccount;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subaccount;
+
 //The data variable holds the payload
 $data = array(
     "account_bank"=> "044",

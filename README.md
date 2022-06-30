@@ -106,8 +106,7 @@ include('library/rave.php');
 include('library/raveEventHandlerInterface.php');
 
 
-use Flutterwave\Rave;
-use Flutterwave\EventHandlerInterface;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Rave;
 
 
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -306,7 +305,7 @@ The following implementation shows how to initiate a direct bank charge. Use the
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AccountPayment.php");
-use Flutterwave\Account;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\AccountPayment;
 
 //The data variable holds the payload
 $data = array(
@@ -325,7 +324,7 @@ $data = array(
         ]       
     );
 
-$payment = new Account();
+$payment = new AccountPayment();
 $result = $payment->accountCharge($data);
 
 if(isset($result['data'])){
@@ -342,7 +341,7 @@ The following implementation shows how to accept payments directly from customer
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/AchPayment.php");
-use Flutterwave\Ach;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\AchPayment;
 
 // The data variable holds the payload
 $data = array(
@@ -357,7 +356,7 @@ $data = array(
     "redirect_url" => "http://ekene.com/u/payment-completed",
     );
 
-$payment = new Ach();
+$payment = new AchPayment();
 
 $result = $payment->achCharge($data);
 if(isset($result['data'])){
@@ -376,7 +375,7 @@ The following implementation shows how to initiate a card charge. Use the Playgr
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/CardPayment.php");
-use Flutterwave\Card;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\CardPayment;
 
 //The data variable holds the payload
 $data = array(
@@ -395,7 +394,7 @@ $data = array(
            
     );
 
-$payment = new Card();
+$payment = new CardPayment();
 $res = $payment->cardCharge($data);//This call is to figure out the authmodel
 $data['authorization']['mode'] = $res['meta']['authorization']['mode'];
 
@@ -432,9 +431,10 @@ if($result['data']['auth_mode'] == 'otp'){
 ### Mobile Money Payments
 
 The following implementation shows how to initiate a mobile money payment. Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/MobileMoney.php");
-use Flutterwave\MobileMoney
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\MobileMoney;
 
 // The data variable holds the payload
 $data = array(
@@ -466,7 +466,7 @@ Collect payments via ussd
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Ussd.php");
-use Flutterwave\Ussd;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Ussd;
 //The data variable holds the payload
 $data = array(
         "tx_ref" => "MC-15852309v5050e8",
@@ -502,7 +502,7 @@ Collect payments from your customers via Mpesa.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Mpesa.php");
-use Flutterwave\Mpesa;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Mpesa;
 
 $data = array(
     "amount" => "1500",
@@ -535,7 +535,7 @@ How to make a transfer payment
 ```php
 
 require("Flutterwave-Rave-PHP-SDK/library/Transfer.php");
-use Flutterwave\Transfer;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Transfer;
 
 // sample payload for payBill()
 $data = array(
@@ -606,7 +606,7 @@ The following implementation shows how to create virtual cards on rave. Use the 
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VirtualCards.php");
-use Flutterwave\VirtualCard;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualCard;
 
 $data = array(
     "currency"=>"NGN",
@@ -645,7 +645,7 @@ The following implementation shows how to verify a Bank Verification Number.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bvn.php");
-use Flutterwave\Bvn;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Bvn;
 //The data variable holds the payload
 $bvn_number = "123456789";
 $bvn = new Bvn();
@@ -661,7 +661,7 @@ The following implementation shows how to create a payment plan on the rave dash
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/PaymentPlan.php");
-use Flutterwave\PaymentPlan;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\PaymentPlan;
 
 //sample payload for payBill()
 $data = array(
@@ -687,9 +687,10 @@ print_r($result);
 
 The following implementation shows how to create a subaccount on the rave dashboard
 Use the Playground Directory to view Responses and samples of use.
+
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Subaccount.php");
-use Flutterwave\Subaccount;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subaccount;
 
 $data = array(
     "account_bank"=> "044",
@@ -730,7 +731,7 @@ The following implementation shows how to create a transfer recipient on the rav
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Recipient.php");
-use Flutterwave\Recipient;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Recipient;
 
 $data = array(
     "account_bank"=> "044",
@@ -759,7 +760,7 @@ The following implementation shows how to activate a subscription, fetch a subsc
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Subscription.php");
-use Flutterwave\Subscription;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subscription;
 
 $id = 1112 //Id of subscription plan
 //$cid = 2222
@@ -780,7 +781,7 @@ visit: https://developer.flutterwave.com/v3.0/reference#buy-airtime-bill
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Bill.php");
-use Flutterwave\Bill;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Bill;
 
 $data = array(
     "country"=> "NG",
@@ -836,7 +837,7 @@ The following implementation shows how to create a electronic receipt.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Ebill.php");
-use Flutterwave\Ebill;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Ebill;
 
 $data = array(
     "narration"=> "mndkn blls",
@@ -870,7 +871,7 @@ https://developer.flutterwave.com/reference#create-a-virtual-account-number
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VirtualAccount.php");
-use Flutterwave\VirtualAccount;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualAccount;
 
 //sample payload for payBill()
 $data = array(
@@ -910,7 +911,7 @@ Once the charge and validation process is complete for the first charge on the c
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/TokenizedCharge.php");
-use Flutterwave\TokenizedCharge;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\TokenizedCharge;
 
 $data = array(
      "token"=> "flw-t1nf-1ff187b04cecb4acff4ac62c2b6f7784-m03k",
@@ -937,7 +938,7 @@ List all transactions on your account. You could do a specific query using ```cu
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/Transactions.php");
-use Flutterwave\Transactions;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Transactions;
 
 $data = array(
 'amount'=> 1000
@@ -965,7 +966,7 @@ Collect ZAR payments offline using Vouchers
 ```php
 require("Flutterwave-Rave-PHP-SDK/library/VoucherPayment.php");
 
-use Flutterwave\VoucherPayment;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VoucherPayment;
 //The data variable holds the payload
 $data = array(
         //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file

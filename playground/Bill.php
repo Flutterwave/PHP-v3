@@ -4,7 +4,8 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/Bill.php");
-use Flutterwave\Bill;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Bill;
 
 //sample payload for payBill()
 $data = array(

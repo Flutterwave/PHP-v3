@@ -3,7 +3,9 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/bvn.php");
-use Flutterwave\Bvn;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Bvn;
+
 //The data variable holds the payload
 $bvn_number = "123456789";
 $bvn = new Bvn();

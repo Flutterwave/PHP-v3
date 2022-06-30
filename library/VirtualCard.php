@@ -5,8 +5,7 @@ namespace Flutterwave;
 //uncomment if you need this
 //define("BASEPATH", 1);//Allow direct access to rave.php and raveEventHandler.php
 
-require_once('rave.php');
-require_once('EventTracker.php');
+use Flutterwave\EventHandlers\EventTracker;
 
 class VirtualCard
 {
@@ -173,4 +172,3 @@ class VirtualCard
 
 }
 
-?>

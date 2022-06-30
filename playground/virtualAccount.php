@@ -4,7 +4,8 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/VirtualAccount.php");
-use Flutterwave\VirtualAccount;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualAccount;
 
 //sample payload for payBill()
 $data = array(

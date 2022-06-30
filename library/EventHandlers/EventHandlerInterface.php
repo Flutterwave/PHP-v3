@@ -1,5 +1,5 @@
 <?php
-namespace Flutterwave;
+namespace Flutterwave\EventHandlers;
 
 // Prevent direct access to this class
 //defined('BASEPATH') OR exit('No direct script access allowed');
@@ -51,4 +51,3 @@ interface EventHandlerInterface{
     function onTimeout($transactionReference,$data);
 
 }
-?>

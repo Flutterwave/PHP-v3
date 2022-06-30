@@ -3,7 +3,9 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/Transactions.php");
-use Flutterwave\Transactions;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Transactions;
+
 //The data variable holds the payload
 $data = array(
 'amount'=> 1000

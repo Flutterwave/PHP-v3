@@ -1,11 +1,11 @@
 <?php
 
-namespace Flutterwave;
+namespace Flutterwave\EventHandlers;
 
 use Unirest\Request;
 use Unirest\Request\Body;
 
-Trait EventTracker
+trait EventTracker
 {
 
     static $time_start = 0;

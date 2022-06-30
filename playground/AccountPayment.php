@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 DEFINE('DS', DIRECTORY_SEPARATOR);
 
 require("../library/AccountPayment.php");
-use Flutterwave\Account;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\AccountPayment;
+
 //The data variable holds the payload
 
 
@@ -27,7 +29,7 @@ $data = array(
         ]       
     );
 
-$payment = new Account();
+$payment = new AccountPayment();
 
 $result = $payment->accountCharge($data);
 $sera = serialize($payment);

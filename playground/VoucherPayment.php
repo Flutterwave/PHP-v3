@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/VoucherPayment.php");
-use Flutterwave\VoucherPayment;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VoucherPayment;
+
 //The data variable holds the payload
 $data = array(
         //"public_key": "FLWPUBK-xxxxxxxxxxxxxxxxxxxxx-X"//you can ommit the public key as the key is take from your .env file

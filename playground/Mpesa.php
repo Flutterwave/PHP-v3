@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/Mpesa.php");
-use Flutterwave\Mpesa;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Mpesa;
+
 //The data variable holds the payload
 $data = array(
     "amount" => "1500",

@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/VirtualCards.php");
-use Flutterwave\VirtualCard;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualCard;
+
 //The data variable holds the payload
 $data = array(
     "currency"=>"NGN",

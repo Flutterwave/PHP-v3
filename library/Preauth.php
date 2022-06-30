@@ -2,45 +2,7 @@
 
 namespace Flutterwave;
 
-require("rave.php");
-require("raveEventHandlerInterface.php");
-require_once('EventTracker.php');
-
-class preEventHandler implements EventHandlerInterface
-{
-
-    use EventTracker;
-
-    function onSuccessful($transactionData)
-    {
-        self::sendAnalytics("Initiate-Preauth");
-    }
-
-    function onFailure($transactionData)
-    {
-        self::sendAnalytics("Initiate-Preauth-Error");
-    }
-
-    function onRequery($transactionReference)
-    {
-        // TODO: Implement onRequery() method.
-    }
-
-    function onRequeryError($requeryResponse)
-    {
-        // TODO: Implement onRequeryError() method.
-    }
-
-    function onCancel($transactionReference)
-    {
-        // TODO: Implement onCancel() method.
-    }
-
-    function onTimeout($transactionReference, $data)
-    {
-        // TODO: Implement onTimeout() method.
-    }
-}
+use Flutterwave\EventHandlers\PreEventHandler;
 
 class Preauth
 {
@@ -56,7 +18,7 @@ class Preauth
         // echo "</pre>";
         // exit;
         $mode = "";
-        if(!isset($array['preauthorize'])|| empty($array['preauthorize']))
+        if(empty($array['preauthorize']))
         {
             $array['preauthorize'] = true;
         }
@@ -66,7 +28,7 @@ class Preauth
             $mode = "VBVSECURECODE";
         }
 
-        if (!isset($array['tx_ref']) || empty($array['tx_ref'])) {
+        if (empty($array['tx_ref'])) {
             $array['tx_ref'] = $this->preauthPayment->txref;
         } else {
             $this->preauthPayment->txref = $array['tx_ref'];
@@ -75,16 +37,16 @@ class Preauth
 
         $this->preauthPayment->type = 'card';
         //set the payment handler
-        $this->preauthPayment->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new PreEventHandler)
         //set the endpoint for the api call
         ->setEndPoint("v3/charges?type=" . $this->preauthPayment->type);
         //returns the value from the results
         //you can choose to store the returned value in a variable and validate within this function
         $this->preauthPayment->setAuthModel("AUTH");
 
-        preEventHandler::startRecording();
+        PreEventHandler::startRecording();
         $response = $this->preauthPayment->chargePayment($array);
-        preEventHandler::sendAnalytics('Initiate-Preauth');
+        PreEventHandler::sendAnalytics('Initiate-Preauth');
 
         return $response;
         /**you will need to validate and verify the charge
@@ -104,13 +66,13 @@ class Preauth
             return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
-        $this->preauthPayment->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new PreEventHandler)
             //set the endpoint for the api call
             ->setEndPoint("v3/charges/$flw_ref/capture");
         //returns the value from the results
-        preEventHandler::startRecording();
+        PreEventHandler::startRecording();
         $response = $this->preauthPayment->captureFunds($array);
-        preEventHandler::sendAnalytics('Initiate-Capture-Funds');
+        PreEventHandler::sendAnalytics('Initiate-Capture-Funds');
 
         return json_decode($response);
     }
@@ -124,13 +86,13 @@ class Preauth
             return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
-        $this->preauthPayment->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new PreEventHandler)
             //set the endpoint for the api call
             ->setEndPoint("v3/charges/$flw_ref/void");
         //returns the value from the results
-        preEventHandler::startRecording();
+        PreEventHandler::startRecording();
         $response = $this->preauthPayment->void($array);
-        preEventHandler::sendAnalytics('Initiate-Preauth-Void');
+        PreEventHandler::sendAnalytics('Initiate-Preauth-Void');
 
         return json_decode($response);
 
@@ -145,13 +107,13 @@ class Preauth
             return '<div class="alert alert-danger text-center">' . $result['message'] . '</div>';;
         }
         //set the payment handler
-        $this->preauthPayment->eventHandler(new preEventHandler)
+        $this->preauthPayment->eventHandler(new PreEventHandler)
             //set the endpoint for the api call
             ->setEndPoint("v3/charges/$flw_ref/refund");
         //returns the value from the results
-        preEventHandler::startRecording();
+        PreEventHandler::startRecording();
         $response = $this->preauthPayment->preRefund($array);
-        preEventHandler::sendAnalytics('Initiate-Preauth-Refund');
+        PreEventHandler::sendAnalytics('Initiate-Preauth-Refund');
 
         return json_decode($response);
 

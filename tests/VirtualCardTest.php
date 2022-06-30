@@ -1,7 +1,7 @@
 <?php
 require("../lib/VirtualCards.php");
-use Flutterwave\VirtualCard;
-use \Mockery;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualCard;
 use PHPUnit\Framework\TestCase;
 
 class API {}
