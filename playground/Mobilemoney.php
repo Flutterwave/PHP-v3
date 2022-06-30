@@ -34,9 +34,6 @@ if(isset($result['data'])){
 
 }
 
-
-
-
 echo '<div class="alert alert-success role="alert">
         <h1>Charge Result: </h1>
         <p><b> '.print_r($result, true).'</b></p>
