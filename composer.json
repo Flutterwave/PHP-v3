@@ -6,7 +6,7 @@
     "homepage": "https://github.com/Flutterwave/Flutterwave-PHP-v3",
     "autoload": {
         "psr-4": {
-            "Flutterwave\\": "library/Rave"
+            "Flutterwave\\": "library/"
         }
     },
     "require": {
