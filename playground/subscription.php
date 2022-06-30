@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/Subscription.php");
-use Flutterwave\Subscription;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subscription;
+
 //sample payload for payBill()
 $id = 1112; //Id of subscription plan
 $cid = 2222;

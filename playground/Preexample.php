@@ -3,7 +3,7 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 require("../library/Preauth.php");
 
-use Flutterwave\Preauth;
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Preauth;
 
 $payment = new Preauth();
 

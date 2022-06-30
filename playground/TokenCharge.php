@@ -5,8 +5,10 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 
-require("../library/TokinizedCharge.php");
-use Flutterwave\TokinizedCharge;
+require("../library/TokenizedCharge.php");
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\TokenizedCharge;
+
 //The data variable holds the payload
 $data = array(
      "token"=> "flw-t1nf-1ff187b04cecb4acff4ac62c2b6f7784-m03k",
@@ -20,7 +22,7 @@ $data = array(
      "device_fingerprint" =>"62wd23423rq324323qew1" 
     );
 
-$payment = new TokinizedCharge();
+$payment = new TokenizedCharge();
 $result = $payment->tokenCharge($data);//initiates the charge
 $verify = $payment->verifyTransaction();
 

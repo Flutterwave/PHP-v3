@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/Ussd.php");
-use Flutterwave\Ussd;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Ussd;
+
 //The data variable holds the payload
 $data = array(
         "tx_ref" => "MC-15852309v5050e8",

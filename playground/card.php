@@ -7,7 +7,8 @@ DEFINE('DS', DIRECTORY_SEPARATOR);
 
 require("../library/CardPayment.php");
 require("testcards.php");
-use Flutterwave\Card;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\CardPayment;
 
 //check the file testcards.php for the sample request...
 //The data variable holds the payload
@@ -17,7 +18,7 @@ use Flutterwave\Card;
 if (isset($_POST['charge'])){
     $card_option = $_POST['token'];
 
-    $payment = new Card();
+    $payment = new CardPayment();
 
     $result = $payment->cardCharge($cards[$card_option]);
     if(gettype($result) == 'string'){

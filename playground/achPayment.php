@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 DEFINE('DS', DIRECTORY_SEPARATOR);
 
 require("../library/AchPayment.php");
-use Flutterwave\Ach;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\AchPayment;
+
 //The data variable holds the payload
 
 
@@ -23,7 +25,7 @@ $data = array(
     "redirect_url" => "http://ekene.com/u/payment-completed",
     );
 
-$payment = new Ach();
+$payment = new AchPayment();
 
 $result = $payment->achCharge($data);
 echo '<div class="alert alert-success role="alert">

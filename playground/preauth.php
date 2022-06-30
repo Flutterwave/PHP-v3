@@ -7,7 +7,8 @@ DEFINE('DS', DIRECTORY_SEPARATOR);
 
 require("../library/Preauth.php");
 require("testcards.php");
-use Flutterwave\Preauth;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Preauth;
 
 //check the file testcards.php for the sample request...
 //The data variable holds the payload

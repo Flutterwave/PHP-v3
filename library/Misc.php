@@ -1,5 +1,7 @@
 <?php
 
+namespace Flutterwave;
+
 use Unirest\Request;
 use Unirest\Request\Body;
 

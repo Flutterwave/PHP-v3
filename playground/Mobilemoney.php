@@ -3,7 +3,9 @@ $page = 'result';
 include('partials/header.php');//this is just to load the bootstrap and css. 
 
 require("../library/MobileMoney.php");
-use Flutterwave\MobileMoney;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\MobileMoney;
+
 //The data variable holds the payload
 $data = array(
     "order_id" => "USS_URG_89245453s2323",

@@ -6,7 +6,9 @@ include('partials/header.php');//this is just to load the bootstrap and css.
 
 
 require("../library/Recipient.php");
-use Flutterwave\Recipient;
+
+use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Recipient;
+
 //sample payload for payBill()
 $data = array(
     "account_bank"=> "044",
