@@ -1,5 +1,5 @@
 <p align="center">
-    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo/full.svg" width="50%"/>
+    <img title="Flutterwave" height="200" src="https://flutterwave.com/images/logo-colored.svg" width="50%"/>
 </p>
 
 # Flutterwave v3 PHP SDK
@@ -23,8 +23,6 @@ Use this library to integrate your PHP app to Rave.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
-> :warning: **Please note that PCI-DSS certification is required for card payment method to be enabled on this v3 SDK**
-
 See [references](#references) for links to dashboard and API documentation.
 
 Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
@@ -37,7 +35,7 @@ The vendor folder is committed into the project to allow easy installation for t
 It is recommended to update the project dependencies using:
 
 ```shell
-$ composer install flutterwavedev/flutterwave-v3
+$ composer require flutterwavedev/flutterwave-v3
 ```
 
 ### Setting Up Environment Variables
@@ -47,10 +45,10 @@ Save your PUBLIC_KEY, SECRET_KEY, ENV in the .env file
 
 ```env
 
-PUBLIC_KEY = "****YOUR**PUBLIC**KEY****"
-SECRET_KEY = "****YOUR**SECRET**KEY****"
-ENCRYPTION_KEY = "Encryption key"
-ENV = "staging or live"
+PUBLIC_KEY="****YOUR**PUBLIC**KEY****"
+SECRET_KEY="****YOUR**SECRET**KEY****"
+ENCRYPTION_KEY="Encryption key"
+ENV="staging or live"
 
 ```
 
@@ -557,7 +555,7 @@ if(isset($result['data'])){
 
 ```
 
-### Virtual Cards
+### Vitual Cards
 
 The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
 
@@ -916,7 +914,7 @@ require("Flutterwave-Rave-PHP-SDK/library/VoucherPayment.php");
 use Flutterwave\VoucherPayment;
 //The data variable holds the payload
 $data = array(
-        //"public_key": "FLWPUBK-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-X"//you can ommit the public key as the key is take from your .env file
+        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
         //"tx_ref": "MC-15852309v5050e8",
         "amount"=> "100",
         "type"=> "voucher_payment",
