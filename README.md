@@ -51,7 +51,7 @@ The vendor folder is committed into the project to allow easy installation for t
 It is recommended to update the project dependencies using:
 
 ```shell
-$ composer install flutterwavedev/flutterwave-v3
+$ composer require flutterwavedev/flutterwave-v3
 ```
 
 <a id="initialization"></a>
