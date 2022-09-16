@@ -1,15 +1,14 @@
 <?php
 
+
+require "setup.php";// NOTICE: this assumes you have an env file in the PHP folder.
+
 session_start();
-// session_destroy();
-// Prevent direct access to this class
 
-define("BASEPATH", 1);
-
+const BASEPATH = 1;
 
 use Flutterwave\EventHandlers\EventHandlerInterface;
-use Flutterwave\Rave;
-
+use Flutterwave\Flutterwave;
 
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $getData = $_GET;
@@ -42,7 +41,7 @@ if (isset($postData['ref'])) {
     $overrideRef = true;
 }
 
-$payment = new Rave($_SESSION['secretKey'], $prefix, $overrideRef);
+$payment = new Flutterwave($prefix, $overrideRef);
 
 function getURL($url, $data = array()) {
     $urlArr = explode('?', $url);
@@ -188,7 +187,7 @@ if (isset($postData['amount'])) {
             ->eventHandler(new myEventHandler)
             ->requeryTransaction($getData['transaction_id']);
     } else {
-        $payment->logger->warn('Stop!!! Please pass the txref parameter!');
+        $payment->logger->warning('Stop!!! Please pass the txref parameter!');
         echo 'Stop!!! Please pass the txref parameter!';
     }
 }

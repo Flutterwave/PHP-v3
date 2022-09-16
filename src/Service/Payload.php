@@ -1,0 +1,70 @@
+<?php
+
+namespace Flutterwave\Service;
+
+use Flutterwave\Payload as Load;
+
+class Payload
+{
+    protected array $requiredParams = [
+        "amount","tx_ref","currency","customer"
+    ];
+
+    public function create(array $data): Load
+    {
+        $check = $this->validSuppliedData($data);
+        if(!$check['result']){
+            function turnRed($txt)
+            {
+                $txt = ucfirst($txt);
+                return "<b><span style='color:red'>$txt</span></b>";
+            }
+
+            throw new \InvalidArgumentException(turnRed($check['missing_param'])." is required in the payload");
+        }
+
+        $currency = $data['currency'];
+        $amount = $data['amount'];
+        $customer = $data['customer'];
+        $redirectUrl = $data['redirectUrl'] ?? null;
+        $otherData = (isset($data['additionalData'])) ? $data['additionalData'] : null;
+        $phone_number = (isset($data['phone'])) ? $data['phone'] : null;
+
+        if(isset($data['pin']) && !empty($data['pin']))
+        {
+            $otherData['pin'] = $data['pin'];
+        }
+
+        $payload = new Load();
+
+        $tx_ref = $data['tx_ref'] ?? $payload->generateTxRef();
+
+//        $payload->set('phone_number', $phone_number); // customer factory handles that
+        $payload->set('currency', $currency);
+        $payload->set('amount', $amount);
+        $payload->set('tx_ref', $tx_ref);
+        $payload->set('customer', $customer);
+        $payload->set('redirect_url', $redirectUrl);
+        $payload->set('otherData', $otherData);
+
+        return $payload;
+    }
+
+    public function validSuppliedData(array $data): array
+    {
+        $params = $this->requiredParams;
+
+        foreach ( $params as $param)
+        {
+            if(!array_key_exists($param, $data)){
+                return ['missing_param'=> $param, 'result' => false];
+            }
+        }
+
+        if(!$data['customer'] instanceof \Flutterwave\Customer){
+            return ['missing_param'=> 'customer', 'result' => false];
+        }
+
+        return ['missing_param' => null, 'result' => true];
+    }
+}

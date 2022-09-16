@@ -1,0 +1,89 @@
+<?php
+
+namespace Flutterwave\Service;
+
+use Flutterwave\EventHandlers\EventTracker;
+use Flutterwave\Helper\Config;
+use Unirest\Exception;
+
+class PaymentPlan extends Service
+{
+    use EventTracker;
+    private array $requiredParams = [
+        "amount","name","interval","duration"
+    ];
+    private string $name = "payment-plans";
+    public function __construct(Config $config)
+    {
+        parent::__construct($config);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function create(\Flutterwave\Payload $payload): \stdClass
+    {
+        $payload = $payload->toArray();
+        foreach ($this->requiredParams as $param){
+            if(!array_key_exists($param, $payload)){
+                $this->logger->error("Payment Plan Service::The required parameter $param is not present in payload");
+                throw new \InvalidArgumentException("Payment Plan Service:The required parameter $param is not present in payload");
+            }
+        }
+
+        $body = $payload;
+
+        $this->logger->notice("Payment Plan Service::Creating a Plan.");
+        self::startRecording();
+        $response = $this->request($body,'POST', $this->name);
+        $this->logger->notice("Payment Plan Service::Created a Plan Successfully.");
+        self::setResponseTime();
+        return $response;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function get(string $id): \stdClass
+    {
+        $this->logger->notice("Payment Plan Service::Retrieving a Plan ($id).");
+        self::startRecording();
+        $response = $this->request(null,'GET', $this->name."/$id");
+        self::setResponseTime();
+        return $response;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function list(): \stdClass
+    {
+        $this->logger->notice("Payment Plan Service::Retrieving all Plans.");
+        self::startRecording();
+        $response = $this->request(null,'GET', $this->name);
+        self::setResponseTime();
+        return $response;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function update(string $id): \stdClass
+    {
+        $this->logger->notice("Payment Plan Service::Updating Plan id:($id)");
+        self::startRecording();
+        $response = $this->request(null,'PUT', $this->name."$id");
+        self::setResponseTime();
+        return $response;
+    }
+
+    public function cancel(string $id): \stdClass
+    {
+        $this->logger->notice("Payment Plan Service::Canceling Plan id:($id)");
+        self::startRecording();
+        $response = $this->request(null,'PUT', $this->name."$id");
+        self::setResponseTime();
+        return $response;
+    }
+}
+
