@@ -14,13 +14,7 @@ class Payload
     {
         $check = $this->validSuppliedData($data);
         if(!$check['result']){
-            function turnRed($txt)
-            {
-                $txt = ucfirst($txt);
-                return "<b><span style='color:red'>$txt</span></b>";
-            }
-
-            throw new \InvalidArgumentException(turnRed($check['missing_param'])." is required in the payload");
+            throw new \InvalidArgumentException("<b><span style='color:red'>".$check['missing_param']."</span></b>"." is required in the payload");
         }
 
         $currency = $data['currency'];

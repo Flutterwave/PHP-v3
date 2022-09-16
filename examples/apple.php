@@ -4,8 +4,7 @@ require "../setup.php";
 session_start();
 
 use Flutterwave\Helper;
-use Flutterwave\Service;
-use Flutterwave\Data\AuthMode;
+use Flutterwave\Util\AuthMode;
 
 $config = Helper\Config::getInstance(
     $_SERVER[Helper\Config::SECRET_KEY],
@@ -24,6 +23,8 @@ try {
         "tx_ref" => uniqid().time(),
         "redirectUrl" => "https://google.com"
     ];
+
+    $data['redirectUrl'] = "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.php?tx_ref={$data['tx_ref']}";
 
     $applepayment = \Flutterwave\Flutterwave::create("apple");
     $customerObj = $applepayment->customer->create([
@@ -63,7 +64,7 @@ try {
 <link rel="stylesheet" href="./assets/css/index.css">
 <div class="buttons">
     <form method="get">
-        <h3> Bank Transfer Payment Sample</h3>
+        <h3> ApplePay Payment Sample</h3>
         <span class="error"><?= $error ?? ""  ?></span>
         <div class="request">
             <?= $request_display ?? "" ?>

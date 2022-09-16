@@ -56,8 +56,8 @@ class ApplePayTest extends TestCase
 
         $applepayment = \Flutterwave\Flutterwave::create("apple");
         //no customer object;
-        $payload  = $applepayment->payload->create($data);
         $this->expectException(\InvalidArgumentException::class);
+        $payload  = $applepayment->payload->create($data);
         $result = $applepayment->initiate($payload);
     }
 
@@ -65,8 +65,8 @@ class ApplePayTest extends TestCase
     {
         $data = [];
         $applepayment = \Flutterwave\Flutterwave::create("apple");
-        $payload  = $applepayment->payload->create($data);
         $this->expectException(\InvalidArgumentException::class);
+        $payload  = $applepayment->payload->create($data);
         $result = $applepayment->initiate($payload);
 
     }
