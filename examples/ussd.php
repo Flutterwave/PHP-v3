@@ -5,7 +5,7 @@ session_start();
 
 use Flutterwave\Helper;
 use Flutterwave\Service;
-use Flutterwave\Data\AuthMode;
+use Flutterwave\Util\AuthMode;
 
 $config = Helper\Config::getInstance(
     $_SERVER[Helper\Config::SECRET_KEY],
@@ -26,7 +26,8 @@ try {
         "tx_ref" => uniqid().time(),
         "redirectUrl" => null,
         "additionalData" => [
-            "account_bank" => "044"
+            "account_bank" => "204",
+            "account_number" => "0000000000000"
         ]
     ];
 

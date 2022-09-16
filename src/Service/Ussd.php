@@ -16,6 +16,9 @@ class Ussd extends Service implements Payment
     protected ?string $type = null;
     private UssdEventHandler $eventHandler;
     private string $country = 'NG';
+    private array $requiredParam = [
+        "account_number","account_bank"
+    ];
     private array $supported_banks = [
         "044" => "Access Bank",
         "050" => "Ecobank",
@@ -48,6 +51,7 @@ class Ussd extends Service implements Payment
      */
     public function initiate(\Flutterwave\Payload $payload): array
     {
+        $this->logger->info("Ussd Service::Initiated Ussd Charge");
         return $this->charge($payload);
     }
 
@@ -58,6 +62,20 @@ class Ussd extends Service implements Payment
     public function charge(\Flutterwave\Payload $payload): array
     {
         $otherData = $payload->get("otherData");
+
+        if(empty($otherData)){
+            $msg = "Please pass the missing parameters 'account_number' and 'account_bank'";
+            $this->logger->error("Ussd Service::$msg");
+            throw new \InvalidArgumentException("Ussd Service::$msg");
+        }
+
+        foreach ($this->requiredParam as $param){
+            if(!array_key_exists($param, $otherData)){
+                $msg = "Please pass the missing parameter '$param'";
+                $this->logger->error("Ussd Service::$msg");
+                throw new \InvalidArgumentException("Ussd Service::$msg");
+            }
+        }
 
         $bank = $otherData['account_bank'];
 
@@ -75,7 +93,9 @@ class Ussd extends Service implements Payment
         unset($body['address']);
 
         UssdEventHandler::startRecording();
+        $this->logger->info("Ussd Service::Generating Ussd Code");
         $request = $this->request($body,'POST', self::TYPE);
+        $this->logger->info("Ussd Service::Generated Ussd Code Successfully");
         UssdEventHandler::setResponseTime();
 
         return $this->handleAuthState($request, $body);
