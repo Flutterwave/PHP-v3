@@ -4,6 +4,7 @@ namespace Unit\Service;
 
 require __DIR__.'/../../../setup.php';
 
+use Flutterwave\Flutterwave;
 use Flutterwave\Util\AuthMode;
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Util\Currency;
@@ -19,7 +20,7 @@ class CardTest extends TestCase
             $_SERVER[Config::ENCRYPTION_KEY],
             $_SERVER['ENV']
         );
-        \Flutterwave\Flutterwave::configure($config);
+        Flutterwave::configure($config);
     }
 
     public function testAuthModeReturnPin()
@@ -47,7 +48,7 @@ class CardTest extends TestCase
             ],
         ];
 
-        $cardpayment = \Flutterwave\Flutterwave::create("card");
+        $cardpayment = Flutterwave::create("card");
         $customerObj = $cardpayment->customer->create([
             "full_name" => "Olaobaju Abraham",
             "email" => "olaobajua@gmail.com",
@@ -58,7 +59,6 @@ class CardTest extends TestCase
         $result = $cardpayment->initiate($payload);
 
         $this->assertSame(AuthMode::PIN,$result['mode']);
-
     }
 
     public function testInvalidArgumentExceptionThrowOnNoCardDetails()
@@ -71,7 +71,7 @@ class CardTest extends TestCase
             "additionalData" => null,
         ];
 
-        $cardpayment = \Flutterwave\Flutterwave::create("card");
+        $cardpayment = Flutterwave::create("card");
         $customerObj = $cardpayment->customer->create([
             "full_name" => "Olaobaju Abraham",
             "email" => "olaobajua@gmail.com",
@@ -109,7 +109,7 @@ class CardTest extends TestCase
             ],
         ];
 
-        $cardpayment = \Flutterwave\Flutterwave::create("card");
+        $cardpayment = Flutterwave::create("card");
         $customerObj = $cardpayment->customer->create([
             "full_name" => "Olaobaju Abraham",
             "email" => "olaobajua@gmail.com",
@@ -150,7 +150,7 @@ class CardTest extends TestCase
             ],
         ];
 
-        $cardpayment = \Flutterwave\Flutterwave::create("card");
+        $cardpayment = Flutterwave::create("card");
         $customerObj = $cardpayment->customer->create([
             "full_name" => "Olaobaju Abraham",
             "email" => "olaobajua@gmail.com",
