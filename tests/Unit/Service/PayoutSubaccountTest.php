@@ -7,14 +7,33 @@ use PHPUnit\Framework\TestCase;
 
 class PayoutSubaccountTest extends TestCase
 {
-    protected function setUp(): void
+    public function testPayoutSuccountCreation()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
+
+    }
+
+    public function testRetrievingListOfPayoutSubaccounts()
+    {
+
+    }
+
+    public function testRetrievingPayoutSubaccount()
+    {
+
+    }
+
+    public function testUpdatingPayoutSubaccount()
+    {
+
+    }
+
+    public function testFetchingAvailableBalanceOfPayoutSubaccount()
+    {
+
+    }
+
+    public function testFetchingStaticVirtualAccountOfPayoutSubaccounts()
+    {
+
     }
 }

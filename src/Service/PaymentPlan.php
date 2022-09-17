@@ -68,11 +68,18 @@ class PaymentPlan extends Service
     /**
      * @throws Exception
      */
-    public function update(string $id): \stdClass
+    public function update(string $id, \Flutterwave\Payload $payload): \stdClass
     {
+        if(!$payload->has('amount') && !$payload->has('status'))
+        {
+            $msg = "Payment Plan Service(Action:Update):Please pass the required params: 'amount' and 'status'";
+            $this->logger->error($msg);
+            throw new \InvalidArgumentException($msg);
+        }
+
         $this->logger->notice("Payment Plan Service::Updating Plan id:($id)");
         self::startRecording();
-        $response = $this->request(null,'PUT', $this->name."$id");
+        $response = $this->request(null,'PUT', $this->name."/$id");
         self::setResponseTime();
         return $response;
     }
@@ -81,7 +88,7 @@ class PaymentPlan extends Service
     {
         $this->logger->notice("Payment Plan Service::Canceling Plan id:($id)");
         self::startRecording();
-        $response = $this->request(null,'PUT', $this->name."$id");
+        $response = $this->request(null,'PUT', $this->name."/$id/cancel");
         self::setResponseTime();
         return $response;
     }

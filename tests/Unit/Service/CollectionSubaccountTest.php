@@ -12,17 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionSubaccountTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
-    }
-
     public function testCollectionSubaccountCreation()
     {
         $config = Config::getInstance(
@@ -44,7 +33,6 @@ class CollectionSubaccountTest extends TestCase
         $payload->set("country", "NG");
         $service = new CollectionSubaccount($config);
         $request = $service->create($payload);
-        print_r($request);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->subaccount_id));
     }
 
