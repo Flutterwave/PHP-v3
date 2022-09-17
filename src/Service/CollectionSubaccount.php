@@ -9,7 +9,8 @@ class CollectionSubaccount extends Service
 {
     private SubaccountEventHandler $eventHandler;
     private string $name = "subaccounts";
-    private array $requiredParams = [ "account_bank", "account_number", "business_name", "split_value", "business_mobile" ];
+    private array $requiredParams = [ "account_bank", "account_number", "business_name", "split_value", "business_mobile","business_email", "country" ];
+    private array $requiredParamsUpdate = [ "split_value"];
     public function __construct(Config $config)
     {
         parent::__construct($config);
@@ -20,17 +21,16 @@ class CollectionSubaccount extends Service
 
     public function confirmPayload(Payload $payload): array
     {
-        $payload = $payload->toArray();
 
         foreach($this->requiredParams as $param){
-            if(array_key_exists($param, $payload))
+            if(!$payload->has($param))
             {
                 $this->logger->error("Subaccount Service::The required parameter $param is not present in payload");
-                throw new \InvalidArgumentException("The required parameter $param is not present in payload");
+                throw new \InvalidArgumentException("Subaccount Service:The required parameter $param is not present in payload");
             }
         }
 
-        return $payload;
+        return $payload->toArray();
     }
 
     /**
@@ -72,10 +72,19 @@ class CollectionSubaccount extends Service
     /**
      * @throws Exception
      */
-    public function update(string $id): \stdClass
+    public function update(string $id, Payload $payload): \stdClass
     {
+        foreach($this->requiredParamsUpdate as $param){
+            if(!$payload->has($param))
+            {
+                $this->logger->error("Subaccount Service::The required parameter $param is not present in payload");
+                throw new \InvalidArgumentException("Subaccount Service:The required parameter $param is not present in payload");
+            }
+        }
+
+        $payload = $payload->toArray();
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'PUT', "/{$id}");
+        $response = $this->request($payload,'PUT', "/{$id}");
         $this->eventHandler::setResponseTime();
         return $response;
     }
@@ -86,7 +95,7 @@ class CollectionSubaccount extends Service
     public function delete(string $id): \stdClass
     {
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'DELETE', "/{$id}/transactions");
+        $response = $this->request(null,'DELETE', "/{$id}");
         $this->eventHandler::setResponseTime();
         return $response;
     }
