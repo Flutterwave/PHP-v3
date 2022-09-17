@@ -25,6 +25,12 @@ class Beneficiaries extends Service
     public function create(\Flutterwave\Payload $payload): \stdClass
     {
         $payload = $payload->toArray();
+
+        if(array_key_exists('customer', $payload)){
+            $this->logger->error("Beneficiaries Service::The required parameter customer Object is not present in payload");
+            throw new \InvalidArgumentException("Beneficiaries Service:The required parameter Object is not present in payload");
+        }
+
         foreach ($this->requiredParams as $param){
             if(!array_key_exists($param, $payload)){
                 $this->logger->error("Beneficiaries Service::The required parameter $param is not present in payload");

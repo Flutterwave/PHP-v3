@@ -4,10 +4,10 @@ namespace Unit\Service;
 
 require __DIR__.'/../../../setup.php';
 
-use Flutterwave\Util\AuthMode;
-use PHPUnit\Framework\TestCase;
-use Flutterwave\Util\Currency;
 use Flutterwave\Helper\Config;
+use Flutterwave\Util\AuthMode;
+use Flutterwave\Util\Currency;
+use PHPUnit\Framework\TestCase;
 
 class ApplePayTest extends TestCase
 {

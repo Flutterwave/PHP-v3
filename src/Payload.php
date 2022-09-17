@@ -56,8 +56,15 @@ class Payload
     public function toArray(string $payment_method = null): array
     {
         $data = $this->data;
-        $customer = $data['customer'];
+        $customer = $data['customer'] ?? new Customer();
         $additionalData = $data['otherData'] ?? [];
+
+        if(gettype($customer) == "string"){
+            $string_value = $customer;
+            $customer = new Customer();
+            $customer->set('customer', $string_value);
+        }
+
 
         switch ($payment_method){
             case 'card':
@@ -86,7 +93,9 @@ class Payload
             unset($data['preauthorize']);
         }
 
-        if(is_null($data['phone_number']))
+
+
+        if(array_key_exists('phone_number', $data) && is_null($data['phone_number']))
         {
             unset($data['phone_number']);
         }

@@ -12,7 +12,7 @@ class Bill extends Service
     protected ?array $categories = null;
     private string $name = "bill-categories";
     private array $requiredParams = [
-        "country","customer","amount","type"
+        "country","customer","amount","type","reference"
     ];
     public function __construct(Config $config)
     {
@@ -49,6 +49,7 @@ class Bill extends Service
      */
     public function createPayment(\Flutterwave\Payload $payload): \stdClass
     {
+        $payload =
         $payload = $payload->toArray();
         foreach ($this->requiredParams as $param){
             if(!array_key_exists($param, $payload)){
@@ -61,7 +62,7 @@ class Bill extends Service
 
         $this->logger->notice("Bill Payment Service::Creating a Bill Payment.");
         self::startRecording();
-        $response = $this->request($body,'POST', $this->name);
+        $response = $this->request($body,'POST', "bills");
         $this->logger->notice("Bill Payment Service::Created a Bill Payment Successfully.");
         self::setResponseTime();
         return $response;

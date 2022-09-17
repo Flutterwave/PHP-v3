@@ -11,4 +11,5 @@ class AuthMode
     const OTP = "otp";
     const USSD = "ussd";
     const AVS = "avs_noauth";
+    const BANKTRANSFER = "banktransfer";
 }

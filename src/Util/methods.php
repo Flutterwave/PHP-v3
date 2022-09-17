@@ -5,6 +5,7 @@ use Flutterwave\Service\AchPayment;
 use Flutterwave\Service\ApplePay;
 use Flutterwave\Service\Banks;
 use Flutterwave\Service\BankTransfer;
+use Flutterwave\Service\Beneficiaries;
 use Flutterwave\Service\Bill;
 use Flutterwave\Service\CardPayment;
 use Flutterwave\Service\ChargeBacks;
@@ -32,27 +33,17 @@ return [
     "account" => AccountPayment::class,
     "ach" => AchPayment::class,
     "apple" => ApplePay::class,
-    "bank" => Banks::class,
     "bank-transfer" => BankTransfer::class,
     "bill" => Bill::class,
     "card" => CardPayment::class,
     "chargeback" => ChargeBacks::class,
-    "collection-subaccount" => CollectionSubaccount::class,
     "Misc" => Misc::class,
     "momo" => MobileMoney::class,
     "mpesa" => Mpesa::class,
-    "otp" => Otps::class,
-    "plan" => PaymentPlan::class,
-    "payout-subaccount" => PayoutSubaccount::class,
     "preauth" => Preauth::class,
-    "settlement" => Settlement::class,
-    "subscription" => Subscription::class,
     "tokenize" => TokenizedCharge::class,
-    "transaction" => Transactions::class,
     "transfer" => Transfer::class,
     "ussd" => Ussd::class,
-    "virtual-account" => VirtualAccount::class,
-    "virtual-card" => VirtualCard::class,
 //    "paypal" => PayPal::class,
 //    "remita" => Remita::class,
 //    "voucher" => VoucherPayment::class,
