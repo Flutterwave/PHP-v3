@@ -84,6 +84,9 @@ class PaymentPlan extends Service
         return $response;
     }
 
+    /**
+     * @throws Exception
+     */
     public function cancel(string $id): \stdClass
     {
         $this->logger->notice("Payment Plan Service::Canceling Plan id:($id)");

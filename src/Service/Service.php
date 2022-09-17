@@ -54,10 +54,11 @@ class Service implements ServiceInterface
                 ],$json);
                 break;
             case 'PUT':
+                $json = Body::Json($data??[]);
                 $response = $this->http::put($this->url.$additionalurl,[
                     "Authorization" => "Bearer $secret",
                     "Content-Type" => "application/json"
-                ]);
+                ],$json);
                 break;
             case 'DELETE':
                 $response = $this->http::delete($this->url.$additionalurl,[

@@ -77,10 +77,18 @@ class PayoutSubaccount extends Service
     /**
      * @throws Exception
      */
-    public function update(string $account_reference): \stdClass
+    public function update(string $account_reference, Payload $payload): \stdClass
     {
+        if(!$payload->has("account_name") || !$payload->has("mobilenumber") || !$payload->has("email") )
+        {
+            $msg = "Please pass the required paramters:'account_name','mobilenumber',and 'email' ";
+            $this->logger->error($msg);
+            throw new \InvalidArgumentException($msg);
+        }
+
+
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'PUT', "/{$account_reference}");
+        $response = $this->request($payload->toArray(),'PUT', "/{$account_reference}");
         $this->eventHandler::setResponseTime();
         return $response;
     }
@@ -99,10 +107,10 @@ class PayoutSubaccount extends Service
     /**
      * @throws Exception
      */
-    public function fetchAvailableBalance(string $account_reference): \stdClass
+    public function fetchAvailableBalance(string $account_reference, string $currency = "NGN"): \stdClass
     {
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "/{$account_reference}/balances");
+        $response = $this->request(null,'GET', "/{$account_reference}/balances?currency=$currency");
         $this->eventHandler::setResponseTime();
         return $response;
     }
@@ -110,10 +118,10 @@ class PayoutSubaccount extends Service
     /**
      * @throws Exception
      */
-    public function fetchStaticVirtualAccounts(string $account_reference): \stdClass
+    public function fetchStaticVirtualAccounts(string $account_reference, string $currency = "NGN"): \stdClass
     {
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "/{$account_reference}/static-account");
+        $response = $this->request(null,'GET', "/{$account_reference}/static-account?currency=$currency");
         $this->eventHandler::setResponseTime();
         return $response;
     }
