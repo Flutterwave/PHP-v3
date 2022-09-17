@@ -2,7 +2,7 @@
 
 namespace Flutterwave\EventHandlers;
 
-use Flutterwave\Data\AuthMode;
+use Flutterwave\Util\AuthMode;
 
 class MomoEventHandler implements EventHandlerInterface
 {

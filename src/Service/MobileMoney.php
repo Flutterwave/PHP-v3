@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\Payment;
-use Flutterwave\Data\Currency;
+use Flutterwave\Util\Currency;
 use Flutterwave\EventHandlers\MomoEventHandler;
 use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
@@ -148,6 +148,4 @@ class MobileMoney extends Service implements Payment
     {
         return $this->eventHandler->onAuthorization($response, ['logger' => $this->logger] );
     }
-
-
 }
