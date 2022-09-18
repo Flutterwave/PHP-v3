@@ -3,6 +3,7 @@
 $dev_instructions = "<h3>Sample Verify Endpoint</h3>";
 $dev_instructions .= "<p>Simply make a get request to this route with either \"transactionId\" or \"tx_ref\" as the query parameter.";
 ###########################################################################################################################################
+require __DIR__."/../../vendor/autoload.php";
 require __DIR__."/../../setup.php";
 
 use Flutterwave\Helper;

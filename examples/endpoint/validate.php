@@ -4,6 +4,7 @@ $dev_instructions = "<h3>Sample Validate Endpoint</h3>";
 $dev_instructions .= "<p>Simply make a post request to this route with both \"otp\" or \"flw_ref\" as the request body.";
 
 ###################################################################################################################################
+require __DIR__."/../../vendor/autoload.php";
 require __DIR__."/../../setup.php";
 
 

@@ -1,8 +1,5 @@
 <?php  
 
-require_once __DIR__."/../../vendor/autoload.php";
-//require_once __DIR__."/vendor/autoload.php";
-
 use Flutterwave\Helper;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__."/../../");
