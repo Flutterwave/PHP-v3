@@ -284,7 +284,7 @@ class Flutterwave extends AbstractPayment
     {
         $this->createCheckSum();
 
-        $this->logger("Rendering Payment Modal..");
+        $this->logger->info("Rendering Payment Modal..");
 
         echo '<html lang="en">';
         echo '<body>';
@@ -312,7 +312,7 @@ class Flutterwave extends AbstractPayment
               console.log(data);
             },
             onclose: function() {
-                window.location = "?cancelled=cancelled";
+                window.location = "?cancelled=cancelled&cancel_ref='.$this->txref.'";
               },
             customizations: {
               title: "' . $this->customTitle . '",
@@ -325,7 +325,7 @@ class Flutterwave extends AbstractPayment
         echo '</body>';
         echo '</html>';
 
-        $this->logger("Rendered Payment Modal Successfully..");
+        $this->logger->info("Rendered Payment Modal Successfully..");
 
     }
 
@@ -336,7 +336,7 @@ class Flutterwave extends AbstractPayment
      * */
     function paymentCanceled(string $referenceNumber): object
     {
-        $this->logger->notice('Payment was canceled by user..' . $this->txref);
+        $this->logger->notice('Payment was canceled by user..' . $referenceNumber);
         if (isset($this->handler)) {
             $this->handler->onCancel($referenceNumber);
         }

@@ -179,7 +179,7 @@ if (isset($postData['amount'])) {
         // Handle canceled payments
         $payment
             ->eventHandler(new myEventHandler)
-            ->paymentCanceled($getData['cancelled']);
+            ->paymentCanceled($getData['cancel_ref']);
     } elseif (isset($getData['tx_ref'])) {
         // Handle completed payments
         $payment->logger->notice('Payment completed. Now requerying payment.');
