@@ -299,7 +299,7 @@ if (isset($postData['amount'])) {
 ### Configuration settings
 This should be accessible for every implementation. if you have a .env file just require the file setup.
 ```php
-//require __DIR__.'/vendor/flutterwavedev/flutterwave-v3/php/setup.php';
+//require __DIR__.'/path-to-vendor/flutterwavedev/flutterwave-v3/php/setup.php';
 $config = Config::getInstance(
     $_SERVER[Config::SECRET_KEY],
     $_SERVER[Config::PUBLIC_KEY],
@@ -562,6 +562,26 @@ $payload->set("business_mobile", "09087930450");
 $payload->set("business_email", "vicomma@gmail.com");
 $payload->set("country", "NG");
 $service = new CollectionSubaccount($config);
+$request = $service->create($payload);
+```
+
+### Payout Subaccount
+
+The following implementation shows how to create a payout subaccount via PHP SDK.
+
+```php
+use Flutterwave\Payload;
+use Flutterwave\Customer;
+use Flutterwave\Service\PayoutSubaccount;
+
+$customer = new Customer();
+$customer->set("fullname","Jake Teddy");
+$customer->set("email","jteddy@gmail.com");
+$customer->set("phone_number","+2348065007000");
+$payload = new Payload();
+$payload->set("country", "NG");
+$payload->set("customer", $customer);
+$service = new PayoutSubaccount($config);
 $request = $service->create($payload);
 ```
 
