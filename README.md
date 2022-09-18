@@ -370,7 +370,7 @@ $result = $achpayment->initiate($payload);
 
 ### Direct Card Charge
 
-The following implementation shows how to initiate a card charge. Use the Playground Directory to view an implementation Responses and samples of use.
+The following implementation shows how to initiate a card charge. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/card.php)
 
 ```php
 $data = [
@@ -435,7 +435,7 @@ $result = $momopayment->initiate($payload);
 
 ### USSD
 
-Collect payments via ussd
+Collect payments via ussd. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ussd.php)
 
 ```php
 $data = [
@@ -464,7 +464,7 @@ $result = $ussdpayment->initiate($payload);
 
 ### Mpesa
 
-Collect payments from your customers via Mpesa.
+Collect payments from your customers via Mpesa.a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/mpesa.php)
 
 ```php
 $data = [
@@ -535,67 +535,37 @@ $request = $service->create($payload);
 The following implementation shows how to create a subaccount via PHP SDK.
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/Subaccount.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subaccount;
+use Flutterwave\Payload;
+use Flutterwave\Service\CollectionSubaccount;
 
-$data = array(
-    "account_bank"=> "044",
-    "account_number"=> "0690000037",
-    "business_name"=> "Eternal Blue",
-    "business_email"=> "petya@stux.net",
-    "business_contact"=> "Anonymous",
-    "business_contact_mobile"=> "090890382",
-    "business_mobile"=> "09087930450",
-    "country"=> "NG",
-    "meta"=> array(
-        array(
-            "meta_name"=> "mem_adr",
-            "meta_value"=> "0x16241F327213"
-        )
-    ),
-    "split_type"=> "percentage",
-    "split_value"=> 0.5
-);
-
-$fetch_data = array("id" => "RS_9247C52A37C5EB15C7E8E974CD1B35D7");
-$update_data = array("id" => "2755","business_name"=>"Mad O!","business_email"=> "mad@o.enterprises",
-"account_bank"=> "044","account_number"=> "0690000040","split_type"=> "flat","split_value"=> "200");
-
-$subaccount = new Subaccount();
-$createSubaccount = $subaccount->createSubaccount($data);
-$getSubaccounts = $subaccount->getSubaccounts();
-$fetchSubaccount = $subaccount->fetchSubaccount($fetch_data);
-$updateSubaccount = $subaccount->updateSubaccount($update_data);
-print_r($createSubaccount);
+$payload = new Payload();
+$payload->set("account_bank", "044");
+$payload->set("account_number", "06900000".mt_rand(29, 40));
+$payload->set("business_name", "Maxi Ventures");
+$payload->set("split_value", "0.5"); // 50%
+$payload->set("business_mobile", "09087930450");
+$payload->set("business_email", "vicomma@gmail.com");
+$payload->set("country", "NG");
+$service = new CollectionSubaccount($config);
+$request = $service->create($payload);
 ```
 
 <br>
 
-### Transfer Recipient
+### Beneficiaries
 
-The following implementation shows how to create a transfer recipient on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to create a transfer Beneficiary via the PHP SDK.
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/Recipient.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Recipient;
+use Flutterwave\Payload;
+use Flutterwave\Service\Beneficiaries;
 
-$data = array(
-    "account_bank"=> "044",
-    "account_number"=> "0690000036",
-);
-$fetchdata = array(
-  'id' => '6153'
-);
-$deldata = array(
-  'id'=>'7236'
-);
-
-$payment = new Recipient();
-$recipient1 = $payment->createRecipient($data);//Create a recipient for transfer
-$recipients = $payment->listRecipients();// get all existing recipients
-$recipient = $payment->fetchBeneficiary($fetchdata);//fetch a specific recipient.
-$deleteRecipient = $payment->deleteBeneficiary($deldata);//delete recipient
-print_r($recipient1);
+$payload = new Payload();
+$payload->set("account_bank", "044");
+$payload->set("account_number", "0690000034");
+$payload->set("beneficiary_name", "Abraham Smith Olaolu");
+$service = new Beneficiaries($config);
+$request = $service->create($payload);
 ```
 
 <br>
@@ -605,18 +575,7 @@ print_r($recipient1);
 The following implementation shows how to activate a subscription, fetch a subscription, get all subscriptions.
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/Subscription.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Subscription;
-
-$id = 1112 //Id of subscription plan
-//$cid = 2222
-$subscription = new Subscription();
-$resultGet = $subscription->getAllSubscription();//gets all existing subscription
-$resultActivate = $subscription->activateSubscription($id);// activates a subscription plan
-$resultCancel = $subscription->cancelSubscription($cid);// activates a subscription plan
-
-//returns the result 
-print_r($result);
+# subscriptions
 ```
 
 ### Bills
@@ -626,88 +585,18 @@ The following implementation shows how to pay for any kind of bill from Airtime 
 visit: https://developer.flutterwave.com/v3.0/reference#buy-airtime-bill
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/Bill.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Bill;
+use Flutterwave\Payload;
+use Flutterwave\Service\Bill;
 
-$data = array(
-    "country"=> "NG",
-	"customer"=> "+23490803840303",
-	"amount"=> 500,
-	"recurrence"=> "ONCE",
-	"type"=> "AIRTIME",
-	"reference"=> "9300049645534545454332433"
-);
+$payload = new Payload();
+$payload->set("country", "NG");
+$payload->set("customer", "+2349067985861");
+$payload->set("amount", "2000");
+$payload->set("type", "AIRTIME");
+$payload->set("reference", "TEST_".uniqid().uniqid());
 
-//sample payload for bulkBill()
-$bulkdata = array(
-    "bulk_reference"=>"edf-12de5223d2f3243474543",
-    "callback_url"=>"https://webhook.site/96374895-154d-4aa0-99b5-709a0a128674",
-    "bulk_data"=> array(
-        array(
-        "country"=> "NG",
-        "customer"=> "+23490803840303",
-        "amount"=> 500,
-        "recurrence"=> "WEEKLY",
-        "type"=> "AIRTIME",
-        "reference"=>"930049200929"
-        ),
-        array(
-        "country"=>"NG",
-        "customer"=> "+23490803840304",
-        "amount"=> 500,
-        "recurrence"=> "WEEKLY",
-        "type"=>"AIRTIME",
-        "reference"=>"930004912332434232"
-        )
-    ),
-);
-
-$getdata = array(
-    //"reference"=>"edf-12de5223d2f32434753432"
-     "id"=>"BIL136",
-     "product_id"=>"OT150"
-);
-
-$payment = new Bill();
-$result = $payment->payBill($data);//create a bill paymenr
-$bulkresult = $payment->bulkBill($bulkdata);//create bulk bill payment....
-$getresult = $payment->getBill($getdata);// get bulk result....
-$getAgencies = $payment->getAgencies();
-$getBillCategories = $payment->getBillCategories();
-print_r($result);
-```
-
-### Ebills
-
-The following implementation shows how to create a electronic receipt.
-
-```php
-require("Flutterwave-Rave-PHP-SDK/src/Ebill.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Ebill;
-
-$data = array(
-    "narration"=> "mndkn blls",
-    "number_of_units"=> 2,//should be a string
-    "currency"=> "NGN",
-    "amount"=> 200,//should be a string
-    "phone_number"=> "09384747474",
-    "email"=>"jake@rad.com",
-    "tx_ref"=> "akhlm-pstmn-1094434370393",
-    "ip"=> "127.9.0.7",
-    "custom_business_name"=> "John Madakin",
-    "country"=> "NG"
-);
-
-$update = array(
-    "reference"=>"RVEBLS-2B93A7039017-90937",//on creation of order, this is the flw_ref
-    "currency"=> "NGN",
-    "amount"=> "4000"
-);
-
-$payment = new Ebill();
-$result = $payment->order($data);//create an order reciept
-$updateResult = $payment->updateOrder($update);//create bulk bill payment....
-print_r($result);
+$service = new Bill($config);
+$request = $service->createPayment($payload);
 ```
 
 ### Virtual Accounts
@@ -716,38 +605,7 @@ The following implementation shows how to create a virtual Account. Please view 
 https://developer.flutterwave.com/reference#create-a-virtual-account-number
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/VirtualAccount.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VirtualAccount;
-
-//sample payload for payBill()
-$data = array(
-  "email"=> "johnmadakin@allstar.com",
-  "duration"=> 5,
-  "frequency"=> 5,
-  "amount"=>"22000",
-  "is_permanent"=> true,
-  "tx_ref"=> "jhn-mdkn-101923123463"
-);
-
-$bulkdata = array(
-  "accounts"=> 5,
-  "email"=> "sam@son.com",
-  "is_permanent"=> true,
-  "tx_ref"=> "jhn-mndkn-012439283422"
-);
-
-$batch = array('batch_id' => 'RND_2641579516055928');
-
-$getdata = array(
-    "order_ref"=>"URF_1590362018488_8875935"
-);
-
-$account = new VirtualAccount();
-$result = $account->createVirtualAccount($data);//create a virtak account
-$bulkAccounts = $account->createBulkAccounts($bulkdata);//create bulk v accounts
-$virtualAccounts = $account->getBulkAccounts($batch);//list all bulk accounts
-$virtualAccount = $account->getAccountNumber($getdata);//get an account.
-print_r($result);
+# virtual accounts
 ```
 <br>
 
@@ -756,93 +614,38 @@ print_r($result);
 Once the charge and validation process is complete for the first charge on the card, you can make use of the token for subsequent charges.
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/TokenizedCharge.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\TokenizedCharge;
+use Flutterwave\Util\Currency;
 
-$data = array(
-     "token"=> "flw-t1nf-1ff187b04cecb4acff4ac62c2b6f7784-m03k",
-     "currency"=> "NGN",
-     "country"=> "NG",
-     "amount"=> 30300,
-     "email"=> "olaobajua@gmail.com",
-     "first_name"=> "Anonymous",
-     "last_name"=> "customer",
-     "client_ip" =>"154.123.220.1",
-     "device_fingerprint" =>"62wd23423rq324323qew1" 
-    );
+$data = [
+    "amount" => 2000,
+    "currency" => Currency::NGN,
+    "tx_ref" => uniqid().time(),
+    "redirectUrl" => null,
+    "additionalData" => [
+        "token" => "flw-t0-fe20067f9d8d3ce3d06f93ea2d2fea28-m03k"
+    ]
+];
 
-$payment = new TokinizedCharge();
-$result = $payment->tokenCharge($data);//initiates the charge
-$verify = $payment->verifyTransaction();
-print_r($result);
+$data['redirectUrl'] = "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.php?tx_ref={$data['tx_ref']}";
+
+$customerObj = $tokenpayment->customer->create([
+    "full_name" => "Olaobaju Jesulayomi Abraham",
+    "email" => "olaobajua@gmail.com",
+    "phone" => "+2349067985861"
+]);
+$data['customer'] = $customerObj;
+$tokenpayment = \Flutterwave\Flutterwave::create("tokenize");
+$payload  = $tokenpayment->payload->create($data);
+$result = $tokenpayment->initiate($payload);
 ```
-<br>
 
 ### View Transactions
 
 List all transactions on your account. You could do a specific query using ```customer_email``` or ```customer_fullname``` to make specifc search. View all successfull or failed transactions for a particular period, month or year
 
 ```php
-require("Flutterwave-Rave-PHP-SDK/src/Transactions.php");
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\Transactions;
-
-$data = array(
-'amount'=> 1000
-);
-$fetch_data = array(
-'id'=>'345522'
-);
-$time_data = array(
-  'id'=>'3434'
-);
-
-$history = new Transactions();
-$transactions = $history->viewTransactions();
-$transactionfee = $history->getTransactionFee($data);
-$verifyTransaction = $history->verifyTransaction($fetch_data);
-$timeline = $history->viewTimeline($time_data);
-print_r($transactions);
+# Transaction service
 ```
-<br>
-
-### Voucher payment
-
-Collect ZAR payments offline using Vouchers
-
-```php
-require("Flutterwave-Rave-PHP-SDK/src/VoucherPayment.php");
-
-use Flutterwave\EventHandlers\EventHandlers\EventHandlers\EventHandlers\EventHandlers\VoucherPayment;
-//The data variable holds the payload
-$data = array(
-        //"public_key": "FLWPUBK-6c4e3dcb21282d44f907c9c9ca7609cb-X"//you can ommit the public key as the key is take from your .env file
-        //"tx_ref": "MC-15852309v5050e8",
-        "amount"=> "100",
-        "type"=> "voucher_payment",
-        "currency"=> "ZAR",
-        "pin"=> "19203804939000",
-        "email"=>"ekene@flw.com",
-        "phone_number" =>"0902620185",
-        "account_bank" => "058",
-        "fullname" => "Ekene Eze",
-        "client_ip" =>"154.123.220.1",
-        "device_fingerprint" =>"62wd23423rq324323qew1",
-        "meta" => array(
-            "flightID"=> "123949494DC"
-        )     
-    );
-
-$payment = new VoucherPayment();
-$result = $payment->voucher($data);
-if(isset($result['data'])){
-  $id = $result['data']['id'];
-  $verify = $payment->verifyTransaction($id);
-}
-print_r($result);
-```
-
-You can also find the class documentation in the docs folder. There you will find documentation for the `Rave` class and the `EventHandlerInterface`.
-
 
 ## Testing
 
