@@ -311,7 +311,8 @@ $config = Config::getInstance(
 
 ### Account Charge
 
-The following implementation shows how to initiate a direct bank charge. Use the Playground DIrectory to view Responses and samples of use.
+The following implementation shows how to initiate a direct bank charge. <br /> 
+want to see it work real time? a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/account.php).
 
 ```php
 $data = [
@@ -342,7 +343,7 @@ $result = $accountpayment->initiate($payload);
 
 ### ACH Charge
 
-The following implementation shows how to accept payments directly from customers in the US and South Africa. Use the Playground DIrectory to view Responses and samples of use.
+The following implementation shows how to accept payments directly from customers in the US and South Africa. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ach.php).
 
 ```php
 $data = [
@@ -408,7 +409,7 @@ $result = $cardpayment->initiate($payload);
 
 ### Mobile Money Payments
 
-The following implementation shows how to initiate a mobile money payment. Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to initiate a mobile money payment. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/momo.php).
 
 ```php
 $data = [
@@ -529,10 +530,9 @@ $request = $service->create($payload);
 
 <br>
 
-### Subaccount Management
+### Collection Subaccount
 
-The following implementation shows how to create a subaccount on the rave dashboard
-Use the Playground Directory to view Responses and samples of use.
+The following implementation shows how to create a subaccount via PHP SDK.
 
 ```php
 require("Flutterwave-Rave-PHP-SDK/src/Subaccount.php");
