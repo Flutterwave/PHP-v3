@@ -299,7 +299,10 @@ if (isset($postData['amount'])) {
 ### Configuration settings
 This should be accessible for every implementation. if you have a .env file just require the file setup.
 ```php
-//require __DIR__.'/path-to-vendor/flutterwavedev/flutterwave-v3/php/setup.php';
+require __DIR__.'/vendor/flutterwavedev/flutterwave-v3/setup.php';
+
+use Flutterwave\Helper\Config;
+
 $config = Config::getInstance(
     $_SERVER[Config::SECRET_KEY],
     $_SERVER[Config::PUBLIC_KEY],
