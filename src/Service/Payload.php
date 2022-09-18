@@ -24,12 +24,18 @@ class Payload
         $otherData = (isset($data['additionalData'])) ? $data['additionalData'] : null;
         $phone_number = (isset($data['phone'])) ? $data['phone'] : null;
 
+
+
         if(isset($data['pin']) && !empty($data['pin']))
         {
             $otherData['pin'] = $data['pin'];
         }
 
         $payload = new Load();
+
+        if(!\is_null($phone_number)){
+            $payload->set("phone", $phone_number);
+        }
 
         $tx_ref = $data['tx_ref'] ?? $payload->generateTxRef();
 

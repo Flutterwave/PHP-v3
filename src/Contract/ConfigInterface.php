@@ -9,7 +9,7 @@ interface ConfigInterface
 {
     public function getHttp(): Request;
 
-    public static function getInstance(string $secretKey, string $publicKey, string $enc, string $env);
+    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env);
 
     public function getLoggerInstance(): LoggerInterface;
 

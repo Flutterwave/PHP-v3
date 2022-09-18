@@ -13,7 +13,6 @@ trait PaymentFactory
      */
     public static function create(string $payment): Contract\Payment
     {
-
         if(is_null(self::$methods))
         {
             throw new Exception("No Payment Method Available at the moment. Please reach out to support");

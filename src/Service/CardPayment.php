@@ -2,9 +2,9 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\CardEventHandler;
 use Flutterwave\Contract\Payment;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use InvalidArgumentException;
 use Unirest\Exception;
@@ -24,7 +24,7 @@ class CardPayment extends Service implements Payment
     private string $end_point;
     private CardEventHandler $eventHandler;
 
-    function __construct(Config $config) {
+    function __construct(?ConfigInterface $config = null) {
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();

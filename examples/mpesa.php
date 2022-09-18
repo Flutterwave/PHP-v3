@@ -1,23 +1,17 @@
 <?php
 require __DIR__."/../vendor/autoload.php";
-require "setup.php";
 
 session_start();
 
 use Flutterwave\Helper;
 use Flutterwave\Service;
 
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
+\Flutterwave\Flutterwave::bootstrap();
 
 try {
     $data = [
         "amount" => 2000,
-        "currency" => Flutterwave\Util\Currency::NGN,
+        "currency" => Flutterwave\Util\Currency::KES,
         "tx_ref" => uniqid().time(),
         "redirectUrl" => "https://google.com"
     ];
@@ -44,7 +38,9 @@ try {
 
         if(isset($request['make'])){
             $result = $mpesapayment->initiate($payload);
-            print_r($result);
+            $instruction = $result['instruction'];
+            $transactionId = $result['transactionId'];
+            $response_display = require __DIR__."/view/form/mpesa.php";
         }
 
     }

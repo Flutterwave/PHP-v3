@@ -1,10 +1,9 @@
 <?php
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\UssdEventHandler;
-use Flutterwave\Flutterwave;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -37,7 +36,7 @@ class Ussd extends Service implements Payment
         "035" => "Wema bank",
         "057" => "Zenith bank"
     ];
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 

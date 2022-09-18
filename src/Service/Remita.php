@@ -2,8 +2,15 @@
 
 namespace Flutterwave\Service;
 
-class Remita
+use Flutterwave\Contract\ConfigInterface;
+
+class Remita extends Service
 {
+    public function __construct(?ConfigInterface $config = null)
+    {
+        parent::__construct($config);
+    }
+
     public function getAgencies()
     {
         

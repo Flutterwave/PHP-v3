@@ -59,12 +59,6 @@ abstract class AbstractPayment
 
     public function __construct()
     {
-        self::$config = Helper\Config::getInstance(
-            $_SERVER[Helper\Config::SECRET_KEY],
-            $_SERVER[Helper\Config::PUBLIC_KEY],
-            $_SERVER[Helper\Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
     }
 
     abstract public function initialize();

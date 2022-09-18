@@ -4,16 +4,6 @@ $dev_instructions = "<h3>Sample Verify Endpoint</h3>";
 $dev_instructions .= "<p>Simply make a get request to this route with either \"transactionId\" or \"tx_ref\" as the query parameter.";
 ###########################################################################################################################################
 require __DIR__."/../../vendor/autoload.php";
-require __DIR__."/../../setup.php";
-
-use Flutterwave\Helper;
-
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
 
 $data = $_GET;
 
@@ -27,7 +17,7 @@ if (isset($data['transactionId']) || isset($data['tx_ref']) )
     $tx_ref = $data['tx_ref'] ?? null;
 
     try {
-        $transactionService = (new \Flutterwave\Service\Transactions($config));
+        $transactionService = (new \Flutterwave\Service\Transactions());
 
         if(!is_null($transactionId)){
             $res = $transactionService->verify($transactionId);
@@ -62,7 +52,7 @@ if(isset($data['resp']))
     $tx_ref = $resp['data']['tx_ref'] ?? null;
 
     try {
-        $transactionService = (new \Flutterwave\Service\Transactions($config));
+        $transactionService = (new \Flutterwave\Service\Transactions());
 
         if(!is_null($transactionId)){
             $res = $transactionService->verify($transactionId);
@@ -96,7 +86,7 @@ if(isset($data['response'])){
     $tx_ref = $resp['txRef'] ?? null;
 
     try {
-        $transactionService = (new \Flutterwave\Service\Transactions($config));
+        $transactionService = (new \Flutterwave\Service\Transactions());
 
         if(!is_null($transactionId)){
             $res = $transactionService->verify($transactionId);

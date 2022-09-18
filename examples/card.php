@@ -1,27 +1,16 @@
 <?php
 require __DIR__."/../vendor/autoload.php";
-require "../setup.php";
-
 session_start();
 
-use Flutterwave\Helper;
-use Flutterwave\Payload;
 use Flutterwave\Util\AuthMode;
-
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
-
-\Flutterwave\Flutterwave::configure($config);
+use Flutterwave\Util\Currency;
+\Flutterwave\Flutterwave::bootstrap();
 
 try {
 
     $data = [
         "amount" => 2000,
-        "currency" => Flutterwave\Util\Currency::NGN,
+        "currency" => Currency::NGN,
         "tx_ref" => uniqid().time(),
         "redirectUrl" => null,
         "additionalData" => [

@@ -2,8 +2,8 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Helper\Config;
 use Unirest\Exception;
 
 class PaymentPlan extends Service
@@ -13,7 +13,7 @@ class PaymentPlan extends Service
         "amount","name","interval","duration"
     ];
     private string $name = "payment-plans";
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
     }

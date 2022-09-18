@@ -2,8 +2,8 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\ServiceInterface;
-use Flutterwave\EventHandlers\CardEventHandler;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Helper\Config;
 use Unirest\Exception;
@@ -14,21 +14,26 @@ class Service implements ServiceInterface
 {
     const ENDPOINT = "";
     private static string $name = "service";
+    /**
+     * @var ConfigInterface|Config|null
+     */
+    private static $spareConfig;
     private EventHandlerInterface $eventHandler;
     protected string $baseUrl;
     protected \Psr\Log\LoggerInterface $logger;
     private \Unirest\Request $http;
-    protected Config $config;
+    protected ConfigInterface $config;
     public ?Payload $payload;
     public ?Customer $customer;
     protected string $url;
     protected string $secret;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
+        self::bootstrap($config);
         $this->customer = new Customer;
         $this->payload = new Payload;
-        $this->config = $config;
+        $this->config = (is_null($config))?self::$spareConfig:$config;
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
         $this->secret = $this->config->getSecretKey();
@@ -104,5 +109,20 @@ class Service implements ServiceInterface
             $this->logger->warning("Transaction Service::cannot verify invalid transaction id. ");
             throw new \InvalidArgumentException("cannot verify invalid transaction id.");
         }
+    }
+
+    private  static function bootstrap(?ConfigInterface $config = null)
+    {
+        if(\is_null($config))
+        {
+            require __DIR__."/../../setup.php";
+            $config = Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY],
+                $_SERVER[Config::ENCRYPTION_KEY],
+                $_SERVER['ENV']
+            );
+        }
+        self::$spareConfig = $config;
     }
 }

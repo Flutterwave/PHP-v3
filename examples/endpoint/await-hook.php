@@ -1,18 +1,11 @@
 <?php
 
-require __DIR__."/../../setup.php";
+require __DIR__."/../../vendor/autoload.php";
 
 use Flutterwave\Helper;
 use Flutterwave\Service;
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
 
-\Flutterwave\Flutterwave::configure($config);
-$transaction =  new Service\Transactions($config);
+$transaction =  new Service\Transactions();
 
 echo "Confirming Payment...";
 

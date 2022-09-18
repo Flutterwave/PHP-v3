@@ -2,8 +2,8 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use InvalidArgumentException;
 use Unirest\Exception;
@@ -13,7 +13,7 @@ class VirtualCard extends Service
     use EventTracker;
     private string $name = "virtual-cards";
     private array $requiredParams = [ "currency", "amount", "billing_name", "debit_currency", "business_mobile" ];
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
     }

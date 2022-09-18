@@ -2,15 +2,15 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Helper\Config;
 use Unirest\Exception;
 
 class Settlement extends Service
 {
     use EventTracker;
     private string $name = "settlements";
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
     }

@@ -2,9 +2,9 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\TransferEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
 use stdClass;
@@ -22,7 +22,7 @@ class Transfer extends Service implements Payment
     private array $requiredParamsRate = [
         "amount", "destination_currency". "source_currency"
     ];
-    function __construct(Config $config)
+    function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 

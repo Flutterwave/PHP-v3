@@ -2,7 +2,12 @@
 
 namespace Flutterwave\Service;
 
-class PayPal
-{
+use Flutterwave\Contract\ConfigInterface;
 
+class PayPal extends Service
+{
+    public function __construct(?ConfigInterface $config = null)
+    {
+        parent::__construct($config);
+    }
 }

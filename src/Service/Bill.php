@@ -2,8 +2,8 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Helper\Config;
 use Unirest\Exception;
 
 class Bill extends Service
@@ -14,7 +14,7 @@ class Bill extends Service
     private array $requiredParams = [
         "country","customer","amount","type","reference"
     ];
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $this->categories = require __DIR__ . "/../Util/bill_categories.php";

@@ -1,7 +1,6 @@
 <?php
 
-
-require "setup.php";// NOTICE: this assumes you have an env file in the PHP folder.
+require __DIR__."/vendor/autoload.php";
 
 session_start();
 
@@ -9,6 +8,8 @@ const BASEPATH = 1;
 
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Flutterwave;
+
+\Flutterwave\Flutterwave::bootstrap();
 
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $getData = $_GET;

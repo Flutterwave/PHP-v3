@@ -2,9 +2,9 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\ApplePayEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -15,7 +15,7 @@ class ApplePay extends Service implements Payment
     const TYPE = 'applepay';
     private ApplePayEventHandler $eventHandler;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 

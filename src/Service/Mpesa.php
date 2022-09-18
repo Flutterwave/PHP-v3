@@ -2,10 +2,9 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\MpesaEventHandler;
-use Flutterwave\Flutterwave;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -15,7 +14,7 @@ class Mpesa extends Service implements Payment {
     const TYPE = 'mpesa';
     private MpesaEventHandler $eventHandler;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 
@@ -40,7 +39,7 @@ class Mpesa extends Service implements Payment {
     {
         $this->logger->notice("Charging via Mpesa ...");
 
-        $number = $payload->get('phone_number');
+        $number = $payload->get('customer')->toArray()['phone_number'];
         $currency = $payload->get('currency');
 
         if(\is_null($number))
@@ -80,11 +79,11 @@ class Mpesa extends Service implements Payment {
      */
     private function handleAuthState(\stdClass $response, array $payload): array
     {
-        $mode = response->data->auth_model;
+        $mode = $response->data->auth_model;
         $this->logger->info("Mpesa Auth Mode: {$mode}");
         return [
             "status" => $response->data->status,
-            "transactionId" => $response->id,
+            "transactionId" => $response->data->id,
             "dev_instruction" => "The customer should authorize the payment on their Phones via the Mpesa. status is pending",
             "instruction" => "Please kindly authorize the payment on your Mobile phone",
             "mode" => $mode

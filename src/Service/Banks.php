@@ -2,13 +2,13 @@
 
 namespace Flutterwave\Service;
 
-use Flutterwave\Helper\Config;
+use Flutterwave\Contract\ConfigInterface;
 use Unirest\Exception;
 
 class Banks extends Service
 {
     private string $name = "banks";
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
     }

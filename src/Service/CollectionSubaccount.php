@@ -1,7 +1,7 @@
 <?php
 namespace Flutterwave\Service;
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\SubaccountEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use Unirest\Exception;
 
@@ -11,7 +11,7 @@ class CollectionSubaccount extends Service
     private string $name = "subaccounts";
     private array $requiredParams = [ "account_bank", "account_number", "business_name", "split_value", "business_mobile","business_email", "country" ];
     private array $requiredParamsUpdate = [ "split_value"];
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $endpoint = $this->name;

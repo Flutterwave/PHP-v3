@@ -1,9 +1,9 @@
 <?php
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AchEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -21,7 +21,7 @@ class AchPayment extends Service implements Payment
     ];
     private AchEventHandler $eventHandler;
 
-    function __construct(Config $config)
+    function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 

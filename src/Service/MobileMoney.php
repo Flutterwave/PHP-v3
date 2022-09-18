@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\Util\Currency;
 use Flutterwave\EventHandlers\MomoEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -35,7 +35,7 @@ class MobileMoney extends Service implements Payment
     ];
     private ?MomoEventHandler $eventHandler = null;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $endpoint = $this->getEndpoint();

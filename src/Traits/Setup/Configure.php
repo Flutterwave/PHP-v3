@@ -2,13 +2,24 @@
 
 namespace Flutterwave\Traits\Setup;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Helper\Config;
 
 trait Configure
 {
-    public  static function configure(Config $config)
+    public  static function bootstrap(?ConfigInterface $config = null)
     {
-        self::$methods = require __DIR__ . "/../../Util/methods.php"; //TODO: update the methods
+        if(\is_null($config))
+        {
+            require __DIR__."/../../../setup.php";
+            $config = Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY],
+                $_SERVER[Config::ENCRYPTION_KEY],
+                $_SERVER['ENV']
+            );
+        }
         self::$config = $config;
+        self::$methods = require __DIR__ . "/../../Util/methods.php";
     }
 }

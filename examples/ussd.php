@@ -8,15 +8,7 @@ use Flutterwave\Helper;
 use Flutterwave\Service;
 use Flutterwave\Util\AuthMode;
 
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
-
-\Flutterwave\Flutterwave::configure($config);
-$transaction =  new Service\Transactions($config);
+\Flutterwave\Flutterwave::bootstrap();
 
 try {
     $ussdpayment = \Flutterwave\Flutterwave::create("ussd");
@@ -27,7 +19,7 @@ try {
         "tx_ref" => uniqid().time(),
         "redirectUrl" => null,
         "additionalData" => [
-            "account_bank" => "204",
+            "account_bank" => "044",
             "account_number" => "0000000000000"
         ]
     ];

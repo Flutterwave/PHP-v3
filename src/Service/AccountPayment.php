@@ -1,9 +1,9 @@
 <?php
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AccountEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use InvalidArgumentException;
 use Unirest\Exception;
@@ -23,7 +23,7 @@ class AccountPayment extends Service implements Payment
     private string $end_point;
     private AccountEventHandler $eventHandler;
 
-    function __construct(Config $config)
+    function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 

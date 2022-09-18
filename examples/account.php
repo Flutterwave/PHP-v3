@@ -8,13 +8,7 @@ use Flutterwave\Helper;
 use Flutterwave\Payload;
 use Flutterwave\Service;
 
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
-\Flutterwave\Flutterwave::configure($config);
+\Flutterwave\Flutterwave::bootstrap();
 
 try {
 

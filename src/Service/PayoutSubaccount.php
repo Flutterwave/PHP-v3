@@ -2,8 +2,8 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\PayoutSubaccoutEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use Unirest\Exception;
 
@@ -13,7 +13,7 @@ class PayoutSubaccount extends Service
     private array $requiredParams = [ "email", "mobilenumber","country" ];
     private PayoutSubaccoutEventHandler $eventHandler;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $endpoint = $this->name;

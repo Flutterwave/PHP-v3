@@ -9,16 +9,7 @@ use Flutterwave\Payload;
 use Flutterwave\Service;
 use Flutterwave\Util\AuthMode;
 
-$config = Helper\Config::getInstance(
-    $_SERVER[Helper\Config::SECRET_KEY],
-    $_SERVER[Helper\Config::PUBLIC_KEY],
-    $_SERVER[Helper\Config::ENCRYPTION_KEY],
-    $_SERVER['ENV']
-);
-
-
-\Flutterwave\Flutterwave::configure($config);
-$transaction =  new Service\Transactions($config);
+\Flutterwave\Flutterwave::bootstrap();
 
 try {
     $preauthpayment = \Flutterwave\Flutterwave::create("preauth");

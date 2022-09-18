@@ -19,6 +19,9 @@ class Payload
 
     public function get(string $param)
     {
+        if(!$this->has($param)){
+            return null;
+        }
         return $this->data[$param];
     }
 

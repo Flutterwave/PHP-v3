@@ -1,8 +1,8 @@
 <?php
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\TransactionVerificationEventHandler;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\ApiOperations\Get;
 use Flutterwave\Traits\ApiOperations\Post;
 use Unirest\Exception;
@@ -25,10 +25,9 @@ class Transactions extends Service
     ];
     private TransactionVerificationEventHandler $eventHandler;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
-
         $this->baseUrl = $this->config::BASE_URL;
         $this->end_point = Transactions::ENDPOINT;
         $this->eventHandler = new TransactionVerificationEventHandler;

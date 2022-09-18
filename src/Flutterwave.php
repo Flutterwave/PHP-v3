@@ -1,8 +1,6 @@
 <?php
 namespace Flutterwave;
 
-//require __DIR__ . '/../setup.php'; // Uncomment this autoloader if you need it
-
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Traits\PaymentFactory;
 use Unirest\Request;

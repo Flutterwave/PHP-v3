@@ -2,10 +2,9 @@
 
 namespace Flutterwave\Service;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\PreEventHandler;
-use Flutterwave\Flutterwave;
-use Flutterwave\Helper\Config;
 use Flutterwave\Traits\Group\Charge;
 use Unirest\Exception;
 
@@ -16,7 +15,7 @@ class Preauth extends Service implements Payment
     private CardPayment $cardService;
     private PreEventHandler $eventHandler;
 
-    public function __construct(Config $config)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $this->cardService = new CardPayment($config);

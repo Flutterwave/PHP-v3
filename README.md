@@ -303,7 +303,7 @@ require __DIR__.'/vendor/flutterwavedev/flutterwave-v3/setup.php';
 
 use Flutterwave\Helper\Config;
 
-$config = Config::getInstance(
+$config = Config::setUp(
     $_SERVER[Config::SECRET_KEY],
     $_SERVER[Config::PUBLIC_KEY],
     $_SERVER[Config::ENCRYPTION_KEY],

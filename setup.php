@@ -1,8 +1,9 @@
 <?php  
 
 use Flutterwave\Helper;
+use Dotenv\Dotenv;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__."/../../");
+$dotenv = Dotenv::createImmutable(__DIR__."/../../");
 $dotenv->safeLoad();
 
 //check if the current version of php is compatible
@@ -13,7 +14,7 @@ if(!Helper\CheckCompatibility::isCompatible())
 }
 
 // check for required key in SERVER super global
-$flutterwaveKeys = ["SECRET_KEY","PUBLIC_KEY","ENV"];
+$flutterwaveKeys = ["SECRET_KEY","PUBLIC_KEY","ENV", "ENCRYPTION_KEY"];
 asort($flutterwaveKeys);
 
 try{
@@ -21,12 +22,13 @@ try{
     {
         if(!array_key_exists($key, $_SERVER))
         {
-            throw new InvalidArgumentException("$key variable not supplied.");
+            throw new InvalidArgumentException("$key environment variable missing.");
         }
     }
 }catch(\Exception $e)
 {
-    echo "Flutterwave: " .$e->getMessage();
-    echo "<br /> Kindly create a .env in the project root ";
+    echo "<code>Flutterwave sdk: " .$e->getMessage()."</code>";
+
+    echo "<br /> Kindly create a <code>.env </code> in the project root and add the required environment variables.";
     exit;
 }

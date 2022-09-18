@@ -56,8 +56,9 @@ class Config implements ConfigInterface {
         return $this->http ?? new Request();
     }
 
-    public static function getInstance(string $secretKey, string $publicKey, string $enc, string $env): self
+    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): self
     {
+
         if(\is_null(self::$instance))
         {
             return new Config($secretKey, $publicKey, $enc, $env);
