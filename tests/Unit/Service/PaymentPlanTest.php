@@ -2,8 +2,6 @@
 
 namespace Unit\Service;
 
-require __DIR__.'/../../../setup.php';
-
 use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use Flutterwave\Service\PaymentPlan;
@@ -13,13 +11,7 @@ class PaymentPlanTest extends TestCase
 {
     public function testPlanCreation()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
+        \Flutterwave\Flutterwave::bootstrap();
 
         $payload = new Payload();
         $payload->set("amount", "2000");
@@ -27,7 +19,7 @@ class PaymentPlanTest extends TestCase
         $payload->set("interval", "monthly");
         $payload->set("duration", "1");
 
-        $service = new PaymentPlan($config);
+        $service = new PaymentPlan();
 
         $request = $service->create($payload);
 
@@ -36,45 +28,21 @@ class PaymentPlanTest extends TestCase
 
     public function testRetrievingPlan()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
-
-        $service = new PaymentPlan($config);
+        $service = new PaymentPlan();
         $request = $service->get("15803");
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
     }
 
     public function testRetrievingPlans()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
-
-        $service = new PaymentPlan($config);
+        $service = new PaymentPlan();
         $request = $service->list();
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
     public function testUpdatingPlan()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
-
-        $service = new PaymentPlan($config);
+        $service = new PaymentPlan();
         $payload = new Payload();
         $payload->set("amount","600");
         $payload->set("status", "active");
@@ -84,15 +52,7 @@ class PaymentPlanTest extends TestCase
 
     public function testCancelingPlan()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
-
-        $service = new PaymentPlan($config);
+        $service = new PaymentPlan();
         $request = $service->cancel("15803");
         $this->assertTrue(property_exists($request,'data') && $request->data->status == "cancelled");
     }

@@ -2,8 +2,6 @@
 
 namespace Unit\Service;
 
-require __DIR__.'/../../../setup.php';
-
 use Flutterwave\Flutterwave;
 use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
@@ -14,15 +12,6 @@ class CollectionSubaccountTest extends TestCase
 {
     public function testCollectionSubaccountCreation()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
         $payload = new Payload();
         $payload->set("account_bank", "044");
         $payload->set("account_number", "06900000".mt_rand(29, 40));
@@ -31,22 +20,13 @@ class CollectionSubaccountTest extends TestCase
         $payload->set("business_mobile", "09087930450");
         $payload->set("business_email", "vicomma@gmail.com");
         $payload->set("country", "NG");
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $request = $service->create($payload);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->subaccount_id));
     }
 
     public function testWhenSubaccountAlreadyExist()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
         $payload = new Payload();
         $payload->set("account_bank", "044");
         $payload->set("account_number", "0690000018");
@@ -55,7 +35,7 @@ class CollectionSubaccountTest extends TestCase
         $payload->set("business_mobile", "09087930450");
         $payload->set("business_email", "vicomma@gmail.com");
         $payload->set("country", "NG");
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("A subaccount with the account number and bank already exists");
         $request = $service->create($payload);
@@ -63,15 +43,6 @@ class CollectionSubaccountTest extends TestCase
 
     public function testInvalidAccountNumber()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
         $payload = new Payload();
         $payload->set("account_bank", "044");
         $payload->set("account_number", "0690000090");
@@ -80,7 +51,7 @@ class CollectionSubaccountTest extends TestCase
         $payload->set("business_mobile", "09087930450");
         $payload->set("business_email", "vicomma@gmail.com");
         $payload->set("country", "NG");
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("Sorry we couldn't verify your account number kindly pass a valid account number.");
         $request = $service->create($payload);
@@ -88,16 +59,7 @@ class CollectionSubaccountTest extends TestCase
 
     public function testRetrievingCollectionSubaccountList()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $request = $service->list();
 
         $this->assertTrue(property_exists($request,'data') && is_array($request->data));
@@ -105,50 +67,23 @@ class CollectionSubaccountTest extends TestCase
 
     public function testRetrievingOneSubaccount()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $request = $service->get("RS_B7995AEEA79FF3AC16336C53EECB32F0");
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
     public function testUpdatingCollectionSubaccount()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
         $payload = new Payload();
         $payload->set("split_value", "0.2");
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $request = $service->update("17714", $payload);
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
     public function testDeletingCollectionSubaccount()
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-
-        Flutterwave::configure($config);
-
-        $service = new CollectionSubaccount($config);
+        $service = new CollectionSubaccount();
         $request = $service->delete("17714");
         $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
     }

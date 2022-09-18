@@ -2,8 +2,6 @@
 
 namespace Unit\Service;
 
-require __DIR__.'/../../../setup.php';
-
 use Flutterwave\Flutterwave;
 use Flutterwave\Util\AuthMode;
 use PHPUnit\Framework\TestCase;
@@ -14,13 +12,7 @@ class CardTest extends TestCase
 {
     protected function setUp(): void
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        Flutterwave::configure($config);
+        Flutterwave::bootstrap();
     }
 
     public function testAuthModeReturnPin()

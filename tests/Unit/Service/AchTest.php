@@ -2,8 +2,6 @@
 
 namespace Unit\Service;
 
-require __DIR__.'/../../../setup.php';
-
 use Flutterwave\Helper\Config;
 use Flutterwave\Util\AuthMode;
 use PHPUnit\Framework\TestCase;
@@ -13,13 +11,7 @@ class AchTest extends TestCase
 {
     protected function setUp(): void
     {
-        $config = Config::getInstance(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::configure($config);
+        \Flutterwave\Flutterwave::bootstrap();
     }
 
     public function testAuthModeReturnRedirect()
