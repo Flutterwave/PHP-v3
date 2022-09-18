@@ -2,7 +2,6 @@
 
 namespace Unit\Service;
 
-use Flutterwave\Helper\Config;
 use Flutterwave\Util\AuthMode;
 use Flutterwave\Util\Currency;
 use PHPUnit\Framework\TestCase;

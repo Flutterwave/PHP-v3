@@ -2,8 +2,6 @@
 
 namespace Unit\Service;
 
-use Flutterwave\Flutterwave;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
 use Flutterwave\Service\CollectionSubaccount;
 use PHPUnit\Framework\TestCase;
@@ -62,7 +60,7 @@ class CollectionSubaccountTest extends TestCase
         $service = new CollectionSubaccount();
         $request = $service->list();
 
-        $this->assertTrue(property_exists($request,'data') && is_array($request->data));
+        $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
     public function testRetrievingOneSubaccount()

@@ -5,7 +5,6 @@ namespace Unit\Service;
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Util\AuthMode;
 use Flutterwave\Util\Currency;
-use Flutterwave\Helper\Config;
 
 class AccountTest extends TestCase
 {

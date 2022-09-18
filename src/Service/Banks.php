@@ -3,10 +3,12 @@
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\EventHandlers\EventTracker;
 use Unirest\Exception;
 
 class Banks extends Service
 {
+    use EventTracker;
     private string $name = "banks";
     public function __construct(?ConfigInterface $config = null)
     {
