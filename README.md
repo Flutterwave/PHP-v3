@@ -315,6 +315,8 @@ The following implementation shows how to initiate a direct bank charge. <br />
 want to see it work real time? a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/account.php).
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::NGN,
@@ -346,6 +348,8 @@ $result = $accountpayment->initiate($payload);
 The following implementation shows how to accept payments directly from customers in the US and South Africa. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ach.php).
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::ZAR,
@@ -373,6 +377,8 @@ $result = $achpayment->initiate($payload);
 The following implementation shows how to initiate a card charge. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/card.php)
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::NGN,
@@ -396,7 +402,7 @@ $data = [
     ],
 ];
 
-$cardpayment = Flutterwave::create("card");
+$cardpayment = \Flutterwave\Flutterwave::create("card");
 $customerObj = $cardpayment->customer->create([
     "full_name" => "Olaobaju Abraham",
     "email" => "olaobajua@gmail.com",
@@ -412,6 +418,8 @@ $result = $cardpayment->initiate($payload);
 The following implementation shows how to initiate a mobile money payment. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/momo.php).
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::XOF,
@@ -438,6 +446,8 @@ $result = $momopayment->initiate($payload);
 Collect payments via ussd. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ussd.php)
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::NGN,
@@ -467,9 +477,11 @@ $result = $ussdpayment->initiate($payload);
 Collect payments from your customers via Mpesa.a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/mpesa.php)
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
-    "currency" => Flutterwave\Util\Currency::NGN,
+    "currency" => Currency::NGN,
     "tx_ref" => uniqid().time(),
     "redirectUrl" => "https://google.com"
 ];
@@ -518,13 +530,16 @@ The following implementation shows how to verify a Bank Verification Number.
 The following implementation shows how to create a payment plan on the rave dashboard. Use the Playground Directory to view Responses and samples of use.
 
 ```php
-$payload = new \Flutterwave\Payload();
+use Flutterwave\Payload;
+use Flutterwave\Service\PaymentPlan;
+
+$payload = new Payload();
 $payload->set("amount", "2000");
 $payload->set("name", "Hulu Extra");
 $payload->set("interval", "monthly");
 $payload->set("duration", "1");
 
-$service = new \Flutterwave\Service\PaymentPlan($config);
+$service = new PaymentPlan($config);
 $request = $service->create($payload);
 ```
 
