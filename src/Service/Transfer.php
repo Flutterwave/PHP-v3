@@ -61,9 +61,10 @@ class Transfer extends Service implements Payment
 
         $payload->set("reference", $tx_ref);
 
-        $payload = $payload->toArray();
+        $payload = $payload->toArray("account");
 
         unset($payload['tx_ref']);
+        unset($payload['address']);
 
         $this->eventHandler::startRecording();
         $response = $this->request($payload, 'POST');

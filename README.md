@@ -503,7 +503,31 @@ $result = $mpesapayment->initiate($payload);
 How to make a transfer payment
 
 ```php
-# make transfer
+$data = [
+    "amount" => 2000,
+    "currency" => Currency::NGN,
+    "tx_ref" => "TEST-".uniqid().time()."_PMCKDU_1",
+    "redirectUrl" => "https://www.example.com",
+    "additionalData" => [
+        "account_details" => [
+            "account_bank" => "044",
+            "account_number" => "0690000032",
+            "amount" => "2000",
+            "callback" => null
+        ],
+        "narration" => "Good Times in the making",
+    ],
+];
+
+$service = new Transfer();
+$customerObj = $service->customer->create([
+    "full_name" => "Olaobaju Abraham",
+    "email" => "olaobajua@gmail.com",
+    "phone" => "+2349067985861"
+]);
+$data['customer'] = $customerObj;
+$payload  = $service->payload->create($data);
+$response = $service->initiate($payload);
 ```
 
 <br>
