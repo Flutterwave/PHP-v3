@@ -71,10 +71,11 @@ class Misc extends Service
     /**
      * @throws Exception
      */
-    public function resolveAccount($data): \stdClass
+    public function resolveAccount(\Flutterwave\Payload $payload): \stdClass
     {
+        $payload = $payload->toArray();
         foreach ($this->requiredParamsAccountResolve as $param){
-            if(!array_key_exists($param, $data)){
+            if(!array_key_exists($param, $payload)){
                 $this->logger->error("Misc Service::The following parameter is missing to resolve account: $param");
                 throw new \InvalidArgumentException("The following parameter is missing to resolve account: $param");
             }
@@ -82,7 +83,7 @@ class Misc extends Service
 
         $this->logger->info("Misc Service::Resolving Account Details.");
         self::startRecording();
-        $response  = $this->request($data, "POST","account/resolve" );
+        $response  = $this->request($payload, "POST","accounts/resolve" );
         self::setResponseTime();
         return $response;
     }

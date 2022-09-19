@@ -13,6 +13,7 @@ class VirtualCard extends Service
     use EventTracker;
     private string $name = "virtual-cards";
     private array $requiredParams = [ "currency", "amount", "billing_name", "debit_currency", "business_mobile" ];
+    private array $requiredParamsFund = ["debit_currency","amount"];
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
@@ -20,17 +21,16 @@ class VirtualCard extends Service
 
     public function confirmPayload(Payload $payload): array
     {
-        $payload = $payload->toArray();
 
         foreach($this->requiredParams as $param){
-            if(array_key_exists($param, $payload))
+            if(!$payload->has($param))
             {
                 $this->logger->error("VirtualCard Service::The required parameter $param is not present in payload");
                 throw new InvalidArgumentException("The required parameter $param is not present in payload");
             }
         }
 
-        return $payload;
+        return $payload->toArray();
     }
 
     /**
@@ -42,7 +42,7 @@ class VirtualCard extends Service
         $body = $this->confirmPayload($payload);
         $this->logger->notice("VirtualCard Service::Payload Confirmed.");
         self::startRecording();
-        $response = $this->request($body,'POST');
+        $response = $this->request($body,'POST',$this->name);
         self::setResponseTime();
         return $response;
 
@@ -77,7 +77,7 @@ class VirtualCard extends Service
      */
     public function fund(string $id, array $data): \stdClass
     {
-        foreach ($this->requiredParamsHistory as $param){
+        foreach ($this->requiredParamsFund as $param){
             if(!array_key_exists($param, $data)){
                 $this->logger->error("Misc Service::The following parameter is missing to check balance history: $param");
                 throw new \InvalidArgumentException("The following parameter is missing to check balance history: $param");
@@ -86,7 +86,7 @@ class VirtualCard extends Service
 
         $this->logger->notice("VirtualCard Service::Funding Virtual Card [$id].");
         self::startRecording();
-        $response = $this->request($data,'POST', $this->name."/$id");
+        $response = $this->request($data,'POST', $this->name."/$id/fund");
         self::setResponseTime();
         return $response;
     }

@@ -537,7 +537,20 @@ $response = $service->initiate($payload);
 The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
 
 ```php
-# virtual card
+use Flutterwave\Payload;
+use Flutterwave\Service\VirtualCard;
+use Flutterwave\Util\Currency;
+
+$payload = new Payload();
+$service = new VirtualCard();
+
+$payload->set("currency", Currency::NGN);
+$payload->set("amount", "5000");
+$payload->set("debit_currency", Currency::NGN);
+$payload->set("business_mobile", "+234505394568");
+$payload->set("billing_name", "Abraham Smith");
+$payload->set("firstname", "Abraham");
+$response = $service->create($payload);
 ```
 
 ### BVN Verification
@@ -545,7 +558,10 @@ The following implementation shows how to create virtual cards on rave. Use the 
 The following implementation shows how to verify a Bank Verification Number.
 
 ```php
-# bvn verification
+use Flutterwave\Service\Misc;
+
+$service = new Misc();
+$response = $service->resolveBvn("203004042344532");
 ```
 
 <br>
@@ -722,7 +738,8 @@ All of the SDK's tests are written with PHP's ```phpunit``` module. The tests cu
 ```Card```,
 ```Transfer```,
 ```Preauth```,
-```Subaccount```,
+```Collection Subaccount```,
+```Payout Subaccount```,
 ```Subscriptions``` and
 ```Paymentplan```
 
