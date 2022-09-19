@@ -99,9 +99,9 @@ The request will contain the following parameters.
 - ref `Your transaction reference. It must be unique per transaction.  By default, the Rave class generates a unique transaction reference for each transaction. Pass this parameter only if you uncommented the related section in the script below.`
 
 ```php
+<?php
 
-
-require "setup.php";// NOTICE: this assumes you have an env file in the PHP folder.
+require __DIR__."/vendor/autoload.php";
 
 session_start();
 
@@ -109,6 +109,8 @@ const BASEPATH = 1;
 
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Flutterwave;
+
+\Flutterwave\Flutterwave::bootstrap();
 
 $URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 $getData = $_GET;
