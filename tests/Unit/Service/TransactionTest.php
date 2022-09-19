@@ -2,7 +2,9 @@
 
 namespace Unit\Service;
 
-class TransactionTest
+use PHPUnit\Framework\TestCase;
+
+class TransactionTest extends TestCase
 {
 
 }

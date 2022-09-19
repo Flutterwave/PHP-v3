@@ -635,7 +635,15 @@ $request = $service->create($payload);
 The following implementation shows how to activate a subscription, fetch a subscription, get all subscriptions.
 
 ```php
-# subscriptions
+use Flutterwave\Service\Subscription;
+
+# List Subscription
+$service = new Subscription();
+$response = $service->list();
+
+# Activate Subscription
+$service = new Subscription();
+$response = $service->activate("4147");
 ```
 
 ### Bills
