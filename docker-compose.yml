@@ -1,0 +1,13 @@
+services:
+    web:
+        image: nginx
+        ports:
+        - "80:80"
+        volumes:
+        - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+        - app
+    db:
+        image: mysql:5.7
+        volumes:
+        - ./docker/mysql:/var/lib/mysql
