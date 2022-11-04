@@ -689,7 +689,16 @@ The following implementation shows how to create a virtual Account. Please view 
 https://developer.flutterwave.com/reference#create-a-virtual-account-number
 
 ```php
-# virtual accounts
+use Flutterwave\Service\VirtualAccount;
+
+$service = new VirtualAccount();
+
+$payload = [
+    "email" => "kennyio@gmail.com",
+    "bvn" => "12345678901",
+];
+
+$response = $service->create($payload);
 ```
 <br>
 
