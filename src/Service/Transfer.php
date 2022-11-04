@@ -107,10 +107,10 @@ class Transfer extends Service implements Payment
 
         $body =  $payload->toArray();
         $this->logger->notice("Transfer Service::Creating a Bulk Transfer.");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request($body,'POST', "bulk-transfers");
         $this->logger->notice("Transfer Service::Created a Bulk Transfer Successfully.");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
@@ -120,9 +120,9 @@ class Transfer extends Service implements Payment
     public function get(string $id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Transfer id:($id)");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', $this->name."/$id");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
@@ -132,9 +132,9 @@ class Transfer extends Service implements Payment
     public function getAll(): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving all Transfers");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', $this->name);
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
@@ -152,9 +152,9 @@ class Transfer extends Service implements Payment
 
         $query = http_build_query($params);
         $this->logger->notice("Transfer Service::Retrieving Transfer Fee");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', "/fee?$query");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
@@ -164,10 +164,10 @@ class Transfer extends Service implements Payment
     public function getRetry(string $id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Transfer id:($id)");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', "/$id/retries");
         $this->logger->info("Transfer Service::Transfer retry attempts retrieved.");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
@@ -177,13 +177,16 @@ class Transfer extends Service implements Payment
     public function getBulk(string $batch_id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Bulk Transfer id:($batch_id)");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', "?batch_id=$batch_id");
         $this->logger->info("Transfer Service::Bulk Transfer retrieved.");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getRates(array $params): stdClass
     {
         foreach ($this->requiredParamsRate as $param){
@@ -196,10 +199,10 @@ class Transfer extends Service implements Payment
         $query = http_build_query($params);
         $logData = json_encode($params);
         $this->logger->notice("Transfer Service::Retrieving Transfer Rate data:($logData)");
-        self::startRecording();
+        $this->eventHandler::startRecording();
         $response = $this->request(null,'GET', "?$query");
         $this->logger->info("Transfer Service::Transfer rate retrieved.");
-        self::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $response;
     }
 
