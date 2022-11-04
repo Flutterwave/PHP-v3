@@ -55,7 +55,7 @@ class CardPayment extends Service implements Payment
         throw new InvalidArgumentException($msg);
     }
 
-    public function save(callable $callback): self
+    public function save(callable $callback)
     {
         // TODO: Implement save() method.
     }
