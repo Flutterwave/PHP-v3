@@ -785,6 +785,7 @@ You can also follow us [@FlutterwaveEng](https://twitter.com/FlutterwaveEng) and
 ## Contribution guidelines
 Read more about our community contribution guidelines [here](/CONTRIBUTING.md)
 
+
 <a id="license"></a>
 
 ## License
@@ -792,7 +793,6 @@ Read more about our community contribution guidelines [here](/CONTRIBUTING.md)
 By contributing to this library, you agree that your contributions will be licensed under its [MIT license](/LICENSE).
 
 Copyright (c) Flutterwave Inc.
-
 
 <a id="references"></a>
 
