@@ -9,7 +9,7 @@ use Unirest\Exception;
 
 class Transactions extends Service
 {
-    use Post, Get;
+    use Post;
     const ENDPOINT = 'transactions';
     const REFUND_PATH = "/:id"."/refund";
     const MULTI_REFUND_ENDPOINT = "/refunds";
