@@ -24,7 +24,6 @@ trait Prepare
 
     /**
      * Generates a checksum value for the information to be sent to the payment gateway
-     * @return object
      * */
     function createCheckSum()
     {
