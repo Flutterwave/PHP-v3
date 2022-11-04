@@ -32,5 +32,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
+    - name: PHPStan analysis
+      run: vendor/bin/phpstan analyse tests --no-progress --no-interaction --error-format=table
+
     - name: Run test suite
       run: ./vendor/bin/phpunit tests
