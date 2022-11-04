@@ -7,7 +7,7 @@ use Flutterwave\Helper\Config;
 
 trait Configure
 {
-    public  static function bootstrap(?ConfigInterface $config = null)
+    public  static function bootstrap(?ConfigInterface $config = null) : void
     {
         if(\is_null($config))
         {
