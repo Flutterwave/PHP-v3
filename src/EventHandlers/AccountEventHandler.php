@@ -105,7 +105,7 @@ class AccountEventHandler implements EventHandlerInterface
             case 'otp':
                 $data['dev_instruction'] = 'Redirect user to a form to validate with OTP code sent to their Phone.';
 
-                if(property($response->data, 'processor_response')){
+                if(property_exists($response->data, 'processor_response')){
                     $data['instruction'] = $response->data->processor_response;
                 }else{
                     $data['instruction'] = $response->meta->authorization->validate_instructions;
