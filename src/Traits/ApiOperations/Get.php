@@ -8,8 +8,6 @@ trait Get
 {
     /**
      * makes a get call to the api
-     * @param array
-     * @return object
      * */
 
     function getURL($url)

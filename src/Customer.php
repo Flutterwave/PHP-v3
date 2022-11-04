@@ -6,6 +6,12 @@ class Customer
 {
     private array $data = [];
 
+    public function __construct(array $data = [])
+    {
+        //TODO: validate data contains the required fields.
+        $this->data = [...$data];
+    }
+
     public function get(string $param)
     {
         return $this->data[$param];
