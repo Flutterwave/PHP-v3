@@ -2,11 +2,11 @@
 
 namespace Flutterwave\Enum;
 
-use Cerbero\Enum\Concerns\Enumerates;
+//use Cerbero\Enum\Concerns\Enumerates;
 
 enum Method:string
 {
-    use Enumerates;
+//    use Enumerates;
     case DEFAULT = "default";
     case STANDARD = "standard";
     case CARD = "card";

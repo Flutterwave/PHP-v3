@@ -2,11 +2,11 @@
 
 namespace Flutterwave\Enum;
 
-use Cerbero\Enum\Concerns\Enumerates;
+//use Cerbero\Enum\Concerns\Enumerates;
 
 enum Currency:string
 {
-    use Enumerates;
+//    use Enumerates;
     case NGN = "NGN";
     case USD = "USD";
     case KES = "KES";
