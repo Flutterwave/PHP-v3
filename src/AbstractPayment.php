@@ -2,6 +2,7 @@
 
 namespace Flutterwave;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Traits\ApiOperations as Api;
 use Flutterwave\Traits\PayloadOperations as Payload;
@@ -53,9 +54,9 @@ abstract class AbstractPayment
      */
     public LoggerInterface $logger;
     /**
-     * @var Helper\Config
+     * @var ConfigInterface
      */
-    protected static Helper\Config $config;
+    protected static ConfigInterface $config;
 
     public function __construct()
     {
