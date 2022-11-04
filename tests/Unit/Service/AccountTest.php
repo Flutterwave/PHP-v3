@@ -5,12 +5,20 @@ namespace Unit\Service;
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Util\AuthMode;
 use Flutterwave\Util\Currency;
+use Flutterwave\Helper\Config;
 
 class AccountTest extends TestCase
 {
     protected function setUp(): void
     {
-        \Flutterwave\Flutterwave::bootstrap();
+        $config = Config::setUp(
+            $_SERVER[Config::SECRET_KEY],
+            $_SERVER[Config::PUBLIC_KEY],
+            $_SERVER[Config::ENCRYPTION_KEY],
+            $_SERVER['ENV']
+        );
+
+        \Flutterwave\Flutterwave::bootstrap($config);
     }
 
     public function testAuthModeReturn()
