@@ -14,6 +14,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      ENV: ${{ secrets.ENV }}
+
     steps:
     - uses: actions/checkout@v3
 
