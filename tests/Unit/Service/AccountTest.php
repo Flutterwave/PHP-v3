@@ -17,7 +17,6 @@ class AccountTest extends TestCase
             $_SERVER[Config::ENCRYPTION_KEY],
             $_SERVER['ENV']
         );
-
         \Flutterwave\Flutterwave::bootstrap($config);
     }
 

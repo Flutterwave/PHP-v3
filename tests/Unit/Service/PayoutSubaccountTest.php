@@ -29,7 +29,6 @@ class PayoutSubaccountTest extends TestCase
     {
         $service = new PayoutSubaccount();
         $request = $service->list();
-        print_r($request);
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
@@ -37,7 +36,6 @@ class PayoutSubaccountTest extends TestCase
     {
         $service = new PayoutSubaccount();
         $request = $service->get("PSA15FAF664D63870782");
-        print_r($request);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->bank_code));
     }
 
@@ -51,7 +49,6 @@ class PayoutSubaccountTest extends TestCase
 
         $service = new PayoutSubaccount();
         $request = $service->update("PSA15FAF664D63870692", $payload);
-        print_r($request);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->bank_code));
     }
 
