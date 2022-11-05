@@ -22,15 +22,19 @@ class VirtualAccountTest extends TestCase
         $this->assertTrue(property_exists(
                 $response, "data") && !empty($response->data->order_ref) && isset($response->data->account_number)
         );
+
+        return $response->data->order_ref;
     }
 
     public function testRetrievingBulkVirtualAccounts()
     {
         $service = new VirtualAccount();
 
+        $change = mt_rand(1, 1000);
+
         $payload = [
             "accounts" => 5,
-            "email" => "kennyio@gmail.com",
+            "email" => "kennyio+$change@gmail.com",
             "tx_ref" => "kenny-".time(), // This is a transaction reference that would be returned each time a transfer is done to the account
         ];
 
@@ -41,11 +45,14 @@ class VirtualAccountTest extends TestCase
         );
     }
 
-    public function testRetrievingVirtualAccount()
+    /**
+     * @depends testVirtualAccountCreation
+     */
+    public function testRetrievingVirtualAccount(string $order_ref)
     {
         $service = new VirtualAccount();
 
-        $order_ref = "RND_2641579516055928"; // This is the order reference returned on the virtual account number creation
+        // $order_ref - This is the order reference returned on the virtual account number creation
 
         $response = $service->get($order_ref);
 
@@ -54,12 +61,15 @@ class VirtualAccountTest extends TestCase
         );
     }
 
-    public function testUpdatingVirtualAccount()
+    /**
+     * @depends testVirtualAccountCreation
+     */
+    public function testUpdatingVirtualAccount(string $order_ref)
     {
         $service = new VirtualAccount();
 
         $payload = [
-            "order_ref" => "RND_2641579516055928",
+            "order_ref" => $order_ref,
             "bvn" => "12345678901",
         ];
 
@@ -69,11 +79,14 @@ class VirtualAccountTest extends TestCase
         );
     }
 
-    public function testDeletingVirtualAccount()
+    /**
+     * @depends testVirtualAccountCreation
+     */
+    public function testDeletingVirtualAccount(string $order_ref)
     {
         $service = new VirtualAccount();
 
-        $order_ref = "RND_2641579516055928"; // This is the order reference returned on the virtual account number creation
+        // $order_ref - This is the order reference returned on the virtual account number creation
         $response = $service->delete($order_ref);
 
         $this->assertTrue(property_exists(
