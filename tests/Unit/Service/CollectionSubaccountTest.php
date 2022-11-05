@@ -69,7 +69,7 @@ class CollectionSubaccountTest extends TestCase
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testRetrievingOneSubaccount(string $subaccount_id)
+    public function testRetrievingOneSubaccount($subaccount_id)
     {
         $service = new CollectionSubaccount();
         $request = $service->get($subaccount_id);
@@ -79,7 +79,7 @@ class CollectionSubaccountTest extends TestCase
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testUpdatingCollectionSubaccount(string $subaccount_id)
+    public function testUpdatingCollectionSubaccount($subaccount_id)
     {
         $payload = new Payload();
         $payload->set("split_value", "0.2");
@@ -91,7 +91,7 @@ class CollectionSubaccountTest extends TestCase
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testDeletingCollectionSubaccount(string $subaccount_id)
+    public function testDeletingCollectionSubaccount($subaccount_id)
     {
         $service = new CollectionSubaccount();
         $request = $service->delete($subaccount_id);
