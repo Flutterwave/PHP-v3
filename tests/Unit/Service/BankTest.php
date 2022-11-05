@@ -17,7 +17,7 @@ class BankTest extends TestCase
     public function testRetrievingBankBranches()
     {
         $service = new Banks();
-        $response = $service->getBranches("044");
+        $response = $service->getBranches("280");
         $this->assertTrue(property_exists($response,'data') && \is_array($response->data));
     }
 }
