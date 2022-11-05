@@ -22,7 +22,7 @@ trait Charge
             $this->logger->error("Charge Group::To verify a transaction please pass a transactionId.");
             throw new \InvalidArgumentException("To verify a transaction please pass a transactionId.");
         }
-        return (new Transactions($this->config))::verify($transactionId);
+        return (new Transactions($this->config))->verify($transactionId);
     }
 
     private function checkPayloadIsValid(\Flutterwave\Payload $payload, string $criteria): bool
