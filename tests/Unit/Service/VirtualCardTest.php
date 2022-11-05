@@ -14,11 +14,17 @@ class VirtualCardTest extends TestCase
         $payload = new Payload();
         $service = new VirtualCard();
 
+        $payload->set("first_name","PHP");
+        $payload->set("last_name","SDK");
+        $payload->set("date_of_birth","1994-03-01");
+        $payload->set("title","Mr");
+        $payload->set("gender","M"); //M or F
+        $payload->set("email","developers@flutterwavego.com");
         $payload->set("currency", Currency::NGN);
         $payload->set("amount", "5000");
         $payload->set("debit_currency", Currency::NGN);
-        $payload->set("business_mobile", "+234505394568");
-        $payload->set("billing_name", "Abraham Smith");
+        $payload->set("phone", "+234505394568");
+        $payload->set("billing_name", "Abraham Ola");
         $payload->set("firstname", "Abraham");
         $response = $service->create($payload);
         $this->assertTrue(property_exists(
