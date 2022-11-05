@@ -11,11 +11,9 @@ class PaymentPlanTest extends TestCase
 {
     public function testPlanCreation()
     {
-        \Flutterwave\Flutterwave::bootstrap();
-
         $payload = new Payload();
-        $payload->set("amount", "2000");
-        $payload->set("name", "Hulu Extra");
+        $payload->set("amount", "1600");
+        $payload->set("name", "PHPSDK Test Plan");
         $payload->set("interval", "monthly");
         $payload->set("duration", "1");
 
@@ -24,12 +22,17 @@ class PaymentPlanTest extends TestCase
         $request = $service->create($payload);
 
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
+
+        return $request->data->id;
     }
 
-    public function testRetrievingPlan()
+    /**
+     * @depends testPlanCreation
+     */
+    public function testRetrievingPlan($id)
     {
         $service = new PaymentPlan();
-        $request = $service->get("15803");
+        $request = $service->get($id);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
     }
 
@@ -40,20 +43,26 @@ class PaymentPlanTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
-    public function testUpdatingPlan()
+    /**
+     * @depends testPlanCreation
+     */
+    public function testUpdatingPlan($id)
     {
         $service = new PaymentPlan();
         $payload = new Payload();
         $payload->set("amount","600");
         $payload->set("status", "active");
-        $request = $service->update("15803", $payload);
+        $request = $service->update($id, $payload);
         $this->assertTrue(property_exists($request,'data') && isset($request->data->id));
     }
 
-    public function testCancelingPlan()
+    /**
+     * @depends testPlanCreation
+     */
+    public function testCancelingPlan($id)
     {
         $service = new PaymentPlan();
-        $request = $service->cancel("15803");
+        $request = $service->cancel($id);
         $this->assertTrue(property_exists($request,'data') && $request->data->status == "cancelled");
     }
 }
