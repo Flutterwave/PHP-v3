@@ -8,20 +8,20 @@ use Unirest\Request\Body;
 trait EventTracker
 {
 
-    static $time_start = 0;
-    static $response_time = 0;
+    static float $time_start = 0;
+    static float $response_time = 0;
 
-    static function startRecording()
+    static function startRecording() : void
     {
         self::$time_start = microtime(true);
     }
 
-    static function setResponseTime()
+    static function setResponseTime(): void
     {
         self::$response_time = microtime(true) - self::$time_start;
     }
 
-    static function sendAnalytics($title)
+    static function sendAnalytics($title) : void
     {
         if (self::$response_time <= 0)
             self::setResponseTime();
@@ -41,7 +41,7 @@ trait EventTracker
         self::resetTime();
     }
 
-    private static function resetTime() {
+    private static function resetTime() :void {
         self::$time_start = 0;
         self::$response_time = 0;
     }
