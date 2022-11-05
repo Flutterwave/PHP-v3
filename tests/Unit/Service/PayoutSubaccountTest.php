@@ -14,8 +14,8 @@ class PayoutSubaccountTest extends TestCase
     public function testPayoutSuccountCreation()
     {
         $customer = new Customer();
-        $customer->set("fullname","Jake Teddy");
-        $customer->set("email","jteddy@gmail.com");
+        $customer->set("fullname","PHP David");
+        $customer->set("email","developers@flutterwavego.com");
         $customer->set("phone_number","+2348065007000");
         $payload = new Payload();
         $payload->set("country", "NG");
@@ -23,6 +23,8 @@ class PayoutSubaccountTest extends TestCase
         $service = new PayoutSubaccount();
         $request = $service->create($payload);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->bank_code));
+
+        return $request->data->account_reference;
     }
 
     public function testRetrievingListOfPayoutSubaccounts()
@@ -32,37 +34,49 @@ class PayoutSubaccountTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
-    public function testRetrievingPayoutSubaccount()
+    /**
+     * @depends testPayoutSuccountCreation
+     */
+    public function testRetrievingPayoutSubaccount($account_reference)
     {
         $service = new PayoutSubaccount();
-        $request = $service->get("PSA15FAF664D63870782");
+        $request = $service->get($account_reference);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->bank_code));
     }
 
-    public function testUpdatingPayoutSubaccount()
+    /**
+     * @depends testPayoutSuccountCreation
+     */
+    public function testUpdatingPayoutSubaccount($account_reference)
     {
         $payload = new Payload();
         $payload->set("account_name","Aramide Smith");
-        $payload->set("mobilenumber","+1409340265");
-        $payload->set("email","arasmith676@yahoo.com");
+        $payload->set("mobilenumber","1409340265");
+        $payload->set("email","developers@flutterwavego.com");
         $payload->set("country","NG");
 
         $service = new PayoutSubaccount();
-        $request = $service->update("PSA15FAF664D63870692", $payload);
+        $request = $service->update($account_reference, $payload);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->bank_code));
     }
 
-    public function testFetchingAvailableBalanceOfPayoutSubaccount()
+    /**
+     * @depends testPayoutSuccountCreation
+     */
+    public function testFetchingAvailableBalanceOfPayoutSubaccount($account_reference)
     {
         $service = new PayoutSubaccount();
-        $request = $service->fetchAvailableBalance("PSA15FAF664D63870692", "USD");
+        $request = $service->fetchAvailableBalance($account_reference, "USD");
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->available_balance));
     }
 
-    public function testFetchingStaticVirtualAccountOfPayoutSubaccounts()
+    /**
+     * @depends testPayoutSuccountCreation
+     */
+    public function testFetchingStaticVirtualAccountOfPayoutSubaccounts($account_reference)
     {
         $service = new PayoutSubaccount();
-        $request = $service->fetchStaticVirtualAccounts("PSA15FAF664D63870692", "USD");
+        $request = $service->fetchStaticVirtualAccounts($account_reference, "USD");
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->static_account));
     }
 
