@@ -12,7 +12,7 @@ class VirtualCard extends Service
 {
     use EventTracker;
     private string $name = "virtual-cards";
-    private array $requiredParams = [ "currency", "amount", "billing_name", "debit_currency", "business_mobile" ];
+    private array $requiredParams = [ "currency", "amount", "first_name", "last_name", "date_of_birth","email", "phone", "title", "gender" ];
     private array $requiredParamsFund = ["debit_currency","amount"];
     public function __construct(?ConfigInterface $config = null)
     {
@@ -21,7 +21,6 @@ class VirtualCard extends Service
 
     public function confirmPayload(Payload $payload): array
     {
-
         foreach($this->requiredParams as $param){
             if(!$payload->has($param))
             {

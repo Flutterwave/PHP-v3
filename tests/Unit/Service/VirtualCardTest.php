@@ -24,6 +24,8 @@ class VirtualCardTest extends TestCase
         $this->assertTrue(property_exists(
             $response, "data") && !empty($response->data->id) && isset($response->data->card_pan)
         );
+
+        return $response->data->id;
     }
 
     public function testRetrievingAllVirtualCards()
@@ -33,48 +35,67 @@ class VirtualCardTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
-    public function testRetrievingVirtualCard()
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testRetrievingVirtualCard(string $id)
     {
         $service = new VirtualCard();
-        $request = $service->get("213543");
+        $request = $service->get($id);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
     }
 
-    public function testVirtualCardFund()
+
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testVirtualCardFund(string $id)
     {
         $data = [
             "amount"=>"3500",
             "debit_currency" => Currency::NGN
         ];
         $service = new VirtualCard();
-        $request = $service->fund("213543", $data);
+        $request = $service->fund($id, $data);
         $this->assertTrue(property_exists($request,'data') && $request->message == "Card funded successfully");
     }
 
-    public function testVirtualCardWithdraw()
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testVirtualCardWithdraw(string $id)
     {
-        $card_id = "213543";
+        $card_id = $id;
         $amount = "3500";
         $service = new VirtualCard();
         $request = $service->withdraw($card_id,$amount);
         $this->assertTrue(property_exists($request,'data'));
     }
 
-    public function testVirtualCardBlock()
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testVirtualCardBlock(string $id)
     {
         $service = new VirtualCard();
-        $request = $service->block("213543");
+        $request = $service->block($id);
         $this->assertTrue(property_exists($request,'data') && $request->message == "Card blocked successfully");
     }
 
-    public function testVirtualCardTerminate()
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testVirtualCardTerminate(string $id)
     {
         $service = new VirtualCard();
-        $request = $service->terminate("213543");
+        $request = $service->terminate($id);
         $this->assertTrue(property_exists($request,'data') && $request->message == "Card terminated successfully");
     }
 
-    public function testRetrievingCardTransactions()
+    /**
+     * @depends testVirtualCardCreation
+     */
+    public function testRetrievingCardTransactions(string $id)
     {
         $data = [
             "from" => "2019-01-01",
@@ -84,7 +105,7 @@ class VirtualCardTest extends TestCase
         ];
 
         $service = new VirtualCard();
-        $request = $service->getTransactions("213543", $data);
+        $request = $service->getTransactions($id, $data);
         $this->assertTrue(property_exists($request,'data') && $request->message == "Card transactions fetched successfully");
     }
 }
