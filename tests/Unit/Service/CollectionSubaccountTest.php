@@ -12,15 +12,17 @@ class CollectionSubaccountTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_bank", "044");
-        $payload->set("account_number", "06900000".mt_rand(29, 40));
-        $payload->set("business_name", "Maxi Ventures");
+        $payload->set("account_number", "0690000018");
+        $payload->set("business_name", "Mean Ventures");
+        $payload->set("split_type", "percentage");
         $payload->set("split_value", "0.5"); // 50%
         $payload->set("business_mobile", "09087930450");
-        $payload->set("business_email", "vicomma@gmail.com");
+        $payload->set("business_email", "developers@flutterwavego.com");
         $payload->set("country", "NG");
         $service = new CollectionSubaccount();
         $request = $service->create($payload);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->subaccount_id));
+        return $request->data->subaccount_id;
     }
 
     public function testWhenSubaccountAlreadyExist()
@@ -28,10 +30,11 @@ class CollectionSubaccountTest extends TestCase
         $payload = new Payload();
         $payload->set("account_bank", "044");
         $payload->set("account_number", "0690000018");
-        $payload->set("business_name", "Maxi Ventures");
+        $payload->set("business_name", "Mean Ventures");
+        $payload->set("split_type", "percentage");
         $payload->set("split_value", "0.5"); // 50%
         $payload->set("business_mobile", "09087930450");
-        $payload->set("business_email", "vicomma@gmail.com");
+        $payload->set("business_email", "developers@flutterwavego.com");
         $payload->set("country", "NG");
         $service = new CollectionSubaccount();
         $this->expectException(\Exception::class);
@@ -43,7 +46,7 @@ class CollectionSubaccountTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_bank", "044");
-        $payload->set("account_number", "0690000090");
+        $payload->set("account_number", "0690000190");
         $payload->set("business_name", "Maxi Ventures");
         $payload->set("split_value", "0.5"); // 50%
         $payload->set("business_mobile", "09087930450");
@@ -63,26 +66,35 @@ class CollectionSubaccountTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
-    public function testRetrievingOneSubaccount()
+    /**
+     * @depends testCollectionSubaccountCreation
+     */
+    public function testRetrievingOneSubaccount(string $subaccount_id)
     {
         $service = new CollectionSubaccount();
-        $request = $service->get("RS_B7995AEEA79FF3AC16336C53EECB32F0");
+        $request = $service->get($subaccount_id);
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
-    public function testUpdatingCollectionSubaccount()
+    /**
+     * @depends testCollectionSubaccountCreation
+     */
+    public function testUpdatingCollectionSubaccount(string $subaccount_id)
     {
         $payload = new Payload();
         $payload->set("split_value", "0.2");
         $service = new CollectionSubaccount();
-        $request = $service->update("17714", $payload);
+        $request = $service->update($subaccount_id, $payload);
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
-    public function testDeletingCollectionSubaccount()
+    /**
+     * @depends testCollectionSubaccountCreation
+     */
+    public function testDeletingCollectionSubaccount(string $subaccount_id)
     {
         $service = new CollectionSubaccount();
-        $request = $service->delete("17714");
+        $request = $service->delete($subaccount_id);
         $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
     }
 }

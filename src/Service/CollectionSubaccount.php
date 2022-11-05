@@ -21,7 +21,6 @@ class CollectionSubaccount extends Service
 
     public function confirmPayload(Payload $payload): array
     {
-
         foreach($this->requiredParams as $param){
             if(!$payload->has($param))
             {
@@ -43,6 +42,13 @@ class CollectionSubaccount extends Service
         $this->logger->notice("Subaccount Service::Payload Confirmed.");
         $this->eventHandler::startRecording();
         $response = $this->request($body,'POST');
+
+        if(isset($response->status) && $response->status == "success"){
+            $this->logger->notice("Subaccount Service::Collection Subaccount created successfully.");
+        } else {
+            $this->logger->error("Subaccount Service::Collection Subaccount creation failed.");
+        }
+
         $this->eventHandler::setResponseTime();
         return $response;
     }
@@ -64,7 +70,7 @@ class CollectionSubaccount extends Service
     public function get(string $id): \stdClass
     {
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "/{$id}");
+        $response = $this->request(null,'GET', "/$id");
         $this->eventHandler::setResponseTime();
         return $response;
     }
@@ -84,7 +90,7 @@ class CollectionSubaccount extends Service
 
         $payload = $payload->toArray();
         $this->eventHandler::startRecording();
-        $response = $this->request($payload,'PUT', "/{$id}");
+        $response = $this->request($payload,'PUT', "/$id");
         $this->eventHandler::setResponseTime();
         return $response;
     }
