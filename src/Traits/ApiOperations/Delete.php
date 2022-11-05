@@ -6,7 +6,11 @@ use Unirest\Request;
 
 trait Delete
 {
-    function delURL($url)
+    /**
+     * @param string $url
+     * @return string
+     */
+    function delURL(string $url): string
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
         $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);

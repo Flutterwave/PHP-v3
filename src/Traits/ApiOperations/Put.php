@@ -2,13 +2,18 @@
 
 namespace Flutterwave\Traits\ApiOperations;
 
+use Unirest\Exception;
 use Unirest\Request;
 use Unirest\Request\Body;
 
 trait Put
 {
-
-    function putURL($data)
+    /**
+     * @param mixed[] $data
+     * @return string
+     * @throws Exception
+     */
+    function putURL(array $data): string
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
         $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);

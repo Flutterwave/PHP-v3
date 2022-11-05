@@ -7,10 +7,10 @@ use Unirest\Request;
 trait Get
 {
     /**
-     * makes a get call to the api
-     * */
-
-    function getURL($url)
+     * @param string $url
+     * @return string
+     */
+    function getURL(string $url): string
     {
         // make request to endpoint using unirest.
         $bearerTkn = 'Bearer ' . $this->secretKey;

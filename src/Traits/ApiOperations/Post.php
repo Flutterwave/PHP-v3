@@ -2,12 +2,18 @@
 
 namespace Flutterwave\Traits\ApiOperations;
 
+use Unirest\Exception;
 use Unirest\Request;
 use Unirest\Request\Body;
 
 trait Post
 {
-    function postURL($data): string
+    /**
+     * @param mixed[] $data
+     * @return string
+     * @throws Exception
+     */
+    function postURL(array $data): string
     {
         // make request to endpoint using unirest
         $bearerTkn = 'Bearer ' . $this->config->getSecretKey();
