@@ -96,60 +96,60 @@ class MomoTest extends TestCase
         $this->assertSame(AuthMode::REDIRECT,$result['mode']);
     }
 
-    public function testAuthModeFrancoCallback(){
-        $data = [
-            "amount" => 2000,
-            "currency" => Currency::XAF,
-            "tx_ref" => uniqid().time(),
-            "redirectUrl" => null,
-            "additionalData" => [
-                "network" => "MTN",
-                "country" => "CM"
-            ]
-        ];
+//    public function testAuthModeFrancoCallback(){
+//        $data = [
+//            "amount" => 2000,
+//            "currency" => Currency::XAF,
+//            "tx_ref" => uniqid().time(),
+//            "redirectUrl" => null,
+//            "additionalData" => [
+//                "network" => "MTN",
+//                "country" => "CM"
+//            ]
+//        ];
+//
+//        $momopayment = \Flutterwave\Flutterwave::create("momo");
+//        $customerObj = $momopayment->customer->create([
+//            "full_name" => "Truce Jake",
+//            "email" => "developers@flutterwavego.com",
+//            "phone" => "+2349067900861"
+//        ]);
+//
+//        $data['customer'] = $customerObj;
+//
+//        $payload  = $momopayment->payload->create($data);
+//
+//        $result = $momopayment->initiate($payload);
+//
+//        $this->assertSame(AuthMode::CALLBACK,$result['mode']);
+//    }
 
-        $momopayment = \Flutterwave\Flutterwave::create("momo");
-        $customerObj = $momopayment->customer->create([
-            "full_name" => "Truce Jake",
-            "email" => "developers@flutterwavego.com",
-            "phone" => "+2349067900861"
-        ]);
-
-        $data['customer'] = $customerObj;
-
-        $payload  = $momopayment->payload->create($data);
-
-        $result = $momopayment->initiate($payload);
-
-        $this->assertSame(AuthMode::CALLBACK,$result['mode']);
-    }
-
-    public function testAuthModeZambiaRedirect(){
-        $data = [
-            "amount" => 2000,
-            "currency" => Currency::ZMW,
-            "tx_ref" => uniqid().time(),
-            "redirectUrl" => null,
-            "additionalData" => [
-                "network" => "MTN",
-            ]
-        ];
-
-        $momopayment = \Flutterwave\Flutterwave::create("momo");
-        $customerObj = $momopayment->customer->create([
-            "full_name" => "Flutterwave Developers",
-            "email" => "developers@flutterwavego.com",
-            "phone" => "+2349067985001"
-        ]);
-
-        $data['customer'] = $customerObj;
-
-        $payload  = $momopayment->payload->create($data);
-
-        $result = $momopayment->initiate($payload);
-
-        $this->assertSame(AuthMode::REDIRECT,$result['mode']);
-    }
+//    public function testAuthModeZambiaRedirect(){
+//        $data = [
+//            "amount" => 2000,
+//            "currency" => Currency::ZMW,
+//            "tx_ref" => uniqid().time(),
+//            "redirectUrl" => null,
+//            "additionalData" => [
+//                "network" => "MTN",
+//            ]
+//        ];
+//
+//        $momopayment = \Flutterwave\Flutterwave::create("momo");
+//        $customerObj = $momopayment->customer->create([
+//            "full_name" => "Flutterwave Developers",
+//            "email" => "developers@flutterwavego.com",
+//            "phone" => "+2349067985001"
+//        ]);
+//
+//        $data['customer'] = $customerObj;
+//
+//        $payload  = $momopayment->payload->create($data);
+//
+//        $result = $momopayment->initiate($payload);
+//
+//        $this->assertSame(AuthMode::REDIRECT,$result['mode']);
+//    }
 
     public function testInvalidCurrency()
     {
