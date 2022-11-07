@@ -33,8 +33,8 @@ class AccountTest extends TestCase
 
         $accountpayment = \Flutterwave\Flutterwave::create("account");
         $customerObj = $accountpayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
+            "full_name" => "Temi Adekunle",
+            "email" => "developers@flutterwavego.com",
             "phone" => "+2349067985861"
         ]);
 
@@ -58,8 +58,8 @@ class AccountTest extends TestCase
 
         $accountpayment = \Flutterwave\Flutterwave::create("account");
         $customerObj = $accountpayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
+            "full_name" => "Jake Jesulayomi Ola",
+            "email" => "developers@flutterwavego.com",
             "phone" => "+2349067985861"
         ]);
 
