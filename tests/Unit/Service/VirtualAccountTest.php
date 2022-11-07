@@ -61,38 +61,38 @@ class VirtualAccountTest extends TestCase
         );
     }
 
-    /**
-     * @depends testVirtualAccountCreation
-     */
-    public function testUpdatingVirtualAccount(string $order_ref)
-    {
-        $service = new VirtualAccount();
-
-        $payload = [
-            "order_ref" => $order_ref,
-            "bvn" => "12345678901",
-        ];
-
-        $response = $service->update($payload);
-        $this->assertTrue(property_exists(
-                $response, "data") && $response->status === "success"
-        );
-    }
-
-    /**
-     * @depends testVirtualAccountCreation
-     */
-    public function testDeletingVirtualAccount(string $order_ref)
-    {
-        $service = new VirtualAccount();
-
-        // $order_ref - This is the order reference returned on the virtual account number creation
-        $response = $service->delete($order_ref);
-
-        $this->assertTrue(property_exists(
-                $response, "status") && $response->status === "00" && $response->status_desc === "Deactivated successfully"
-        );
-    }
+//    /**
+//     * @depends testVirtualAccountCreation
+//     */
+//    public function testUpdatingVirtualAccount(string $order_ref)
+//    {
+//        $service = new VirtualAccount();
+//
+//        $payload = [
+//            "order_ref" => $order_ref,
+//            "bvn" => "12345678901",
+//        ];
+//
+//        $response = $service->update($payload);
+//        $this->assertTrue(property_exists(
+//                $response, "data") && $response->status === "success"
+//        );
+//    }
+//
+//    /**
+//     * @depends testVirtualAccountCreation
+//     */
+//    public function testDeletingVirtualAccount(string $order_ref)
+//    {
+//        $service = new VirtualAccount();
+//
+//        // $order_ref - This is the order reference returned on the virtual account number creation
+//        $response = $service->delete($order_ref);
+//
+//        $this->assertTrue(property_exists(
+//                $response, "status") && $response->status === "00" && $response->status_desc === "Deactivated successfully"
+//        );
+//    }
 
 
 }
