@@ -88,13 +88,13 @@ class CollectionSubaccountTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
-    /**
-     * @depends testCollectionSubaccountCreation
-     */
-    public function testDeletingCollectionSubaccount($id)
-    {
-        $service = new CollectionSubaccount();
-        $request = $service->delete($id);
-        $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
-    }
+//    /**
+//     * @depends testCollectionSubaccountCreation
+//     */
+//    public function testDeletingCollectionSubaccount($id)
+//    {
+//        $service = new CollectionSubaccount();
+//        $request = $service->delete($id);
+//        $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
+//    }
 }
