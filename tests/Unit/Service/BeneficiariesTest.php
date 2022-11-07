@@ -15,7 +15,7 @@ class BeneficiariesTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_bank", "044");
-        $payload->set("account_number", "0690000034");
+        $payload->set("account_number", "0690000033");
         $payload->set("beneficiary_name", "Abraham Smith Olaolu");
         $service = new Beneficiaries();
         $request = $service->create($payload);
