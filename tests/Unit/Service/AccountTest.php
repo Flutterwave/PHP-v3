@@ -11,13 +11,7 @@ class AccountTest extends TestCase
 {
     protected function setUp(): void
     {
-        $config = Config::setUp(
-            $_SERVER[Config::SECRET_KEY],
-            $_SERVER[Config::PUBLIC_KEY],
-            $_SERVER[Config::ENCRYPTION_KEY],
-            $_SERVER['ENV']
-        );
-        \Flutterwave\Flutterwave::bootstrap($config);
+        \Flutterwave\Flutterwave::bootstrap();
     }
 
     public function testAuthModeReturn()
