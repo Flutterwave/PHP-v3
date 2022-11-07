@@ -28,9 +28,9 @@ class MomoTest extends TestCase
 
         $momopayment = \Flutterwave\Flutterwave::create("momo");
         $customerObj = $momopayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349067985861"
+            "full_name" => "Abiodun Abrahams",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067982061"
         ]);
 
         $data['customer'] = $customerObj;
@@ -55,7 +55,7 @@ class MomoTest extends TestCase
 
         $momopayment = \Flutterwave\Flutterwave::create("momo");
         $customerObj = $momopayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
+            "full_name" => "Akin Temilade",
             "email" => "vicomma@gmail.com",
             "phone" => "+2349067985861"
         ]);
@@ -82,9 +82,9 @@ class MomoTest extends TestCase
 
         $momopayment = \Flutterwave\Flutterwave::create("momo");
         $customerObj = $momopayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349067985861"
+            "full_name" => "Ali Bolaji",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067901861"
         ]);
 
         $data['customer'] = $customerObj;
@@ -110,9 +110,9 @@ class MomoTest extends TestCase
 
         $momopayment = \Flutterwave\Flutterwave::create("momo");
         $customerObj = $momopayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349067985861"
+            "full_name" => "Truce Jake",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067900861"
         ]);
 
         $data['customer'] = $customerObj;
@@ -137,9 +137,9 @@ class MomoTest extends TestCase
 
         $momopayment = \Flutterwave\Flutterwave::create("momo");
         $customerObj = $momopayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349067985861"
+            "full_name" => "Flutterwave Developers",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067985001"
         ]);
 
         $data['customer'] = $customerObj;
