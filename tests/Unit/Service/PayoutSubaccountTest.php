@@ -14,9 +14,9 @@ class PayoutSubaccountTest extends TestCase
     public function testPayoutSuccountCreation()
     {
         $customer = new Customer();
-        $customer->set("fullname","PHP David");
-        $customer->set("email","developers@flutterwavego.com");
-        $customer->set("phone_number","+2348065007000");
+        $customer->set("fullname","PHP Person");
+        $customer->set("email","cornelius@flutterwavego.com");
+        $customer->set("phone_number","+2348065007910");
         $payload = new Payload();
         $payload->set("country", "NG");
         $payload->set("customer", $customer);
@@ -51,7 +51,7 @@ class PayoutSubaccountTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_name","Aramide Smith");
-        $payload->set("mobilenumber","1409340265");
+        $payload->set("mobilenumber","+2348065007080");
         $payload->set("email","developers@flutterwavego.com");
         $payload->set("country","NG");
 

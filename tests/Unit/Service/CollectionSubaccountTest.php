@@ -12,7 +12,7 @@ class CollectionSubaccountTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_bank", "044");
-        $payload->set("account_number", "0690000018");
+        $payload->set("account_number", "0690000048");
         $payload->set("business_name", "Mean Ventures");
         $payload->set("split_type", "percentage");
         $payload->set("split_value", "0.5"); // 50%
