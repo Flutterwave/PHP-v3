@@ -12,7 +12,7 @@ class CollectionSubaccountTest extends TestCase
     {
         $payload = new Payload();
         $payload->set("account_bank", "044");
-        $payload->set("account_number", "0690000048");
+        $payload->set("account_number", "06900000" . mt_rand(55, 90));
         $payload->set("business_name", "Mean Ventures");
         $payload->set("split_type", "percentage");
         $payload->set("split_value", "0.5"); // 50%
@@ -22,7 +22,7 @@ class CollectionSubaccountTest extends TestCase
         $service = new CollectionSubaccount();
         $request = $service->create($payload);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->subaccount_id));
-        return $request->data->subaccount_id;
+        return $request->data->id;
     }
 
     public function testWhenSubaccountAlreadyExist()
@@ -69,32 +69,32 @@ class CollectionSubaccountTest extends TestCase
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testRetrievingOneSubaccount($subaccount_id)
+    public function testRetrievingOneSubaccount($id)
     {
         $service = new CollectionSubaccount();
-        $request = $service->get($subaccount_id);
+        $request = $service->get($id);
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testUpdatingCollectionSubaccount($subaccount_id)
+    public function testUpdatingCollectionSubaccount($id)
     {
         $payload = new Payload();
         $payload->set("split_value", "0.2");
         $service = new CollectionSubaccount();
-        $request = $service->update($subaccount_id, $payload);
+        $request = $service->update($id, $payload);
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
     /**
      * @depends testCollectionSubaccountCreation
      */
-    public function testDeletingCollectionSubaccount($subaccount_id)
+    public function testDeletingCollectionSubaccount($id)
     {
         $service = new CollectionSubaccount();
-        $request = $service->delete($subaccount_id);
+        $request = $service->delete($id);
         $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
     }
 }
