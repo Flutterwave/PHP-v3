@@ -78,15 +78,15 @@ class VirtualCardTest extends TestCase
         $this->assertTrue(property_exists($request,'data'));
     }
 
-    /**
-     * @depends testVirtualCardCreation
-     */
-    public function testVirtualCardBlock(string $id)
-    {
-        $service = new VirtualCard();
-        $request = $service->block($id);
-        $this->assertTrue(property_exists($request,'data') && $request->message == "Card blocked successfully");
-    }
+//    /**
+//     * @depends testVirtualCardCreation
+//     */
+//    public function testVirtualCardBlock(string $id)
+//    {
+//        $service = new VirtualCard();
+//        $request = $service->block($id);
+//        $this->assertTrue(property_exists($request,'data') && $request->message == "Card blocked successfully");
+//    }
 
     /**
      * @depends testVirtualCardCreation
