@@ -4,6 +4,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\CustomerInterface;
 use Flutterwave\Customer as Person;
+use InvalidArgumentException;
 
 class Customer implements CustomerInterface
 {
@@ -12,7 +13,7 @@ class Customer implements CustomerInterface
         $data = array_change_key_case($data);
         if(empty($data))
         {
-            throw new \InvalidArgumentException("Customer data is empty");
+            throw new InvalidArgumentException("Customer data is empty");
         }
 
         $person = new Person;
@@ -22,11 +23,5 @@ class Customer implements CustomerInterface
         $person->set("address", $data["address"] ?? null);
 
         return $person;
-    }
-
-    public function retrieve(string $email): Person
-    {
-        //TODO: Customer API integration
-        return new Person("john doe", "olaobajua@gmail.com", "+2349067985861", null);
     }
 }

@@ -8,5 +8,4 @@ interface CustomerInterface
 {
     public function create(array $data): Customer;
 
-    public function retrieve(string $email): Customer;
 }
