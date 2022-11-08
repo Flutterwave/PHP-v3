@@ -28,8 +28,8 @@ class BankTransferTest extends TestCase
         $btpayment = Flutterwave::create("bank-transfer");
         $customerObj = $btpayment->customer->create([
             "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349067985861"
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067985011"
         ]);
 
         $data['customer'] = $customerObj;
