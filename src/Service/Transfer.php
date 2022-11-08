@@ -34,7 +34,7 @@ class Transfer extends Service implements Payment
     /**
      * @throws Exception
      */
-    public function initiate(\Flutterwave\Payload $payload)
+    public function initiate(Payload $payload)
     {
         $tx_ref = $payload->get("tx_ref");
         $this->logger->info("Transfer Service::Initiating Transfer....{$tx_ref}");
@@ -49,7 +49,7 @@ class Transfer extends Service implements Payment
      * @return stdClass
      * @throws Exception
      */
-    public function charge(\Flutterwave\Payload $payload): stdClass
+    public function charge(Payload $payload): stdClass
     {
         $additionalData = $payload->get("otherData");
         $tx_ref = $payload->get("tx_ref");
