@@ -4,6 +4,7 @@ namespace Unit\Service;
 
 use Flutterwave\Payload;
 use Flutterwave\Service\CollectionSubaccount;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 
 class CollectionSubaccountTest extends TestCase
@@ -37,7 +38,7 @@ class CollectionSubaccountTest extends TestCase
         $payload->set("business_email", "developers@flutterwavego.com");
         $payload->set("country", "NG");
         $service = new CollectionSubaccount();
-        $this->expectException(\Exception::class);
+        $this->expectException(GuzzleException::class);
         $this->expectExceptionMessage("A subaccount with the account number and bank already exists");
         $request = $service->create($payload);
     }
@@ -88,13 +89,13 @@ class CollectionSubaccountTest extends TestCase
         $this->assertTrue(property_exists($request,'data') && $request->data->bank_name = "ACCESS BANK NIGERIA");
     }
 
-//    /**
-//     * @depends testCollectionSubaccountCreation
-//     */
-//    public function testDeletingCollectionSubaccount($id)
-//    {
-//        $service = new CollectionSubaccount();
-//        $request = $service->delete($id);
-//        $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
-//    }
+    /**
+     * @depends testCollectionSubaccountCreation
+     */
+    public function testDeletingCollectionSubaccount($id)
+    {
+        $service = new CollectionSubaccount();
+        $request = $service->delete($id);
+        $this->assertTrue(property_exists($request,'data') && \is_null($request->data));
+    }
 }
