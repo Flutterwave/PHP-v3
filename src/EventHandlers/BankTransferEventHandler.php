@@ -57,8 +57,10 @@ class BankTransferEventHandler implements EventHandlerInterface
     }
 
     /**
-     * @throws \Exception
-     * */
+     * @param \stdClass $response
+     * @param array|null $resource
+     * @return array
+     */
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
     {
         $auth = $response->meta->authorization;
