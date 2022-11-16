@@ -1,18 +1,19 @@
 <?php
 
-return [
-    "057" => [
-        "requiredParams" => [
-            "passcode" => "DDMMYYYY"
-        ]
-    ],
-    "033" => [
-        "requiredParams" => [
-            "bvn" => "/[0-9]{11}/g"
-        ]
-    ]
-];
+declare(strict_types=1);
 
+return [
+    '057' => [
+        'requiredParams' => [
+            'passcode' => 'DDMMYYYY',
+        ],
+    ],
+    '033' => [
+        'requiredParams' => [
+            'bvn' => '/[0-9]{11}/g',
+        ],
+    ],
+];
 
 //return [
 //    "zenith" => [

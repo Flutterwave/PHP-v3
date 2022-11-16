@@ -1,33 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\EventHandlers;
 
 class PreEventHandler implements EventHandlerInterface
 {
-
     use EventTracker;
 
-    function onSuccessful($transactionData) {
-        self::sendAnalytics("Initiate-Preauth");
+    public function onSuccessful($transactionData): void
+    {
+        self::sendAnalytics('Initiate-Preauth');
     }
 
-    function onFailure($transactionData) {
-        self::sendAnalytics("Initiate-Preauth-Error");
+    public function onFailure($transactionData): void
+    {
+        self::sendAnalytics('Initiate-Preauth-Error');
     }
 
-    function onRequery($transactionReference) {
+    public function onRequery($transactionReference): void
+    {
         // TODO: Implement onRequery() method.
     }
 
-    function onRequeryError($requeryResponse) {
+    public function onRequeryError($requeryResponse): void
+    {
         // TODO: Implement onRequeryError() method.
     }
 
-    function onCancel($transactionReference) {
+    public function onCancel($transactionReference): void
+    {
         // TODO: Implement onCancel() method.
     }
 
-    function onTimeout($transactionReference, $data) {
+    public function onTimeout($transactionReference, $data): void
+    {
         // TODO: Implement onTimeout() method.
     }
 }

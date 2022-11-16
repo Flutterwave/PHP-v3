@@ -1,37 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\EventHandlers;
 
 class PayoutSubaccoutEventHandler implements EventHandlerInterface
 {
     use EventTracker;
 
-    function onSuccessful($transactionData)
+    public function onSuccessful($transactionData): void
     {
         // TODO: Implement onSuccessful() method.
     }
 
-    function onFailure($transactionData)
+    public function onFailure($transactionData): void
     {
         // TODO: Implement onFailure() method.
     }
 
-    function onRequery($transactionReference)
+    public function onRequery($transactionReference): void
     {
         // TODO: Implement onRequery() method.
     }
 
-    function onRequeryError($requeryResponse)
+    public function onRequeryError($requeryResponse): void
     {
         // TODO: Implement onRequeryError() method.
     }
 
-    function onCancel($transactionReference)
+    public function onCancel($transactionReference): void
     {
         // TODO: Implement onCancel() method.
     }
 
-    function onTimeout($transactionReference, $data)
+    public function onTimeout($transactionReference, $data): void
     {
         // TODO: Implement onTimeout() method.
     }

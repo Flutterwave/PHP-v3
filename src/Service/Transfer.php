@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
@@ -7,61 +9,64 @@ use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\TransferEventHandler;
 use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
+use GuzzleHttp\Exception\GuzzleException;
+use InvalidArgumentException;
 use stdClass;
-use Unirest\Exception;
 
 class Transfer extends Service implements Payment
 {
     use Charge;
-    const TYPE = 'transfers';
+    public const TYPE = 'transfers';
     private TransferEventHandler $eventHandler;
     private string $name = 'transfers';
     private array $requiredParamsFee = [
-        "amount", "currency"
+        'amount', 'currency',
     ];
     private array $requiredParamsRate = [
-        "amount", "destination_currency". "source_currency"
+        'amount', 'destination_currency'. 'source_currency',
     ];
-    function __construct(?ConfigInterface $config = null)
+    public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
 
-        $endpoint = "transfers";
-        $this->url  = $this->baseUrl."/".$endpoint;
+        $endpoint = 'transfers';
+        $this->url = $this->baseUrl.'/'.$endpoint;
         $this->eventHandler = new TransferEventHandler();
     }
 
     /**
-     * @throws Exception
+     * @param Payload $payload
+     * @return array
+     * @throws GuzzleException
      */
-    public function initiate(Payload $payload)
+    public function initiate(Payload $payload): array
     {
-        $tx_ref = $payload->get("tx_ref");
-        $this->logger->info("Transfer Service::Initiating Transfer....{$tx_ref}");
-        if($this->checkPayloadIsValid($payload, "account_details"))
-        {
+        $tx_ref = $payload->get('tx_ref');
+        $this->logger->info("Transfer Service::Initiating Transfer....$tx_ref");
+        if ($this->checkPayloadIsValid($payload, 'account_details')) {
             return $this->charge($payload);
         }
+        throw new InvalidArgumentException('Please check your payload');
     }
 
     /**
      * @param Payload $payload
-     * @return stdClass
-     * @throws Exception
+     * @return array
+     * @throws GuzzleException
      */
-    public function charge(Payload $payload): stdClass
+    public function charge(Payload $payload): array
     {
-        $additionalData = $payload->get("otherData");
-        $tx_ref = $payload->get("tx_ref");
+        $additionalData = $payload->get('otherData');
+        $tx_ref = $payload->get('tx_ref');
 
-        if(!array_key_exists("narration", $additionalData)){
-           throw new \InvalidArgumentException("Please pass the parameter 'narration' in the additionalData array");
+        if (! array_key_exists('narration', $additionalData)) {
+            throw new InvalidArgumentException("Please pass the parameter 'narration' in the additionalData array");
         }
-        $this->logger->notice("Transfer Service::Transferring to account ...");
+        $this->logger->notice('Transfer Service::Transferring to account ...');
 
-        $payload->set("reference", $tx_ref);
+        $payload->set('reference', $tx_ref);
 
-        $payload = $payload->toArray("account");
+        $payload = $payload->toArray('account');
 
         unset($payload['tx_ref']);
         unset($payload['address']);
@@ -69,11 +74,27 @@ class Transfer extends Service implements Payment
         $this->eventHandler::startRecording();
         $response = $this->request($payload, 'POST');
         $this->eventHandler::setResponseTime();
-        return $response; //TODO: change to return an Array
-
+        return $this->handleInitiationResponse($response); //TODO: change to return an Array
     }
 
-    public function save(callable $callback)
+    private function handleInitiationResponse(stdClass $data): array
+    {
+        $root = $data->data;
+        return [
+            'id' => $root->id,
+            'account_number' => $root->account_number,
+            'bank_code' => $root->bank_code,
+            'full_name' => $root->full_name,
+            'currency' => $root->currency,
+            'debit_currency' => $root->debit_currency,
+            'reference' => $root->reference,
+            'amount' => $root->amount,
+            'status' => $root->status,
+            'bank_name' => $root->bank_name
+        ];
+    }
+
+    public function save(callable $callback): void
     {
         // TODO: Implement save() method.
     }
@@ -83,116 +104,129 @@ class Transfer extends Service implements Payment
      * @return stdClass
      * retry a previously failed transfer.
      *
-     * @throws Exception
+     * @throws GuzzleException
      */
     public function retry(?string $transactionId): stdClass
     {
         $this->checkTransactionId($transactionId);
         $this->logger->notice("Transfer Service::Retrieving Settlement [$transactionId].");
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'POST', $this->name."/$transactionId/retries");
+        $response = $this->request(null, 'POST', $this->name."/$transactionId/retries");
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param Payload $payload
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function createBulk(Payload $payload): stdClass
     {
-        if(!$payload->has('bulk_data')){
-            $this->logger->error("Transfer Service::Bulk Payload is empty. Pass a filled array");
-            throw new \InvalidArgumentException("Transfer Service::Bulk Payload is currently empty. Pass a filled array");
+        if (! $payload->has('bulk_data')) {
+            $this->logger->error('Transfer Service::Bulk Payload is empty. Pass a filled array');
+            throw new InvalidArgumentException('Transfer Service::Bulk Payload is currently empty. Pass a filled array');
         }
 
-        $body =  $payload->toArray();
-        $this->logger->notice("Transfer Service::Creating a Bulk Transfer.");
+        $body = $payload->toArray();
+        $this->logger->notice('Transfer Service::Creating a Bulk Transfer.');
         $this->eventHandler::startRecording();
-        $response = $this->request($body,'POST', "bulk-transfers");
-        $this->logger->notice("Transfer Service::Created a Bulk Transfer Successfully.");
+        $response = $this->request($body, 'POST', 'bulk-transfers');
+        $this->logger->notice('Transfer Service::Created a Bulk Transfer Successfully.');
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param string $id
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function get(string $id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Transfer id:($id)");
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', $this->name."/$id");
+        $response = $this->request(null, 'GET', $this->name."/$id");
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function getAll(): stdClass
     {
-        $this->logger->notice("Transfer Service::Retrieving all Transfers");
+        $this->logger->notice('Transfer Service::Retrieving all Transfers');
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', $this->name);
+        $response = $this->request(null, 'GET', $this->name);
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param array $params
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function getFee(array $params = []): stdClass
     {
-        foreach ($this->requiredParamsFee as $param){
-            if(!array_key_exists($param, $params)){
+        foreach ($this->requiredParamsFee as $param) {
+            if (! array_key_exists($param, $params)) {
                 $this->logger->error("Transfer Service::the following param is required to get transfer fee: $param");
-                throw new \InvalidArgumentException("Transfer Service::the following param is required to get transfer fee: $param");
+                throw new InvalidArgumentException("Transfer Service::the following param is required to get transfer fee: $param");
             }
         }
 
         $query = http_build_query($params);
-        $this->logger->notice("Transfer Service::Retrieving Transfer Fee");
+        $this->logger->notice('Transfer Service::Retrieving Transfer Fee');
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "/fee?$query");
+        $response = $this->request(null, 'GET', "/fee?$query");
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param string $id
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function getRetry(string $id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Transfer id:($id)");
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "/$id/retries");
-        $this->logger->info("Transfer Service::Transfer retry attempts retrieved.");
+        $response = $this->request(null, 'GET', "/$id/retries");
+        $this->logger->info('Transfer Service::Transfer retry attempts retrieved.');
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param string $batch_id
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function getBulk(string $batch_id): stdClass
     {
         $this->logger->notice("Transfer Service::Retrieving Bulk Transfer id:($batch_id)");
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "?batch_id=$batch_id");
-        $this->logger->info("Transfer Service::Bulk Transfer retrieved.");
+        $response = $this->request(null, 'GET', "?batch_id=$batch_id");
+        $this->logger->info('Transfer Service::Bulk Transfer retrieved.');
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @param array $params
+     * @return stdClass
+     * @throws GuzzleException
      */
     public function getRates(array $params): stdClass
     {
-        foreach ($this->requiredParamsRate as $param){
-            if(!array_key_exists($param, $params)){
+        foreach ($this->requiredParamsRate as $param) {
+            if (! array_key_exists($param, $params)) {
                 $this->logger->error("Transfer Service::the following param is required to get transfer rate: $param");
-                throw new \InvalidArgumentException("Transfer Service::the following param is required to get transfer rate: $param");
+                throw new InvalidArgumentException("Transfer Service::the following param is required to get transfer rate: $param");
             }
         }
 
@@ -200,11 +234,9 @@ class Transfer extends Service implements Payment
         $logData = json_encode($params);
         $this->logger->notice("Transfer Service::Retrieving Transfer Rate data:($logData)");
         $this->eventHandler::startRecording();
-        $response = $this->request(null,'GET', "?$query");
-        $this->logger->info("Transfer Service::Transfer rate retrieved.");
+        $response = $this->request(null, 'GET', "?$query");
+        $this->logger->info('Transfer Service::Transfer rate retrieved.');
         $this->eventHandler::setResponseTime();
         return $response;
     }
-
 }
-

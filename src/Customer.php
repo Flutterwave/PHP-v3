@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave;
 
 class Customer
@@ -31,5 +33,4 @@ class Customer
     {
         return $this->data;
     }
-
 }

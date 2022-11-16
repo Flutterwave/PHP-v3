@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Traits\Group;
 
 use Flutterwave\Service\Transactions;
@@ -9,7 +11,7 @@ trait Charge
 {
     public function getEndpoint(): string
     {
-        return "charges";
+        return 'charges';
     }
 
     /**
@@ -17,24 +19,23 @@ trait Charge
      */
     public function verify(?string $transactionId = null): \stdClass
     {
-        if(is_null($transactionId))
-        {
-            $this->logger->error("Charge Group::To verify a transaction please pass a transactionId.");
-            throw new \InvalidArgumentException("To verify a transaction please pass a transactionId.");
+        if (is_null($transactionId)) {
+            $this->logger->error('Charge Group::To verify a transaction please pass a transactionId.');
+            throw new \InvalidArgumentException('To verify a transaction please pass a transactionId.');
         }
         return (new Transactions($this->config))->verify($transactionId);
     }
 
     private function checkPayloadIsValid(\Flutterwave\Payload $payload, string $criteria): bool
     {
-        $this->logger->notice("Charge Group::Verifying Payload  ...");
+        $this->logger->notice('Charge Group::Verifying Payload  ...');
         //if does not payload contains $criteria :: false
-        if(!is_null($payload->get('otherData'))){
+        if (! is_null($payload->get('otherData'))) {
             $additionalData = $payload->get('otherData');
-            if(!isset($additionalData[$criteria])){
+            if (! isset($additionalData[$criteria])) {
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
 

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Util;
 
 class AuthMode
 {
-    const PIN = "pin";
-    const REDIRECT = "redirect";
-    const VALIDATE = "validate";
-    const CALLBACK = "callback";
-    const OTP = "otp";
-    const USSD = "ussd";
-    const AVS = "avs_noauth";
-    const BANKTRANSFER = "banktransfer";
+    public const PIN = 'pin';
+    public const REDIRECT = 'redirect';
+    public const VALIDATE = 'validate';
+    public const CALLBACK = 'callback';
+    public const OTP = 'otp';
+    public const USSD = 'ussd';
+    public const AVS = 'avs_noauth';
+    public const BANKTRANSFER = 'banktransfer';
 }

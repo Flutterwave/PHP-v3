@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
@@ -11,9 +13,9 @@ use Unirest\Exception;
 class VirtualCard extends Service
 {
     use EventTracker;
-    private string $name = "virtual-cards";
-    private array $requiredParams = [ "currency", "amount", "first_name", "last_name", "date_of_birth","email", "phone", "title", "gender" ];
-    private array $requiredParamsFund = ["debit_currency","amount"];
+    private string $name = 'virtual-cards';
+    private array $requiredParams = [ 'currency', 'amount', 'first_name', 'last_name', 'date_of_birth','email', 'phone', 'title', 'gender' ];
+    private array $requiredParamsFund = ['debit_currency','amount'];
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
@@ -21,11 +23,10 @@ class VirtualCard extends Service
 
     public function confirmPayload(Payload $payload): array
     {
-        foreach($this->requiredParams as $param){
-            if(!$payload->has($param))
-            {
-                $this->logger->error("VirtualCard Service::The required parameter $param is not present in payload");
-                throw new InvalidArgumentException("The required parameter $param is not present in payload");
+        foreach ($this->requiredParams as $param) {
+            if (! $payload->has($param)) {
+                $this->logger->error("VirtualCard Service::The required parameter {$param} is not present in payload");
+                throw new InvalidArgumentException("The required parameter {$param} is not present in payload");
             }
         }
 
@@ -37,14 +38,13 @@ class VirtualCard extends Service
      */
     public function create(Payload $payload): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Creating new Virtual Card.");
+        $this->logger->notice('VirtualCard Service::Creating new Virtual Card.');
         $body = $this->confirmPayload($payload);
-        $this->logger->notice("VirtualCard Service::Payload Confirmed.");
+        $this->logger->notice('VirtualCard Service::Payload Confirmed.');
         self::startRecording();
-        $response = $this->request($body,'POST',$this->name);
+        $response = $this->request($body, 'POST', $this->name);
         self::setResponseTime();
         return $response;
-
     }
 
     /**
@@ -52,9 +52,9 @@ class VirtualCard extends Service
      */
     public function get(string $id): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Retrieving Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Retrieving Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request(null,'GET', $this->name."/$id");
+        $response = $this->request(null, 'GET', $this->name."/{$id}");
         self::setResponseTime();
         return $response;
     }
@@ -64,9 +64,9 @@ class VirtualCard extends Service
      */
     public function list(): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Retrieving all Virtual Cards.");
+        $this->logger->notice('VirtualCard Service::Retrieving all Virtual Cards.');
         self::startRecording();
-        $response = $this->request(null,'GET', $this->name);
+        $response = $this->request(null, 'GET', $this->name);
         self::setResponseTime();
         return $response;
     }
@@ -76,16 +76,16 @@ class VirtualCard extends Service
      */
     public function fund(string $id, array $data): \stdClass
     {
-        foreach ($this->requiredParamsFund as $param){
-            if(!array_key_exists($param, $data)){
-                $this->logger->error("Misc Service::The following parameter is missing to check balance history: $param");
-                throw new \InvalidArgumentException("The following parameter is missing to check balance history: $param");
+        foreach ($this->requiredParamsFund as $param) {
+            if (! array_key_exists($param, $data)) {
+                $this->logger->error("Misc Service::The following parameter is missing to check balance history: {$param}");
+                throw new \InvalidArgumentException("The following parameter is missing to check balance history: {$param}");
             }
         }
 
-        $this->logger->notice("VirtualCard Service::Funding Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Funding Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request($data,'POST', $this->name."/$id/fund");
+        $response = $this->request($data, 'POST', $this->name."/{$id}/fund");
         self::setResponseTime();
         return $response;
     }
@@ -93,11 +93,11 @@ class VirtualCard extends Service
     /**
      * @throws Exception
      */
-    public function withdraw(string $id, string $amount = "0"): \stdClass
+    public function withdraw(string $id, string $amount = '0'): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Withdrawing from Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Withdrawing from Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request([ 'amount' => $amount ],'POST', $this->name."/$id/withdraw");
+        $response = $this->request([ 'amount' => $amount ], 'POST', $this->name."/{$id}/withdraw");
         self::setResponseTime();
         return $response;
     }
@@ -107,9 +107,9 @@ class VirtualCard extends Service
      */
     public function block(string $id): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Blocking Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Blocking Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request(null,'PUT', $this->name."/$id/status/block");
+        $response = $this->request(null, 'PUT', $this->name."/{$id}/status/block");
         self::setResponseTime();
         return $response;
     }
@@ -119,9 +119,9 @@ class VirtualCard extends Service
      */
     public function unblock(string $id): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Unblocking Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Unblocking Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request(null,'PUT', $this->name."/$id/status/unblock");
+        $response = $this->request(null, 'PUT', $this->name."/{$id}/status/unblock");
         self::setResponseTime();
         return $response;
     }
@@ -131,9 +131,9 @@ class VirtualCard extends Service
      */
     public function terminate(string $id): \stdClass
     {
-        $this->logger->notice("VirtualCard Service::Terminating Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Terminating Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request(null,'PUT', $this->name."/$id/terminate");
+        $response = $this->request(null, 'PUT', $this->name."/{$id}/terminate");
         self::setResponseTime();
         return $response;
     }
@@ -141,14 +141,13 @@ class VirtualCard extends Service
     /**
      * @throws Exception
      */
-    public function getTransactions(string $id, array $options = ['index' =>  0, 'size' => 20]): \stdClass
+    public function getTransactions(string $id, array $options = ['index' => 0, 'size' => 20]): \stdClass
     {
         $query = http_build_query($options);
-        $this->logger->notice("VirtualCard Service::Retrieving transaction for Virtual Card [$id].");
+        $this->logger->notice("VirtualCard Service::Retrieving transaction for Virtual Card [{$id}].");
         self::startRecording();
-        $response = $this->request(null,'GET', $this->name."/$id/transactions?$query");
+        $response = $this->request(null, 'GET', $this->name."/{$id}/transactions?{$query}");
         self::setResponseTime();
         return $response;
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\EventHandlers;
 
 use Flutterwave\Util\AuthMode;
@@ -10,9 +12,11 @@ class MomoEventHandler implements EventHandlerInterface
 
     /**
      * This is called only when a transaction is successful
+     *
      * @param array $transactionData
      * */
-    function onSuccessful($transactionData) {
+    public function onSuccessful(array $transactionData): void
+    {
         // Get the transaction from your DB using the transaction reference (txref)
         // Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue
         // Comfirm that the transaction is successful
@@ -23,9 +27,9 @@ class MomoEventHandler implements EventHandlerInterface
         // Give value for the transaction
         // Update the transaction to note that you have given value for the transaction
         // You can also redirect to your success page from here
-        if ($transactionData["data"]["chargecode"] === '00' || $transactionData["data"]["chargecode"] === '0') {
-            self::sendAnalytics("Initiate-Mobile-Money-charge");
-            echo "Transaction Completed";
+        if ($transactionData['data']['chargecode'] === '00' || $transactionData['data']['chargecode'] === '0') {
+            self::sendAnalytics('Initiate-Mobile-Money-charge');
+            echo 'Transaction Completed';
         } else {
             $this->onFailure($transactionData);
         }
@@ -34,83 +38,81 @@ class MomoEventHandler implements EventHandlerInterface
     /**
      * This is called only when a transaction failed
      * */
-    function onFailure($transactionData) {
-        self::sendAnalytics("Initiate-Mobile-Money-error");
+    public function onFailure($transactionData): void
+    {
+        self::sendAnalytics('Initiate-Mobile-Money-error');
         // Get the transaction from your DB using the transaction reference (txref)
         // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
         // You can also redirect to your failure page from here
-
     }
 
     /**
      * This is called when a transaction is requeryed from the payment gateway
      * */
-    function onRequery($transactionReference) {
+    public function onRequery($transactionReference): void
+    {
         // Do something, anything!
     }
 
     /**
      * This is called a transaction requery returns with an error
      * */
-    function onRequeryError($requeryResponse) {
+    public function onRequeryError($requeryResponse): void
+    {
         // Do something, anything!
     }
 
     /**
      * This is called when a transaction is canceled by the user
      * */
-    function onCancel($transactionReference) {
+    public function onCancel($transactionReference): void
+    {
         // Do something, anything!
         // Note: Somethings a payment can be successful, before a user clicks the cancel button so proceed with caution
-
     }
 
     /**
      * This is called when a transaction doesn't return with a success or a failure response. This can be a timedout transaction on the Rave server or an abandoned transaction by the customer.
      * */
-    function onTimeout($transactionReference, $data) {
+    public function onTimeout($transactionReference, $data): void
+    {
         // Get the transaction from your DB using the transaction reference (txref)
         // Queue it for requery. Preferably using a queue system. The requery should be about 15 minutes after.
         // Ask the customer to contact your support and you should escalate this issue to the flutterwave support team. Send this as an email and as a notification on the page. just incase the page timesout or disconnects
-
     }
 
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
     {
-
-        if(property_exists($response, 'data')){
+        if (property_exists($response, 'data')) {
             $transactionId = $response->data->id;
             $tx_ref = $response->data->tx_ref;
             $data['data_to_save'] = [
-                "transactionId" => $transactionId,
-                "tx_ref" => $tx_ref
+                'transactionId' => $transactionId,
+                'tx_ref' => $tx_ref,
             ];
         }
 
-        if(property_exists($response, 'meta')){
+        if (property_exists($response, 'meta')) {
             $mode = $response->meta->authorization->mode;
-            switch ($mode){
+            switch ($mode) {
                 case AuthMode::REDIRECT:
-                    $data['dev_instruction'] = "Redirect the user to the auth link for validation";
+                    $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
                     $data['url'] = $response->meta->authorization->redirect;
                     break;
                 case AuthMode::CALLBACK:
                     $data['dev_instruction'] = "The customer needs to authorize with their mobile money service, and then we'll send you a webhook.";
-                    $data['instruction'] = "please kindly authorize with your mobile money service";
+                    $data['instruction'] = 'please kindly authorize with your mobile money service';
                     break;
             }
         }
 
         $data['mode'] = $mode ?? null;
 
-        if(is_array($resource) && !empty($resource))
-        {
+        if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice("Momo Service::Authorization Mode: ".($mode ?? 'none'));
+            $logger->notice('Momo Service::Authorization Mode: '.($mode ?? 'none'));
         }
 
         return $data;
     }
-
-
 }
