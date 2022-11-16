@@ -13,9 +13,9 @@ class MomoEventHandler implements EventHandlerInterface
     /**
      * This is called only when a transaction is successful
      *
-     * @param array $transactionData
+     * @param object $transactionData
      * */
-    public function onSuccessful(array $transactionData): void
+    public function onSuccessful(object $transactionData): void
     {
         // Get the transaction from your DB using the transaction reference (txref)
         // Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue
