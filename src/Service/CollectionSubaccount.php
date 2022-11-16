@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\SubaccountEventHandler;
 use Flutterwave\Payload;
-use Unirest\Exception;
+use GuzzleHttp\Exception\GuzzleException;
 
 class CollectionSubaccount extends Service
 {
@@ -36,7 +36,9 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @param Payload $payload
+     * @return \stdClass
+     * @throws GuzzleException
      */
     public function create(Payload $payload): \stdClass
     {
@@ -57,7 +59,8 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @return \stdClass
+     * @throws GuzzleException
      */
     public function list(): \stdClass
     {
@@ -68,7 +71,9 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @param string $id
+     * @return \stdClass
+     * @throws GuzzleException
      */
     public function get(string $id): \stdClass
     {
@@ -79,7 +84,10 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @param string $id
+     * @param Payload $payload
+     * @return \stdClass
+     * @throws GuzzleException
      */
     public function update(string $id, Payload $payload): \stdClass
     {
@@ -98,7 +106,9 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @param string $id
+     * @return \stdClass
+     * @throws GuzzleException
      */
     public function delete(string $id): \stdClass
     {
