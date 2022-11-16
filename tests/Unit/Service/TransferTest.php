@@ -41,6 +41,7 @@ class TransferTest extends TestCase
         $data['customer'] = $customerObj;
         $payload  = $service->payload->create($data);
         $response = $service->initiate($payload);
-        $this->assertTrue(property_exists($response,'data') && $response->data->status == "NEW");
+
+        $this->assertTrue(isset($response['bank_code']) && $response['status'] == "NEW");
     }
 }
