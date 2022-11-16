@@ -4,11 +4,13 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\ServiceInterface;
-use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Helper\Config;
-use Unirest\Exception;
-use Unirest\Request\Body;
-use Unirest\Response;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
+use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use stdClass;
+use function is_null;
 
 class Service implements ServiceInterface
 {
@@ -18,10 +20,9 @@ class Service implements ServiceInterface
      * @var ConfigInterface|Config|null
      */
     private static $spareConfig;
-    private EventHandlerInterface $eventHandler;
     protected string $baseUrl;
-    protected \Psr\Log\LoggerInterface $logger;
-    private \Unirest\Request $http;
+    protected LoggerInterface $logger;
+    private ClientInterface $http;
     protected ConfigInterface $config;
     public ?Payload $payload;
     public ?Customer $customer;
@@ -37,62 +38,65 @@ class Service implements ServiceInterface
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
         $this->secret = $this->config->getSecretKey();
-        $this->url  = $this->config::BASE_URL."/";
-        $this->baseUrl = $this->config::BASE_URL;
+        $this->url  = $this->config::getBaseUrl()."/";
+        $this->baseUrl = $this->config::getBaseUrl();
     }
 
     /**
-     * @throws Exception
-     * @throws \Exception
+     * @param array|null $data
+     * @param string $verb
+     * @param string $additionalurl
+     * @return stdClass
+     * @throws GuzzleException
      */
-    protected function request(?array $data = null, string $verb = 'GET', $additionalurl = ""): \stdClass
+    protected function request(?array $data = null, string $verb = 'GET', string $additionalurl = ""): stdClass
     {
-        $response = null;
         $secret = $this->config->getSecretKey();
 
         switch ($verb){
             case 'POST':
-                $json = Body::Json($data);
-                $response = $this->http::post($this->url.$additionalurl,[
-                    "Authorization" => "Bearer $secret",
-                    "Content-Type" => "application/json"
-                ],$json);
+                $response = $this->http->request("POST", $this->url.$additionalurl,[
+                    'debug' => FALSE, # TODO: turn to false  on release.
+                    'headers' => [
+                        "Authorization" => "Bearer $secret",
+                        "Content-Type" => "application/json",
+                    ],
+                    "json" =>  $data
+                ]);
                 break;
             case 'PUT':
-                $json = Body::Json($data??[]);
-                $response = $this->http::put($this->url.$additionalurl,[
-                    "Authorization" => "Bearer $secret",
-                    "Content-Type" => "application/json"
-                ],$json);
+                $response = $this->http->request("PUT", $this->url.$additionalurl,[
+                    'debug' => FALSE, # TODO: turn to false  on release.
+                    'headers' => [
+                        "Authorization" => "Bearer $secret",
+                        "Content-Type" => "application/json",
+                    ],
+                    'json' =>  $data ?? []
+                ]);
                 break;
             case 'DELETE':
-                $response = $this->http::delete($this->url.$additionalurl,[
-                    "Authorization" => "Bearer $secret",
-                    "Content-Type" => "application/json"
+                $response = $this->http->request( "DELETE", $this->url.$additionalurl,[
+                    'debug' => FALSE,
+                    'headers' => [
+                        "Authorization" => "Bearer $secret",
+                        "Content-Type" => "application/json"
+                    ]
                 ]);
+                break;
             default:
-                $response = $this->http::get($this->url.$additionalurl,[
-                    "Authorization" => "Bearer $secret",
-                    "Content-Type" => "application/json"
+                $response = $this->http->request( "GET",$this->url.$additionalurl,[
+                    'debug' => FALSE,
+                    'headers' => [
+                        "Authorization" => "Bearer $secret",
+                        "Content-Type" => "application/json"
+                    ]
                 ]);
                 break;
         }
 
-        if($response instanceof Response)
-        {
-            if($response->code > 200){
-                $this->logger->error("Service::". $response->body->message);
-                throw new \Exception($response->body->message);
-                exit;
-            }
+        $body = $response->getBody();
 
-            if(is_string($response->body)){
-                $this->logger->error("Service::". $response->body);
-                throw new \Exception($response->body);
-            }
-        }
-
-        return $response->body;
+        return json_decode($body);
     }
 
     public function getName(): string
@@ -107,13 +111,13 @@ class Service implements ServiceInterface
 
         if(!$is_valid){
             $this->logger->warning("Transaction Service::cannot verify invalid transaction id. ");
-            throw new \InvalidArgumentException("cannot verify invalid transaction id.");
+            throw new InvalidArgumentException("cannot verify invalid transaction id.");
         }
     }
 
     private  static function bootstrap(?ConfigInterface $config = null)
     {
-        if(\is_null($config))
+        if(is_null($config))
         {
             require __DIR__."/../../setup.php";
             $config = Config::setUp(
