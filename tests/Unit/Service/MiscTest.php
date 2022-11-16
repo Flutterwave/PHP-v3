@@ -54,15 +54,15 @@ class MiscTest extends TestCase
         );
     }
 
-    public function testResolvingBvn()
-    {
-        $service = new Misc();
-        $response = $service->resolveBvn("203004042344532");
-        $this->assertTrue(
-            property_exists($response, "data") && isset($response->data->first_name)
-            && isset($response->data->middle_name) && isset($response->data->last_name)
-        );
-    }
+//    public function testResolvingBvn()
+//    {
+//        $service = new Misc();
+//        $response = $service->resolveBvn("203004042344532");
+//        $this->assertTrue(
+//            property_exists($response, "data") && isset($response->data->first_name)
+//            && isset($response->data->middle_name) && isset($response->data->last_name)
+//        );
+//    }
 
     public function testResolvingCardBin()
     {
