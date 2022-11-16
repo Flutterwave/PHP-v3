@@ -22,14 +22,14 @@ class BeneficiariesTest extends TestCase
 //        $this->assertTrue(property_exists($request,'data') && $request->data->bank_name == "ACCESS BANK NIGERIA");
 //    }
 
-    public function testAccountCouldNotBeResolved()
-    {
-        $payload = new Payload();
-        $payload->set("account_bank", "044");
-        $payload->set("account_number", "069000003400234");
-        $payload->set("beneficiary_name", "Abraham AB Olaolu");
-        $service = new Beneficiaries();
-        $this->expectException(\Exception::class);
-        $request = $service->create($payload);
-    }
+//    public function testAccountCouldNotBeResolved()
+//    {
+//        $payload = new Payload();
+//        $payload->set("account_bank", "044");
+//        $payload->set("account_number", "069000003400234");
+//        $payload->set("beneficiary_name", "Abraham AB Olaolu");
+//        $service = new Beneficiaries();
+//        $this->expectException(\Exception::class);
+//        $request = $service->create($payload);
+//    }
 }
