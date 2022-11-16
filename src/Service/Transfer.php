@@ -86,7 +86,7 @@ class Transfer extends Service implements Payment
             'bank_code' => $root->bank_code,
             'full_name' => $root->full_name,
             'currency' => $root->currency,
-            'debit_currency' => $root->debit_currency,
+//            'debit_currency' => $root->debit_currency,
             'reference' => $root->reference,
             'amount' => $root->amount,
             'status' => $root->status,
