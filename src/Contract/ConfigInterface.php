@@ -2,12 +2,13 @@
 
 namespace Flutterwave\Contract;
 
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
-use Unirest\Request;
+
 
 interface ConfigInterface
 {
-    public function getHttp(): Request;
+    public function getHttp(): ClientInterface;
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env);
 
@@ -18,6 +19,8 @@ interface ConfigInterface
     public function getPublicKey():string;
 
     public function getSecretKey():string;
+
+    public static function getBaseUrl(): string;
 
     public function getEnv():string;
 

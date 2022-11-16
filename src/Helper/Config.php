@@ -3,13 +3,14 @@
 namespace Flutterwave\Helper;
 
 use Flutterwave\Contract\ConfigInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
-use Unirest\Request;
+use function is_null;
 
 class Config implements ConfigInterface {
-
     const PUBLIC_KEY = 'PUBLIC_KEY';
     const SECRET_KEY = 'SECRET_KEY';
     const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
@@ -20,7 +21,7 @@ class Config implements ConfigInterface {
     /**
      * @var string
      */
-    private $secret;
+    private string $secret;
     /**
      * @var string
      */
@@ -35,7 +36,7 @@ class Config implements ConfigInterface {
      * @var Logger
      */
     protected Logger $logger;
-    private Request $http;
+    private ClientInterface $http;
     private string $enc;
 
     private function __construct(string $secretKey, string $publicKey, string $encryptKey, string $env)
@@ -45,31 +46,33 @@ class Config implements ConfigInterface {
         $this->enc = $encryptKey;
         $this->env = $env;
 
-        $this->http = new Request();
+        $this->http = new Client([
+            "base_uri" => $this->getBaseUrl(),
+            "timeout" => 60
+        ]);
+
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $log->pushHandler(new RotatingFileHandler(self::LOG_FILE_NAME, 90, Logger::DEBUG));
+        $log->pushHandler(new RotatingFileHandler(self::LOG_FILE_NAME, 90));
     }
 
-    public function getHttp(): Request
+    public function getHttp(): ClientInterface
     {
-        return $this->http ?? new Request();
+        return $this->http ?? new Client();
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): self
     {
-
-        if(\is_null(self::$instance))
+        if(is_null(self::$instance))
         {
             return new Config($secretKey, $publicKey, $enc, $env);
         }
-
         return self::$instance;
     }
 
     public function getLoggerInstance(): LoggerInterface
     {
-        return $this->logger;;
+        return $this->logger;
     }
 
     public function getEncryptkey(): string
@@ -99,6 +102,6 @@ class Config implements ConfigInterface {
 
     public static function getDefaultTransactionPrefix():string
     {
-        return self::DEFAULT_PREFIX ;
+        return self::DEFAULT_PREFIX;
     }
 }
