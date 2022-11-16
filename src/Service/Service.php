@@ -98,7 +98,7 @@ class Service implements ServiceInterface
                 break;
         }
 
-        $body = $response->getBody();
+        $body = $response->getBody()->getContents();
         return json_decode($body);
     }
 
