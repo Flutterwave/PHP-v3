@@ -48,7 +48,7 @@ try {
             $transfer_bank = $result['transfer_bank'];
             $account_expiration = $result['account_expiration'];
             $transfer_amount = $result['transfer_amount'];
-            $response_display = require __DIR__."/examples/view/form/banktransfer.php";
+            $response_display = require __DIR__."/view/form/banktransfer.php";
         }
     }
 
