@@ -38,6 +38,7 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
+     * @param Payload $payload
      * @return array
      *
      * @throws GuzzleException
@@ -48,6 +49,7 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
+     * @param Payload $payload
      * @return array
      *
      * @throws GuzzleException
@@ -75,10 +77,9 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
+     * @param stdClass $response
      * @param array $payload
-     *
      * @return array
-     *
      * @throws Exception
      */
     private function handleAuthState(stdClass $response, array $payload): array
