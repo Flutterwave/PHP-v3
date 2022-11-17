@@ -1,9 +1,10 @@
-name: PHP Composer
+name: PHP Test
 
 on:
   push:
-    branches: [ "feat/add-guzzle-http" ]
-
+    branches: [ "development" ]
+  pull_request:
+    branches: [ "development" ]
 permissions:
   contents: read
 
