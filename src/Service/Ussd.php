@@ -7,8 +7,9 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\UssdEventHandler;
+use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
-use Unirest\Exception;
+use GuzzleHttp\Exception\GuzzleException;
 
 class Ussd extends Service implements Payment
 {
@@ -49,7 +50,9 @@ class Ussd extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @param Payload $payload
+     * @return array
+     * @throws \Exception
      */
     public function initiate(\Flutterwave\Payload $payload): array
     {
@@ -58,8 +61,9 @@ class Ussd extends Service implements Payment
     }
 
     /**
-     * @throws Exception
-     * @throws \Exception
+     * @param Payload $payload
+     * @return array
+     * @throws GuzzleException
      */
     public function charge(\Flutterwave\Payload $payload): array
     {
@@ -109,6 +113,9 @@ class Ussd extends Service implements Payment
     }
 
     /**
+     * @param \stdClass $response
+     * @param array $payload
+     * @return array
      * @throws \Exception
      */
     private function handleAuthState(\stdClass $response, array $payload): array
