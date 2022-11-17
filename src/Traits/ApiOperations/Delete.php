@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Traits\ApiOperations;
 
 use Unirest\Request;
 
 trait Delete
 {
-    /**
-     * @param string $url
-     * @return string
-     */
-    function delURL(string $url): string
+    public function delURL(string $url): string
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         //$body = Body::json($data);
         $path = $this->baseUrl . '/' . $this->end_point;
         $response = Request::delete($path . $url, $headers);

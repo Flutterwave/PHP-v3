@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 return [
     'AIRTIME',
@@ -12,5 +13,5 @@ return [
     'EKEDC POSTPAID TOPUP',
     'EKEDC PREPAID TOPUP',
     'LCC',
-    'KADUNA TOP UP'
+    'KADUNA TOP UP',
 ];

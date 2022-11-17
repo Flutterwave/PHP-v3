@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
@@ -11,28 +13,23 @@ class Remita extends Service
         parent::__construct($config);
     }
 
-    public function getAgencies()
+    public function getAgencies(): void
     {
-        
     }
 
-    public function getProductUnderAgency()
+    public function getProductUnderAgency(): void
     {
-
     }
 
-    public function getProductAmount()
+    public function getProductAmount(): void
     {
-
     }
 
-    public function createOrder()
+    public function createOrder(): void
     {
-
     }
 
-    public function updateOrder()
+    public function updateOrder(): void
     {
-
     }
 }

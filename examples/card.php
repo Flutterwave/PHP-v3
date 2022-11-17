@@ -8,11 +8,13 @@ use Flutterwave\Util\Currency;
 
 try {
 
+    $tx_ref = uniqid().time();
+
     $data = [
         "amount" => 2000,
         "currency" => Currency::NGN,
-        "tx_ref" => uniqid().time(),
-        "redirectUrl" => null,
+        "tx_ref" => $tx_ref,
+        "redirectUrl" => "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.php?tx_ref={$tx_ref}",
         "additionalData" => [
             "subaccounts" => [
                 ["id" => "RSA_345983858845935893"]
@@ -35,9 +37,8 @@ try {
         ],
     ];
 
-    $data['redirectUrl'] = "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.php?tx_ref={$data['tx_ref']}";
-
     $cardpayment = \Flutterwave\Flutterwave::create("card");
+
     $customerObj = $cardpayment->customer->create([
         "full_name" => "Olaobaju Abraham",
         "email" => "olaobajua@gmail.com",
@@ -137,4 +138,3 @@ try {
     </div>
     <script src="./assets/js/index.js"></script>
 <?php endif ?>
-

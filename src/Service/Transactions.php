@@ -1,27 +1,29 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\TransactionVerificationEventHandler;
-use Flutterwave\Traits\ApiOperations\Get;
 use Flutterwave\Traits\ApiOperations\Post;
 use Unirest\Exception;
 
 class Transactions extends Service
 {
     use Post;
-    const ENDPOINT = 'transactions';
-    const REFUND_PATH = "/:id"."/refund";
-    const MULTI_REFUND_ENDPOINT = "/refunds";
-    const REFUND_DETAILS_PATH = "refunds/:id";
-    const TRANSACTION_FEE_PATH = "/fee";
-    const RESEND_FAILED_HOOKS_PATH = "/:id/resend-hook";
-    const TRANSACTION_TIMELINE_PATH = "/:id/events";
-    const VALIDATE_TRANSACTION = "validate-charge";
-    private static string $name = "transactions";
+    public const ENDPOINT = 'transactions';
+    public const REFUND_PATH = '/:id'.'/refund';
+    public const MULTI_REFUND_ENDPOINT = '/refunds';
+    public const REFUND_DETAILS_PATH = 'refunds/:id';
+    public const TRANSACTION_FEE_PATH = '/fee';
+    public const RESEND_FAILED_HOOKS_PATH = '/:id/resend-hook';
+    public const TRANSACTION_TIMELINE_PATH = '/:id/events';
+    public const VALIDATE_TRANSACTION = 'validate-charge';
+    private static string $name = 'transactions';
     private string $end_point;
     private array $payment_type = [
-      "card","debit_ng_account","mobilemoney","bank_transfer", "ach_payment"
+        'card','debit_ng_account','mobilemoney','bank_transfer', 'ach_payment',
     ];
     private TransactionVerificationEventHandler $eventHandler;
 
@@ -30,7 +32,7 @@ class Transactions extends Service
         parent::__construct($config);
         $this->baseUrl = $this->config::BASE_URL;
         $this->end_point = Transactions::ENDPOINT;
-        $this->eventHandler = new TransactionVerificationEventHandler;
+        $this->eventHandler = new TransactionVerificationEventHandler();
     }
 
     /**
@@ -39,12 +41,12 @@ class Transactions extends Service
     public function verify(string $transactionId): \stdClass
     {
         $this->checkTransactionId($transactionId);
-        $this->logger->notice("Transaction Service::Verifying Transaction...".$transactionId);
+        $this->logger->notice('Transaction Service::Verifying Transaction...'.$transactionId);
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
-            self::ENDPOINT."/$transactionId/verify",
+            'GET',
+            self::ENDPOINT."/{$transactionId}/verify",
         );
         TransactionVerificationEventHandler::setResponseTime();
 
@@ -56,13 +58,12 @@ class Transactions extends Service
      */
     public function verifyWithTxref(string $tx_ref): \stdClass
     {
-
-        $this->logger->notice("Transaction Service::Verifying Transaction...".$tx_ref);
+        $this->logger->notice('Transaction Service::Verifying Transaction...'.$tx_ref);
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
-            self::ENDPOINT."/verify_by_reference?tx_ref=".$tx_ref,
+            'GET',
+            self::ENDPOINT.'/verify_by_reference?tx_ref='.$tx_ref,
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
@@ -78,7 +79,7 @@ class Transactions extends Service
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             self::ENDPOINT."/{$trasanctionId}/refund",
         );
         TransactionVerificationEventHandler::setResponseTime();
@@ -90,11 +91,11 @@ class Transactions extends Service
      */
     public function getAllTransactions(): \stdClass
     {
-        $this->logger->notice("Transaction Service::Retrieving all Transaction for Merchant");
+        $this->logger->notice('Transaction Service::Retrieving all Transaction for Merchant');
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             self::ENDPOINT,
         );
         TransactionVerificationEventHandler::setResponseTime();
@@ -111,7 +112,7 @@ class Transactions extends Service
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             "refunds/{$trasanctionId}",
         );
         TransactionVerificationEventHandler::setResponseTime();
@@ -121,19 +122,19 @@ class Transactions extends Service
     /**
      * @throws Exception
      */
-    public function getTransactionFee(string $amount, string $currency = "NGN", string $payment_type = "card"): \stdClass
+    public function getTransactionFee(string $amount, string $currency = 'NGN', string $payment_type = 'card'): \stdClass
     {
-        if(!$amount){
-            $msg = "Please pass a valid amount";
+        if (! $amount) {
+            $msg = 'Please pass a valid amount';
             $this->logger->warning($msg);
             throw new \InvalidArgumentException($msg);
         }
         $data = [
-            "amount" => $amount,
-            "currency" => $currency
+            'amount' => $amount,
+            'currency' => $currency,
         ];
 
-        if(!isset($this->payment_type[$payment_type])){
+        if (! isset($this->payment_type[$payment_type])) {
             $logData = json_encode($this->payment_type);
             $msg = "Please pass a valid Payment Type: options::{$logData}";
             $this->logger->warning($msg);
@@ -149,7 +150,7 @@ class Transactions extends Service
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             self::ENDPOINT."/fee?{$query}",
         );
         TransactionVerificationEventHandler::setResponseTime();
@@ -166,12 +167,11 @@ class Transactions extends Service
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             self::ENDPOINT."/{$transactionId}/resend-hook",
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
-
     }
 
     /**
@@ -184,7 +184,7 @@ class Transactions extends Service
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
-            "GET",
+            'GET',
             self::ENDPOINT."/{$transactionId}/timeline",
         );
         TransactionVerificationEventHandler::setResponseTime();
@@ -199,20 +199,21 @@ class Transactions extends Service
         $logData = json_encode(
             [
                 'flw_ref' => $flw_ref,
-                'date' => date("mm-dd-YYYY h:i:s")
-            ]);
+                'date' => date('mm-dd-YYYY h:i:s'),
+            ]
+        );
 
-        $this->logger->notice("Transaction Service::Validating Transaction ...".$logData);
+        $this->logger->notice('Transaction Service::Validating Transaction ...'.$logData);
 
         $data = [
-            "otp" => $otp,
-            "flw_ref" => $flw_ref,
+            'otp' => $otp,
+            'flw_ref' => $flw_ref,
 //            "type" => "card" //default would be card
         ];
 
         return $this->request(
             $data,
-            "POST",
+            'POST',
             self::VALIDATE_TRANSACTION,
         );
     }

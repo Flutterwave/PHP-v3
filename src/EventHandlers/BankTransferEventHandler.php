@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\EventHandlers;
 
 class BankTransferEventHandler implements EventHandlerInterface
@@ -9,7 +11,7 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onSuccessful($transactionData)
+    public function onSuccessful($transactionData): void
     {
         // TODO: Implement onSuccessful() method.
     }
@@ -17,7 +19,7 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onFailure($transactionData)
+    public function onFailure($transactionData): void
     {
         // TODO: Implement onFailure() method.
     }
@@ -25,7 +27,7 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onRequery($transactionReference)
+    public function onRequery($transactionReference): void
     {
         // TODO: Implement onRequery() method.
     }
@@ -33,7 +35,7 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onRequeryError($requeryResponse)
+    public function onRequeryError($requeryResponse): void
     {
         // TODO: Implement onRequeryError() method.
     }
@@ -41,7 +43,7 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onCancel($transactionReference)
+    public function onCancel($transactionReference): void
     {
         // TODO: Implement onCancel() method.
     }
@@ -49,19 +51,21 @@ class BankTransferEventHandler implements EventHandlerInterface
     /**
      * @inheritDoc
      */
-    function onTimeout($transactionReference, $data)
+    public function onTimeout($transactionReference, $data): void
     {
         // TODO: Implement onTimeout() method.
     }
 
     /**
-     * @throws \Exception
-     * */
-    function onAuthorization(\stdClass $response, ?array $resource = null): array
+     * @param \stdClass $response
+     * @param array|null $resource
+     * @return array
+     */
+    public function onAuthorization(\stdClass $response, ?array $resource = null): array
     {
         $auth = $response->meta->authorization;
         $mode = $auth->mode;
-        $data['dev_instruction'] = "Display the transfer data for the user to make a transfer to the generated account number. verify via Webhook Service.";
+        $data['dev_instruction'] = 'Display the transfer data for the user to make a transfer to the generated account number. verify via Webhook Service.';
         $data['instruction'] = $auth->transfer_note;
         $data['transfer_reference'] = $auth->transfer_reference;
         $data['transfer_account'] = $auth->transfer_account;
@@ -70,11 +74,10 @@ class BankTransferEventHandler implements EventHandlerInterface
         $data['transfer_amount'] = $auth->transfer_amount;
         $data['mode'] = $mode;
 
-        if(is_array($resource) && !empty($resource))
-        {
+        if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice("Transfer Authorization Mode: ".$mode);
-            $logger->info("Bank Transfer Event::Created Account Info :".json_encode($data));
+            $logger->notice('Transfer Authorization Mode: '.$mode);
+            $logger->info('Bank Transfer Event::Created Account Info :'.json_encode($data));
         }
 
         return $data;

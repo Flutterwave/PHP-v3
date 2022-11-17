@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Traits\PayloadOperations;
 
 use Flutterwave\AbstractPayment;
@@ -8,9 +10,10 @@ trait Prepare
 {
     /**
      * Generates a transaction reference number for the transactions
+     *
      * @return Prepare|AbstractPayment
      */
-    function createReferenceNumber(): self
+    public function createReferenceNumber(): self
     {
         $this->logger->notice('Generating Reference Number....');
         if ($this->overrideTransactionReference) {
@@ -25,27 +28,27 @@ trait Prepare
     /**
      * Generates a checksum value for the information to be sent to the payment gateway
      * */
-    function createCheckSum()
+    public function createCheckSum(): void
     {
         $this->logger->notice('Generating Checksum....');
-        $options = array(
-            "public_key" => self::$config->getPublicKey(),
-            "amount" => $this->amount,
-            "tx_ref" => $this->txref,
-            "currency" => $this->currency,
-            "payment_options" => "card,mobilemoney,ussd",
-            "customer" => [
-                "email" => $this->customerEmail,
-                "phone_number" => $this->customerPhone,
-                "name" => $this->customerFirstname . " " . $this->customerLastname
+        $options = [
+            'public_key' => self::$config->getPublicKey(),
+            'amount' => $this->amount,
+            'tx_ref' => $this->txref,
+            'currency' => $this->currency,
+            'payment_options' => 'card,mobilemoney,ussd',
+            'customer' => [
+                'email' => $this->customerEmail,
+                'phone_number' => $this->customerPhone,
+                'name' => $this->customerFirstname . ' ' . $this->customerLastname,
             ],
-            "redirect_url" => $this->redirectUrl,
-            "customizations" => [
-                "description" => $this->customDescription,
-                "logo" => $this->customLogo,
-                "title" => $this->customTitle,
-            ]
-        );
+            'redirect_url' => $this->redirectUrl,
+            'customizations' => [
+                'description' => $this->customDescription,
+                'logo' => $this->customLogo,
+                'title' => $this->customTitle,
+            ],
+        ];
 
         ksort($options);
 

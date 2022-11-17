@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Traits\ApiOperations;
 
 use Unirest\Exception;
@@ -9,18 +11,17 @@ use Unirest\Request\Body;
 trait Put
 {
     /**
-     * @param mixed[] $data
-     * @return string
+     * @param array<mixed> $data
+     *
      * @throws Exception
      */
-    function putURL(array $data): string
+    public function putURL(array $data): string
     {
         $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = array('Content-Type' => 'application/json', 'Authorization' => $bearerTkn);
+        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
         $body = Body::json($data);
         $url = $this->baseUrl . '/' . $this->end_point;
         $response = Request::put($url, $headers, $body);
         return $response->raw_body;
     }
-
 }

@@ -1,26 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Contract;
 
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
-use Unirest\Request;
 
 interface ConfigInterface
 {
-    public function getHttp(): Request;
 
-    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env);
+    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface;
+    public function getHttp(): ClientInterface;
 
     public function getLoggerInstance(): LoggerInterface;
 
     public function getEncryptkey(): string;
 
-    public function getPublicKey():string;
+    public function getPublicKey(): string;
 
-    public function getSecretKey():string;
+    public function getSecretKey(): string;
 
-    public function getEnv():string;
+    public static function getBaseUrl(): string;
 
-    public static function getDefaultTransactionPrefix():string;
+    public function getEnv(): string;
 
+    public static function getDefaultTransactionPrefix(): string;
 }

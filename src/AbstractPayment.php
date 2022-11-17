@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave;
 
 use Flutterwave\Contract\ConfigInterface;
@@ -14,17 +16,19 @@ abstract class AbstractPayment
 
     public string $secretKey;
     public string $txref;
+    public $type;
+    public LoggerInterface $logger;
 //    protected ?string $integrityHash = null;
     protected string $payButtonText = 'Proceed with Payment';
     protected string $redirectUrl;
-    protected array $meta = array();
+    protected array $meta = [];
     //protected $env;
     protected string $transactionPrefix;
     // public $logger;
     protected EventHandlerInterface $handler;
     protected string $baseUrl;
     protected string $transactionData;
-    protected string $overrideTransactionReference;
+    protected bool $overrideTransactionReference;
     protected int $requeryCount = 0;
     protected static ?array $methods = null;
 
@@ -34,7 +38,7 @@ abstract class AbstractPayment
     protected $pin;
     protected $options;
     protected string $amount;
-    protected $paymentOptions = Null;
+    protected $paymentOptions = null;
     protected $customDescription;
     protected $customLogo;
     protected $customTitle;
@@ -48,20 +52,13 @@ abstract class AbstractPayment
     //EndPoints
     protected string $end_point;
     protected string $flwRef;
-    public $type;
-    /**
-     * @var LoggerInterface
-     */
-    public LoggerInterface $logger;
-    /**
-     * @var ConfigInterface
-     */
     protected static ConfigInterface $config;
 
-    public function __construct()
+    public function __construct(string $prefix, bool $overrideRefWithPrefix)
     {
+        $this->transactionPrefix = $overrideRefWithPrefix ? $prefix : self::$config::DEFAULT_PREFIX . '_';
+        $this->baseUrl = self::$config::BASE_URL;
     }
 
-    abstract public function initialize();
-
+    abstract public function initialize(): void;
 }
