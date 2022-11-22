@@ -1,0 +1,44 @@
+name: PHP Test
+
+on:
+  push:
+    branches: [ "development" ]
+  pull_request:
+    branches: [ "development" ]
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    env:
+      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      ENV: ${{ secrets.ENV }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHPStan analysis
+        run: vendor/bin/phpstan analyse tests --no-progress --no-interaction --error-format=table
+
+      - name: Run test suite
+        run: ./vendor/bin/pest

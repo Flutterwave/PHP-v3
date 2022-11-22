@@ -11,8 +11,8 @@
         }
 
         #explain1 {
-            padding: 10px;
-            margin: 2em;
+            padding: 20px;
+            margin: 2em auto auto;
         }
 
     </style>
@@ -44,7 +44,7 @@
     <!-- Replace the value with your customer phonenumber (optional if email is passes) -->
     <input type="hidden" name="pay_button_text" value="Complete Payment"/>
     <!-- Replace the value with the payment button text you prefer (optional) -->
-    <input type="hidden" name="ref" value="MY_NAME_5a22a7f270abc8879"/>
+<!--    <input type="hidden" name="ref" value="TEST_TXREF_--><?//= uniqid() ?><!--"/>-->
     <!-- Replace the value with your transaction reference. It must be unique per transaction. You can delete this line if you want one to be generated for you. -->
     <input type="hidden" name="successurl" value="http://request.lendlot.com/13b9gxc1?status=success">
     <!-- Put your success url here -->

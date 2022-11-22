@@ -1,0 +1,45 @@
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+.cta {
+    margin-top: 1em;
+    justify-content: center;
+    align-content: center;
+    gap: 2em;
+}
+
+form, .pin-form {
+    text-align: center;
+}
+
+.error{
+    color: red;
+}
+
+.bank-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    margin-bottom: .5em;
+}
+
+.request {
+    width: 100%;
+    min-height: 1.5rem;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.progress {
+    width: 100%;
+    min-height: 1.5rem;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 0.8rem;
+    line-height: 1.2;
+}

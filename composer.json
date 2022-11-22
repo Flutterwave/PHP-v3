@@ -1,23 +1,32 @@
 {
     "name": "flutterwavedev/flutterwave-v3",
-    "description": "A simple SDK for integrating to Flutterwave's Rave payment",
+    "description": "A simple SDK for integrating to Flutterwave Payment",
     "type": "library",
-    "keywords": ["rave", "flutterwave", "payment", "transfers", "africa"],
+    "keywords": ["flutterwave", "payment", "transfers", "africa"],
     "homepage": "https://github.com/Flutterwave/Flutterwave-PHP-v3",
     "autoload": {
         "psr-4": {
-            "Flutterwave\\": "library/"
+            "Flutterwave\\": "src/"
         }
     },
+    "autoload-dev": {
+        "Flutterwave\\Test\\": "tests/"
+    },
     "require": {
-        "php": ">=5.4.0",
-        "monolog/monolog": ">=2.0",
-        "mashape/unirest-php": ">=3.0",
-        "vlucas/phpdotenv": ">=2.5"
+        "php": "^7.4 || ^8.0 || ^8.1",
+        "monolog/monolog": "^2.0 || ^3.0",
+        "vlucas/phpdotenv": "^2.5 || ^3.0 || ^5.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.5",
+        "psr/http-client": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": ">=6.0",
-        "mockery/mockery": ">=1.2"
+        "mockery/mockery": ">=1.2",
+        "symfony/var-dumper": "5.4.13",
+        "phpstan/phpstan": "^1.9",
+        "pestphp/pest": "^1.22",
+        "nunomaduro/phpinsights": "^2.6"
     },
     "license": "MIT",
     "authors": [
@@ -25,5 +34,11 @@
             "name": "Flutterwave Developers",
             "email": "developers@flutterwavego.com"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }
