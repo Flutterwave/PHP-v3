@@ -6,13 +6,20 @@ use Flutterwave\Flutterwave;
 use Flutterwave\Util\AuthMode;
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Util\Currency;
-use Flutterwave\Helper\Config;
+use Flutterwave\Test\Resources\Setup\Config;
 
 class MomoTest extends TestCase
 {
     protected function setUp(): void
     {
-        Flutterwave::bootstrap();
+        Flutterwave::bootstrap(
+            Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY],
+                $_SERVER[Config::ENCRYPTION_KEY],
+                $_SERVER[Config::ENV]
+            )
+        );
     }
 
     public function testAuthModeRwandaRedirect(){

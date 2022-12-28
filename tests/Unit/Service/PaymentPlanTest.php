@@ -2,13 +2,27 @@
 
 namespace Unit\Service;
 
-use Flutterwave\Helper\Config;
+use Flutterwave\Test\Resources\Setup\Config;
 use Flutterwave\Payload;
 use Flutterwave\Service\PaymentPlan;
 use PHPUnit\Framework\TestCase;
 
 class PaymentPlanTest extends TestCase
 {
+
+    public PaymentPlan $service;
+    protected function setUp(): void
+    {
+        $this->service = new PaymentPlan(
+            Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY], 
+                $_SERVER[Config::ENCRYPTION_KEY], 
+                $_SERVER[Config::ENV]
+            )
+        );
+    }
+
     public function testPlanCreation()
     {
         $payload = new Payload();
@@ -17,9 +31,8 @@ class PaymentPlanTest extends TestCase
         $payload->set("interval", "monthly");
         $payload->set("duration", "1");
 
-        $service = new PaymentPlan();
 
-        $request = $service->create($payload);
+        $request = $this->service->create($payload);
 
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
 
@@ -31,15 +44,13 @@ class PaymentPlanTest extends TestCase
      */
     public function testRetrievingPlan($id)
     {
-        $service = new PaymentPlan();
-        $request = $service->get($id);
+        $request = $this->service->get($id);
         $this->assertTrue(property_exists($request,'data') && !empty($request->data->id));
     }
 
     public function testRetrievingPlans()
     {
-        $service = new PaymentPlan();
-        $request = $service->list();
+        $request = $this->service->list();
         $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
     }
 
@@ -48,11 +59,10 @@ class PaymentPlanTest extends TestCase
      */
     public function testUpdatingPlan($id)
     {
-        $service = new PaymentPlan();
         $payload = new Payload();
         $payload->set("amount","600");
         $payload->set("status", "active");
-        $request = $service->update($id, $payload);
+        $request = $this->service->update($id, $payload);
         $this->assertTrue(property_exists($request,'data') && isset($request->data->id));
     }
 
@@ -61,8 +71,7 @@ class PaymentPlanTest extends TestCase
      */
     public function testCancelingPlan($id)
     {
-        $service = new PaymentPlan();
-        $request = $service->cancel($id);
+        $request = $this->service->cancel($id);
         $this->assertTrue(property_exists($request,'data') && $request->data->status == "cancelled");
     }
 }

@@ -2,16 +2,24 @@
 
 namespace Unit\Service;
 
-use PHPUnit\Framework\TestCase;
+use Flutterwave\Flutterwave;
 use Flutterwave\Util\AuthMode;
 use Flutterwave\Util\Currency;
-use Flutterwave\Helper\Config;
+use Flutterwave\Test\Resources\Setup\Config;
+use PHPUnit\Framework\TestCase;
 
 class UssdTest extends TestCase
 {
     protected function setUp(): void
     {
-        \Flutterwave\Flutterwave::bootstrap();
+        Flutterwave::bootstrap(
+            Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY],
+                $_SERVER[Config::ENCRYPTION_KEY],
+                $_SERVER[Config::ENV]
+            )
+        );
     }
 
 //    public function testAuthModeReturnUssd()

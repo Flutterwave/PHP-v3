@@ -2,7 +2,7 @@
 
 namespace Unit\Service;
 
-use Flutterwave\Helper\Config;
+use Flutterwave\Test\Resources\Setup\Config;
 use Flutterwave\Flutterwave;
 use Flutterwave\Util\AuthMode;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,14 @@ class BankTransferTest extends TestCase
 {
     protected function setUp(): void
     {
-        Flutterwave::bootstrap();
+        Flutterwave::bootstrap(
+            Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY],
+                $_SERVER[Config::ENCRYPTION_KEY],
+                $_SERVER[Config::ENV]
+            )
+        );
     }
 
     public function testAuthModeReturnBankTransfer()
