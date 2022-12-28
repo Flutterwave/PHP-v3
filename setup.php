@@ -3,7 +3,7 @@
 use Flutterwave\Helper;
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable(__DIR__."/../../");
+$dotenv = Dotenv::createImmutable(__DIR__."/../../../");
 $dotenv->safeLoad();
 
 //check if the current version of php is compatible
