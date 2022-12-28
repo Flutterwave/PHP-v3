@@ -44,7 +44,7 @@ class Config implements ConfigInterface
 
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $log->pushHandler(new RotatingFileHandler(self::LOG_FILE_NAME, 90));
+        $log->pushHandler(new RotatingFileHandler(__DIR__."../../../../../../".self::LOG_FILE_NAME, 90));
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface
