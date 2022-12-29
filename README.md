@@ -307,7 +307,9 @@ Flutterwave::bootstrap();
 
 # for a custom configuration
 # your config must implement Flutterwave\Contract\ConfigInterface 
-Flutterwave::bootstrap($myConfig);
+$config = Flutterwave::bootstrap($myConfig);
+new VirtualCard($config)
+new VirtualAccount($config)
 ```
 
 ### Account Charge
