@@ -48,10 +48,10 @@ class Config implements ConfigInterface
         $log->pushHandler(new RotatingFileHandler(__DIR__.$filePath, 90));
     }
 
-    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface
+    public static function setUp(string $secretKey, string $publicKey, string $enc, string $env, string $logPath = ""): ConfigInterface
     {
         if (\is_null(self::$instance)) {
-            return new Config($secretKey, $publicKey, $enc, $env);
+            return new Config($secretKey, $publicKey, $enc, $env, $logPath);
         }
         return self::$instance;
     }
