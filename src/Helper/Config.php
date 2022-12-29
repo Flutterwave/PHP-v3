@@ -7,7 +7,6 @@ namespace Flutterwave\Helper;
 use Flutterwave\Contract\ConfigInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use function is_null;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -30,7 +29,7 @@ class Config implements ConfigInterface
     private ClientInterface $http;
     private string $enc;
 
-    private function __construct(string $secretKey, string $publicKey, string $encryptKey, string $env)
+    private function __construct(string $secretKey, string $publicKey, string $encryptKey, string $env, string $logPath = "")
     {
         $this->secret = $secretKey;
         $this->public = $publicKey;
@@ -44,12 +43,14 @@ class Config implements ConfigInterface
 
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $log->pushHandler(new RotatingFileHandler(__DIR__."../../../../../../".self::LOG_FILE_NAME, 90));
+        $filePath = "../../../../../../$logPath".self::LOG_FILE_NAME;
+        $filePath = trim($filePath);
+        $log->pushHandler(new RotatingFileHandler(__DIR__.$filePath, 90));
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface
     {
-        if (is_null(self::$instance)) {
+        if (\is_null(self::$instance)) {
             return new Config($secretKey, $publicKey, $enc, $env);
         }
         return self::$instance;
