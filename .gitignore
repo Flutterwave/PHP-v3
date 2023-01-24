@@ -195,3 +195,4 @@ examples/*.log
 examples/endpoint/*.log
 example.php
 .phpunit.result.cache
+.env.local

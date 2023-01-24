@@ -3,12 +3,25 @@
 namespace Unit\Service;
 
 use Flutterwave\Flutterwave;
-use Flutterwave\Helper\Config;
 use Flutterwave\Payload;
+use Flutterwave\Test\Resources\Setup\Config;
 use Flutterwave\Service\Bill;
 
 class BillTest extends \PHPUnit\Framework\TestCase
 {
+
+    public Bill $service;
+    protected function setUp(): void
+    {
+        $this->service = new Bill(
+            Config::setUp(
+                $_SERVER[Config::SECRET_KEY],
+                $_SERVER[Config::PUBLIC_KEY], 
+                $_SERVER[Config::ENCRYPTION_KEY], 
+                $_SERVER[Config::ENV]
+            )
+        );
+    }
 //    public function testBillCreation()
 //    {
 //        $payload = new Payload();
@@ -30,8 +43,7 @@ class BillTest extends \PHPUnit\Framework\TestCase
         $payload->set("customer", "+2349067985861");
         $payload->set("amount", "2000");
 
-        $service = new Bill();
         $this->expectException(\InvalidArgumentException::class);
-        $request = $service->createPayment($payload);
+        $request = $this->service->createPayment($payload);
     }
 }

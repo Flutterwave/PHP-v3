@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flutterwave\Helper;
+namespace Flutterwave\Test\Resources\Setup;
 
 use Flutterwave\Contract\ConfigInterface;
 use GuzzleHttp\Client;
@@ -17,6 +17,7 @@ class Config implements ConfigInterface
     public const PUBLIC_KEY = 'PUBLIC_KEY';
     public const SECRET_KEY = 'SECRET_KEY';
     public const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
+    public const ENV = 'ENV';
     public const VERSION = 'v3';
     public const BASE_URL = 'https://api.flutterwave.com/'.self::VERSION;
     public const DEFAULT_PREFIX = 'FW|PHP';
@@ -44,7 +45,7 @@ class Config implements ConfigInterface
 
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $log->pushHandler(new RotatingFileHandler(__DIR__."../../../../../../".self::LOG_FILE_NAME, 90));
+        $log->pushHandler(new RotatingFileHandler(self::LOG_FILE_NAME, 90));
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface
