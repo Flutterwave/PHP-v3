@@ -14,7 +14,7 @@ class Currency
     public const ZMW = 'ZMW';
     public const EUR = 'EUR';
     public const GHS = 'GHS';
-    public const TNZ = 'TNZ';
+    public const TZS = 'TZS';
     public const RWF = 'RWF';
     public const XAF = 'XAF';
     public const XOF = 'XOF';
