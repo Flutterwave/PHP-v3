@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flutterwave\Contract;
 
-use GuzzleHttp\ClientInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 
 interface ConfigInterface
@@ -20,8 +20,6 @@ interface ConfigInterface
     public function getPublicKey(): string;
 
     public function getSecretKey(): string;
-
-    public static function getBaseUrl(): string;
 
     public function getEnv(): string;
 
