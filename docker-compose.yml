@@ -1,12 +1,16 @@
 services:
     web:
-        image: nginx
+        image: nginx:latest
         ports:
         - "80:80"
         volumes:
-        - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
         - app
+    app:
+        build:
+            context: .
+            dockerfile: ./.docker/php/Dockerfile
     db:
         image: mysql:5.7
         volumes:
