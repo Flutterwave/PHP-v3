@@ -4,14 +4,14 @@ services:
         ports:
         - "80:80"
         volumes:
-        - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
         - app
     app:
         build:
             context: .
-            dockerfile: ./.docker/php/Dockerfile
+            dockerfile: ./php/Dockerfile
     db:
         image: mysql:5.7
         volumes:
-        - ./docker/mysql:/var/lib/mysql
+        - ./mysql:/var/lib/mysql
