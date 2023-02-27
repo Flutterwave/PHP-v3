@@ -7,6 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\ServiceInterface;
 use Flutterwave\Helper\Config;
+use Flutterwave\Helper\EnvVariables;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
@@ -37,8 +38,8 @@ class Service implements ServiceInterface
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
         $this->secret = $this->config->getSecretKey();
-        $this->url = $this->config::getBaseUrl().'/';
-        $this->baseUrl = $this->config::getBaseUrl();
+        $this->url = EnvVariables::BASE_URL.'/';
+        $this->baseUrl = EnvVariables::BASE_URL;
     }
 
     public function getName(): string
