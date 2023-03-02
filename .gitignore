@@ -195,4 +195,6 @@ examples/*.log
 examples/endpoint/*.log
 example.php
 .phpunit.result.cache
+.phpunit.cache
+coverage.xml
 .env.local
