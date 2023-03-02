@@ -8,7 +8,7 @@ use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AchEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use stdClass;

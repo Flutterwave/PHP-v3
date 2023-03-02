@@ -26,7 +26,7 @@ trait Charge
         return (new Transactions($this->config))->verify($transactionId);
     }
 
-    private function checkPayloadIsValid(\Flutterwave\Payload $payload, string $criteria): bool
+    private function checkPayloadIsValid(\Flutterwave\Entities\Payload $payload, string $criteria): bool
     {
         $this->logger->notice('Charge Group::Verifying Payload  ...');
         //if does not payload contains $criteria :: false

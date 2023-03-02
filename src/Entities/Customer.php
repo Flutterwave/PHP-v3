@@ -2,7 +2,9 @@
 
 namespace Flutterwave\Entities;
 
-class Customer
+use Flutterwave\Contract\EntityInterface;
+
+class Customer implements EntityInterface
 {
     private array $data = [];
 

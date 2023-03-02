@@ -23,13 +23,13 @@ class Mpesa extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new MpesaEventHandler();
+        $this->eventHandler = new MpesaEventHandler($config);
     }
 
     /**
      * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(\Flutterwave\Entities\Payload $payload): array
     {
         return $this->charge($payload);
     }
@@ -38,7 +38,7 @@ class Mpesa extends Service implements Payment
      * @throws ClientExceptionInterface
      * @throws \Exception
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(\Flutterwave\Entities\Payload $payload): array
     {
         $this->logger->notice('Charging via Mpesa ...');
 
@@ -63,9 +63,9 @@ class Mpesa extends Service implements Payment
         unset($body['country']);
         unset($body['address']);
 
-        MpesaEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST', self::TYPE);
-        MpesaEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
 
         return $this->handleAuthState($request, $body);
     }

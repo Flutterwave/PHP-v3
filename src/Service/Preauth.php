@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\PreEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use Psr\Http\Client\ClientExceptionInterface;
 
@@ -31,7 +31,7 @@ class Preauth extends Service implements Payment
      * @param Payload $payload
      * @return array|null
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(Payload $payload): array
     {
         $this->logger->info('Preauth Service::Updated Payload...');
         $payload->set('preauthorize', 1);
@@ -43,7 +43,7 @@ class Preauth extends Service implements Payment
     /**
      * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(Payload $payload): array
     {
         PreEventHandler::startRecording();
         $response = $this->cardService->initiate($payload);
@@ -163,3 +163,4 @@ class Preauth extends Service implements Payment
         return $data ?? [ 'message' => 'Charge Refund Failed!'];
     }
 }
+

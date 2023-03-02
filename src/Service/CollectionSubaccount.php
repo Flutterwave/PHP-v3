@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\SubaccountEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use GuzzleHttp\Exception\GuzzleException;
 
 class CollectionSubaccount extends Service

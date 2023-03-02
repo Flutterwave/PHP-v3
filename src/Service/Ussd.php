@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\UssdEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -55,7 +55,7 @@ class Ussd extends Service implements Payment
      * @return array
      * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(Payload $payload): array
     {
         $this->logger->info('Ussd Service::Initiated Ussd Charge');
         return $this->charge($payload);
@@ -66,7 +66,7 @@ class Ussd extends Service implements Payment
      * @return array
      * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(Payload $payload): array
     {
         $otherData = $payload->get('otherData');
 

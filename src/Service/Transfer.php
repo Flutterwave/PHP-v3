@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\TransferEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
@@ -38,7 +38,7 @@ class Transfer extends Service implements Payment
     /**
      * @param Payload $payload
      * @return array
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function initiate(Payload $payload): array
     {

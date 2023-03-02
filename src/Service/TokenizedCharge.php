@@ -28,7 +28,7 @@ class TokenizedCharge extends Service implements Payment
     /**
      * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(\Flutterwave\Entities\Payload $payload): array
     {
         $this->logger->notice('Tokenize Service::Initiating Card Payment...');
         if (! $this->checkPayloadIsValid($payload, 'token')) {
@@ -44,7 +44,7 @@ class TokenizedCharge extends Service implements Payment
     /**
      * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(\Flutterwave\Entities\Payload $payload): array
     {
         # format the customer object to extract the first_name and the last name.
         $customer = $payload->get('customer')->toArray();

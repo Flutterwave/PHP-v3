@@ -3,8 +3,9 @@
 namespace Flutterwave\Entities;
 
 use Flutterwave\Util\AuthMode;
+use Flutterwave\Contract\EntityInterface;
 
-class Payload
+class Payload implements EntityInterface
 {
     public const PIN = 'pin';
     public const OTP = 'otp';

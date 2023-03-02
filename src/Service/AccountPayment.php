@@ -8,10 +8,11 @@ use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AccountEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class AccountPayment extends Service implements Payment
@@ -62,10 +63,10 @@ class AccountPayment extends Service implements Payment
     }
 
     /**
+     * @param Payload $payload
      * @return array
      *
-     * @throws GuzzleException
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function charge(Payload $payload): array
     {
@@ -125,6 +126,7 @@ class AccountPayment extends Service implements Payment
     }
 
     /**
+     * @param stdClass $response
      * @param array $payload
      *
      * @return array

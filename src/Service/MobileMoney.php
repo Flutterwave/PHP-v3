@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\MomoEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use Flutterwave\Util\Currency;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -49,7 +49,7 @@ class MobileMoney extends Service implements Payment
      * @return array
      * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(Payload $payload): array
     {
         return $this->charge($payload);
     }
@@ -59,7 +59,7 @@ class MobileMoney extends Service implements Payment
      * @return array
      * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(Payload $payload): array
     {
         $currency = $payload->get('currency');
         $otherData = $payload->get('otherData');

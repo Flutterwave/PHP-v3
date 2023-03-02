@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Contract\FactoryInterface;
 use Flutterwave\Contract\ServiceInterface;
+use Flutterwave\Factories\CustomerFactory as Customer;
+use Flutterwave\Factories\PayloadFactory as Payload;
 use Flutterwave\Helper\Config;
 use Flutterwave\Helper\EnvVariables;
 use Psr\Http\Client\ClientInterface;
@@ -18,8 +21,8 @@ use stdClass;
 class Service implements ServiceInterface
 {
     public const ENDPOINT = '';
-    public ?Payload $payload;
-    public ?Customer $customer;
+    public ?FactoryInterface $payload;
+    public ?FactoryInterface $customer;
     protected string $baseUrl;
     protected LoggerInterface $logger;
     protected ConfigInterface $config;

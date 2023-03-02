@@ -6,9 +6,10 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class Beneficiaries extends Service
@@ -24,7 +25,9 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @param Payload $payload
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function create(Payload $payload): stdClass
     {
@@ -53,7 +56,8 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function list(): stdClass
     {
@@ -65,7 +69,9 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @param string $id
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): stdClass
     {
@@ -77,7 +83,9 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @param string $id
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function delete(string $id): stdClass
     {
