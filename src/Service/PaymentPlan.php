@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class PaymentPlan extends Service
 {
@@ -21,7 +21,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function create(\Flutterwave\Payload $payload): \stdClass
     {
@@ -44,7 +44,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): \stdClass
     {
@@ -56,7 +56,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function list(): \stdClass
     {
@@ -68,7 +68,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function update(string $id, \Flutterwave\Payload $payload): \stdClass
     {
@@ -86,7 +86,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function cancel(string $id): \stdClass
     {

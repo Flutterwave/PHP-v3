@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
-use Unirest\Request;
-use Unirest\Request\Body;
+use Flutterwave\Service\Service as Http;
+use Psr\Http\Client\ClientExceptionInterface;
 
 trait EventTracker
 {
@@ -22,6 +22,9 @@ trait EventTracker
         self::$response_time = microtime(true) - self::$time_start;
     }
 
+    /**
+     * @throws ClientExceptionInterface
+     */
     public static function sendAnalytics($title): void
     {
         if (self::$response_time <= 0) {
@@ -37,8 +40,8 @@ trait EventTracker
             'title' => $title,
             'message' => self::$response_time,
         ];
-        $body = Body::json($data);
-        Request::post($url, [], $body);
+
+        $response = (new Http(static::$config))->request($data, 'POST', $url, true);
 
         self::resetTime();
     }

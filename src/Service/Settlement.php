@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Settlement extends Service
 {
@@ -18,7 +18,7 @@ class Settlement extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): \stdClass
     {
@@ -30,7 +30,7 @@ class Settlement extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function list(): \stdClass
     {

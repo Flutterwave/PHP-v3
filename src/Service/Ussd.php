@@ -10,6 +10,7 @@ use Flutterwave\EventHandlers\UssdEventHandler;
 use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Ussd extends Service implements Payment
 {
@@ -46,13 +47,13 @@ class Ussd extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new UssdEventHandler();
+        $this->eventHandler = new UssdEventHandler($config);
     }
 
     /**
      * @param Payload $payload
      * @return array
-     * @throws \Exception
+     * @throws ClientExceptionInterface
      */
     public function initiate(\Flutterwave\Payload $payload): array
     {
@@ -63,7 +64,7 @@ class Ussd extends Service implements Payment
     /**
      * @param Payload $payload
      * @return array
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function charge(\Flutterwave\Payload $payload): array
     {
@@ -98,11 +99,11 @@ class Ussd extends Service implements Payment
         unset($body['country']);
         unset($body['address']);
 
-        UssdEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $this->logger->info('Ussd Service::Generating Ussd Code');
         $request = $this->request($body, 'POST', self::TYPE);
         $this->logger->info('Ussd Service::Generated Ussd Code Successfully');
-        UssdEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
 
         return $this->handleAuthState($request, $body);
     }

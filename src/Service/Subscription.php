@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Subscription extends Service
 {
@@ -18,7 +18,7 @@ class Subscription extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function list(): \stdClass
     {
@@ -30,7 +30,7 @@ class Subscription extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function activate(string $id): \stdClass
     {
@@ -42,7 +42,7 @@ class Subscription extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function deactivate(string $id): \stdClass
     {

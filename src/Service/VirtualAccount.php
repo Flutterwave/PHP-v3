@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class VirtualAccount extends Service
 {
@@ -18,7 +18,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function create(array $payload): \stdClass
     {
@@ -38,7 +38,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function createBulk(array $payload): \stdClass
     {
@@ -62,7 +62,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get($order_ref): \stdClass
     {
@@ -74,7 +74,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBulk($batch_id): \stdClass
     {
@@ -86,7 +86,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function update(array $payload): \stdClass
     {
@@ -108,7 +108,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function delete($order_ref): \stdClass
     {

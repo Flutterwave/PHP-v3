@@ -11,6 +11,7 @@ use Flutterwave\EventHandlers\BankTransferEventHandler;
 use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class BankTransfer extends Service implements Payment
@@ -27,7 +28,7 @@ class BankTransfer extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new BankTransferEventHandler();
+        $this->eventHandler = new BankTransferEventHandler($config);
     }
 
     public function makePermanent(): void
@@ -41,7 +42,7 @@ class BankTransfer extends Service implements Payment
      * @param Payload $payload
      * @return array
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function initiate(Payload $payload): array
     {
@@ -52,8 +53,8 @@ class BankTransfer extends Service implements Payment
      * @param Payload $payload
      * @return array
      *
-     * @throws GuzzleException
-     * @throws Exception
+     * @throws ClientExceptionInterface
+     * @throws Exception|ClientExceptionInterface
      */
     public function charge(Payload $payload): array
     {
@@ -65,9 +66,9 @@ class BankTransfer extends Service implements Payment
         //request payload
         $body = $payload;
 
-        BankTransferEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST', self::TYPE);
-        BankTransferEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $this->handleAuthState($request, $body);
     }
 

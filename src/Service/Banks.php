@@ -6,7 +6,8 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
+use stdClass;
 
 class Banks extends Service
 {
@@ -18,9 +19,9 @@ class Banks extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    public function getByCountry(string $country = 'NG'): \stdClass
+    public function getByCountry(string $country = 'NG'): stdClass
     {
         $this->logger->notice("Bank Service::Retrieving banks in country:({$country}).");
         self::startRecording();
@@ -30,9 +31,9 @@ class Banks extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    public function getBranches(string $id): \stdClass
+    public function getBranches(string $id): stdClass
     {
         $this->logger->notice("Bank Service::Retrieving Bank Branches bank_id:({$id}).");
         self::startRecording();

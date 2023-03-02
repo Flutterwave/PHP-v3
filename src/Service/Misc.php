@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Misc extends Service
 {
@@ -27,7 +27,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getWallet($currency): \stdClass
     {
@@ -39,7 +39,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getWallets(): \stdClass
     {
@@ -51,7 +51,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBalanceHistory(array $queryParams): \stdClass
     {
@@ -71,7 +71,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveAccount(\Flutterwave\Payload $payload): \stdClass
     {
@@ -91,7 +91,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveBvn(string $bvn): \stdClass
     {
@@ -103,7 +103,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveCardBin(string $bin): \stdClass
     {
@@ -115,7 +115,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function userBackgroundCheck(array $data): \stdClass
     {

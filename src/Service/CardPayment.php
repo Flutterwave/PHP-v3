@@ -33,7 +33,7 @@ class CardPayment extends Service implements Payment
 
         $this->url = $this->baseUrl.'/'.$endpoint.'?type='.self::TYPE;
         $this->end_point = self::ENDPOINT.'?type='.self::TYPE;
-        $this->eventHandler = new CardEventHandler();
+        $this->eventHandler = new CardEventHandler($config);
     }
 
     /**

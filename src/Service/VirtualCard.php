@@ -8,7 +8,7 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
 use Flutterwave\Payload;
 use InvalidArgumentException;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class VirtualCard extends Service
 {
@@ -34,7 +34,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function create(Payload $payload): \stdClass
     {
@@ -48,7 +48,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): \stdClass
     {
@@ -60,7 +60,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function list(): \stdClass
     {
@@ -72,7 +72,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function fund(string $id, array $data): \stdClass
     {
@@ -91,7 +91,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function withdraw(string $id, string $amount = '0'): \stdClass
     {
@@ -103,7 +103,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function block(string $id): \stdClass
     {
@@ -115,7 +115,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function unblock(string $id): \stdClass
     {
@@ -127,7 +127,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function terminate(string $id): \stdClass
     {
@@ -139,7 +139,7 @@ class VirtualCard extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getTransactions(string $id, array $options = ['index' => 0, 'size' => 20]): \stdClass
     {

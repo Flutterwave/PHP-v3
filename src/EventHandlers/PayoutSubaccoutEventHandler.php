@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class PayoutSubaccoutEventHandler implements EventHandlerInterface
 {
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     public function onSuccessful($transactionData): void
     {

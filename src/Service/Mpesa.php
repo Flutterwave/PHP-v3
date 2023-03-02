@@ -8,7 +8,7 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\MpesaEventHandler;
 use Flutterwave\Traits\Group\Charge;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Mpesa extends Service implements Payment
 {
@@ -27,7 +27,7 @@ class Mpesa extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function initiate(\Flutterwave\Payload $payload): array
     {
@@ -35,7 +35,7 @@ class Mpesa extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      * @throws \Exception
      */
     public function charge(\Flutterwave\Payload $payload): array

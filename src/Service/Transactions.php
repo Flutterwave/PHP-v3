@@ -7,7 +7,7 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\TransactionVerificationEventHandler;
 use Flutterwave\Traits\ApiOperations\Post;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Transactions extends Service
 {
@@ -36,7 +36,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function verify(string $transactionId): \stdClass
     {
@@ -54,7 +54,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function verifyWithTxref(string $tx_ref): \stdClass
     {
@@ -70,7 +70,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function refund(string $trasanctionId): \stdClass
     {
@@ -87,7 +87,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getAllTransactions(): \stdClass
     {
@@ -103,7 +103,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getRefundInfo(string $trasanctionId): \stdClass
     {
@@ -120,7 +120,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getTransactionFee(string $amount, string $currency = 'NGN', string $payment_type = 'card'): \stdClass
     {
@@ -158,7 +158,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resendFailedHooks(string $transactionId): \stdClass
     {
@@ -175,7 +175,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function retrieveTimeline(string $transactionId): \stdClass
     {
@@ -192,7 +192,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function validate(string $otp, string $flw_ref): \stdClass
     {

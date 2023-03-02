@@ -8,7 +8,7 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\TkEventHandler;
 use Flutterwave\Traits\Group\Charge;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class TokenizedCharge extends Service implements Payment
 {
@@ -26,9 +26,9 @@ class TokenizedCharge extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload)
+    public function initiate(\Flutterwave\Payload $payload): array
     {
         $this->logger->notice('Tokenize Service::Initiating Card Payment...');
         if (! $this->checkPayloadIsValid($payload, 'token')) {
@@ -42,7 +42,7 @@ class TokenizedCharge extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function charge(\Flutterwave\Payload $payload): array
     {

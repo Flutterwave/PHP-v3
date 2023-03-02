@@ -25,7 +25,7 @@ class ApplePay extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new ApplePayEventHandler();
+        $this->eventHandler = new ApplePayEventHandler($config);
     }
 
     /**

@@ -33,7 +33,7 @@ class AchPayment extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new AchEventHandler();
+        $this->eventHandler = new AchEventHandler($config);
     }
 
     public function setCountry(string $country): void

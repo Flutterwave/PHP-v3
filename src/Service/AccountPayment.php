@@ -35,7 +35,7 @@ class AccountPayment extends Service implements Payment
         $endpoint = $this->getEndpoint();
 
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new AccountEventHandler();
+        $this->eventHandler = new AccountEventHandler($config);
     }
 
     public function setCountry(string $country): void

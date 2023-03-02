@@ -11,6 +11,7 @@ use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class Transfer extends Service implements Payment
@@ -31,7 +32,7 @@ class Transfer extends Service implements Payment
 
         $endpoint = 'transfers';
         $this->url = $this->baseUrl.'/'.$endpoint;
-        $this->eventHandler = new TransferEventHandler();
+        $this->eventHandler = new TransferEventHandler($config);
     }
 
     /**
@@ -52,7 +53,7 @@ class Transfer extends Service implements Payment
     /**
      * @param Payload $payload
      * @return array
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function charge(Payload $payload): array
     {
@@ -104,7 +105,7 @@ class Transfer extends Service implements Payment
      * @return stdClass
      * retry a previously failed transfer.
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function retry(?string $transactionId): stdClass
     {
@@ -119,7 +120,7 @@ class Transfer extends Service implements Payment
     /**
      * @param Payload $payload
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function createBulk(Payload $payload): stdClass
     {
@@ -140,7 +141,7 @@ class Transfer extends Service implements Payment
     /**
      * @param string $id
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): stdClass
     {
@@ -153,7 +154,7 @@ class Transfer extends Service implements Payment
 
     /**
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function getAll(): stdClass
     {
@@ -167,7 +168,7 @@ class Transfer extends Service implements Payment
     /**
      * @param array $params
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function getFee(array $params = []): stdClass
     {
@@ -189,7 +190,7 @@ class Transfer extends Service implements Payment
     /**
      * @param string $id
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function getRetry(string $id): stdClass
     {
@@ -204,7 +205,7 @@ class Transfer extends Service implements Payment
     /**
      * @param string $batch_id
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function getBulk(string $batch_id): stdClass
     {
@@ -219,7 +220,7 @@ class Transfer extends Service implements Payment
     /**
      * @param array $params
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function getRates(array $params): stdClass
     {

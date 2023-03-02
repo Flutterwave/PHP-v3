@@ -7,7 +7,8 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\PayoutSubaccoutEventHandler;
 use Flutterwave\Payload;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
+use stdClass;
 
 class PayoutSubaccount extends Service
 {
@@ -41,9 +42,11 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @param Payload $payload
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
-    public function create(Payload $payload): \stdClass
+    public function create(Payload $payload): stdClass
     {
         $this->logger->notice('PSA Service::Creating new Payout Subaccount.');
         $body = $this->confirmPayload($payload);
@@ -55,9 +58,9 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function list(): \stdClass
+    public function list(): stdClass
     {
         $this->eventHandler::startRecording();
         $response = $this->request(null, 'GET');
@@ -66,18 +69,18 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get(string $account_reference): \stdClass
     {
         $this->eventHandler::startRecording();
-        $response = $this->request(null, 'GET', "/{$account_reference}");
+        $response = $this->request(null, 'GET', "/$account_reference");
         $this->eventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function update(string $account_reference, Payload $payload): \stdClass
     {
@@ -94,7 +97,7 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function fetchTransactions(string $account_reference): \stdClass
     {
@@ -105,7 +108,7 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function fetchAvailableBalance(string $account_reference, string $currency = 'NGN'): \stdClass
     {
@@ -116,9 +119,9 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function fetchStaticVirtualAccounts(string $account_reference, string $currency = 'NGN'): \stdClass
+    public function fetchStaticVirtualAccounts(string $account_reference, string $currency = 'NGN'): stdClass
     {
         $this->eventHandler::startRecording();
         $response = $this->request(null, 'GET', "/{$account_reference}/static-account?currency={$currency}");

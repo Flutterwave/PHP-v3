@@ -10,7 +10,7 @@ use Flutterwave\EventHandlers\MomoEventHandler;
 use Flutterwave\Payload;
 use Flutterwave\Traits\Group\Charge;
 use Flutterwave\Util\Currency;
-use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class MobileMoney extends Service implements Payment
 {
@@ -41,13 +41,13 @@ class MobileMoney extends Service implements Payment
         parent::__construct($config);
         $endpoint = $this->getEndpoint();
         $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new MomoEventHandler();
+        $this->eventHandler = new MomoEventHandler($config);
     }
 
     /**
      * @param Payload $payload
      * @return array
-     * @throws \Exception
+     * @throws ClientExceptionInterface
      */
     public function initiate(\Flutterwave\Payload $payload): array
     {
@@ -57,7 +57,7 @@ class MobileMoney extends Service implements Payment
     /**
      * @param Payload $payload
      * @return array
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function charge(\Flutterwave\Payload $payload): array
     {

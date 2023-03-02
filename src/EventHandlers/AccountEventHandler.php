@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class AccountEventHandler implements EventHandlerInterface
 {
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
+
     use EventTracker;
 
     /**

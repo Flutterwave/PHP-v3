@@ -8,9 +8,9 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\ServiceInterface;
 use Flutterwave\Helper\Config;
 use Flutterwave\Helper\EnvVariables;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientInterface;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use function is_null;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -52,15 +52,21 @@ class Service implements ServiceInterface
      * @param string $verb
      * @param string $additionalurl
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    protected function request(?array $data = null, string $verb = 'GET', string $additionalurl = ''): stdClass
+    protected function request(
+        ?array $data = null,
+        string $verb = 'GET',
+        string $additionalurl = '',
+        bool $overrideUrl = false
+    ): stdClass
     {
         $secret = $this->config->getSecretKey();
+        $url = $this->getUrl($overrideUrl, $additionalurl);
 
         switch ($verb) {
             case 'POST':
-                $response = $this->http->request('POST', $this->url.$additionalurl, [
+                $response = $this->http->request('POST', $url, [
                     'debug' => false, # TODO: turn to false  on release.
                     'headers' => [
                         'Authorization' => "Bearer $secret",
@@ -70,7 +76,7 @@ class Service implements ServiceInterface
                 ]);
                 break;
             case 'PUT':
-                $response = $this->http->request('PUT', $this->url.$additionalurl, [
+                $response = $this->http->request('PUT', $url, [
                     'debug' => false, # TODO: turn to false  on release.
                     'headers' => [
                         'Authorization' => "Bearer $secret",
@@ -80,7 +86,7 @@ class Service implements ServiceInterface
                 ]);
                 break;
             case 'DELETE':
-                $response = $this->http->request('DELETE', $this->url.$additionalurl, [
+                $response = $this->http->request('DELETE', $url, [
                     'debug' => false,
                     'headers' => [
                         'Authorization' => "Bearer $secret",
@@ -89,7 +95,7 @@ class Service implements ServiceInterface
                 ]);
                 break;
             default:
-                $response = $this->http->request('GET', $this->url.$additionalurl, [
+                $response = $this->http->request('GET', $url, [
                     'debug' => false,
                     'headers' => [
                         'Authorization' => "Bearer $secret",
@@ -126,5 +132,11 @@ class Service implements ServiceInterface
             );
         }
         self::$spareConfig = $config;
+    }
+    private function getUrl(bool $overrideUrl, string $additionalurl ): string
+    {
+        if($overrideUrl) return $additionalurl;
+
+        return $this->url.$additionalurl;
     }
 }

@@ -6,7 +6,7 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Bill extends Service
 {
@@ -23,7 +23,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getCategories(): \stdClass
     {
@@ -35,7 +35,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function validateService(string $item_code): \stdClass
     {
@@ -47,7 +47,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function createPayment(\Flutterwave\Payload $payload): \stdClass
     {
@@ -87,7 +87,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBillStatus(string $reference): \stdClass
     {
@@ -99,7 +99,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBillPayments(): \stdClass
     {
