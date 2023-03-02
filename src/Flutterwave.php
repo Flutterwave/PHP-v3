@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Flutterwave;
 
 use Flutterwave\EventHandlers\EventHandlerInterface;
+use Flutterwave\Exception\ApiException;
 use Flutterwave\Traits\PaymentFactory;
 use Flutterwave\Traits\Setup\Configure;
+use Psr\Http\Client\ClientExceptionInterface;
 
 define('FLW_PHP_ASSET_DIR', __DIR__.'../assets/');
 
@@ -204,6 +206,8 @@ class Flutterwave extends AbstractPayment
      * Requerys a previous transaction from the Rave payment gateway
      *
      * @param string $referenceNumber This should be the reference number of the transaction you want to requery
+     * @throws ClientExceptionInterface
+     * @throws ApiException
      */
     public function requeryTransaction(string $referenceNumber): object
     {
@@ -219,24 +223,19 @@ class Flutterwave extends AbstractPayment
             // 'only_successful' => '1'
         ];
 
-        // make request to endpoint using unirest.
-        $headers = ['Content-Type' => 'application/json', 'Authorization' => 'Bearer '.self::$config->getSecretKey()];
-        $body = Body::json($data);
-        $url = $this->baseUrl . '/transactions/' . $data['id'] . '/verify';
+        $url = '/transactions/' . $data['id'] . '/verify';
         // Make `POST` request and handle response with unirest
-        $response = Request::get($url, $headers);
-
-//         print_r($response);
+        $response = $this->getURL(static::$config, $url);
 
         //check the status is success
-        if ($response->body && $response->body->status === 'success') {
-            if ($response->body && $response->body->data && $response->body->data->status === 'successful') {
+        if ($response->status === 'success') {
+            if ($response->data && $response->data->status === 'successful') {
                 $this->logger->notice('Requeryed a successful transaction....' . json_encode($response->body->data));
                 // Handle successful
                 if (isset($this->handler)) {
                     $this->handler->onSuccessful($response->body->data);
                 }
-            } elseif ($response->body && $response->body->data && $response->body->data->status === 'failed') {
+            } elseif ($response->data && $response->data->status === 'failed') {
                 // Handle Failure
                 $this->logger->warning('Requeryed a failed transaction....' . json_encode($response->body->data));
                 if (isset($this->handler)) {
@@ -244,12 +243,12 @@ class Flutterwave extends AbstractPayment
                 }
             } else {
                 // Handled an undecisive transaction. Probably timed out.
-                $this->logger->warning('Requeryed an undecisive transaction....' . json_encode($response->body->data));
+                $this->logger->warning('Requeryed an undecisive transaction....' . json_encode($response->data));
                 // I will requery again here. Just incase we have some devs that cannot setup a queue for requery. I don't like this.
                 if ($this->requeryCount > 4) {
                     // Now you have to setup a queue by force. We couldn't get a status in 5 requeries.
                     if (isset($this->handler)) {
-                        $this->handler->onTimeout($this->txref, $response->body);
+                        $this->handler->onTimeout($this->txref, $response->data);
                     }
                 } else {
                     $this->logger->notice('delaying next requery for 3 seconds');
@@ -259,7 +258,6 @@ class Flutterwave extends AbstractPayment
                 }
             }
         } else {
-            // $this->logger->warn('Requery call returned error for transaction reference.....'.json_encode($response->body).'Transaction Reference: '. $this->txref);
             // Handle Requery Error
             if (isset($this->handler)) {
                 $this->handler->onRequeryError($response->body);
