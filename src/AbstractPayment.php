@@ -6,6 +6,7 @@ namespace Flutterwave;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventHandlerInterface;
+use Flutterwave\Helper\EnvVariables;
 use Flutterwave\Traits\ApiOperations as Api;
 use Flutterwave\Traits\PayloadOperations as Payload;
 use Psr\Log\LoggerInterface;
@@ -57,7 +58,7 @@ abstract class AbstractPayment
     public function __construct(string $prefix, bool $overrideRefWithPrefix)
     {
         $this->transactionPrefix = $overrideRefWithPrefix ? $prefix : self::$config::DEFAULT_PREFIX . '_';
-        $this->baseUrl = self::$config::BASE_URL;
+        $this->baseUrl = EnvVariables::BASE_URL;
     }
 
     abstract public function initialize(): void;
