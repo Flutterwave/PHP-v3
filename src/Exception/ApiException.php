@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Flutterwave\Exception;
 
-class ApiException extends \Unirest\Exception
+use Psr\Http\Client\ClientExceptionInterface;
+
+class ApiException extends \Exception
 {
 }
