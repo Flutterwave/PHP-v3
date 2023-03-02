@@ -17,6 +17,7 @@ jobs:
         php: [8.1, 8.2]
 
     env:
+      XDEBUG_MODE: coverage
       PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -50,8 +51,12 @@ jobs:
       - name: run unit tests and coverage scan
         run: ./vendor/bin/pest --coverage --min=0 --coverage-clover ./coverage.xml
 
-      - name: upload coverage report to codecov
+      - name: Upload to Codecov
         uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODE_COV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
 
       - name: push build status to Slack
         uses: 8398a7/action-slack@v3
