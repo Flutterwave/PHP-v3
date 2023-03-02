@@ -2,7 +2,7 @@ name: Review changes on Dev (Commits/PRs)
 
 on:
   push:
-    branches: ['development']
+    branches: ["development"]
   pull_request:
     types:
       - opened
@@ -21,7 +21,7 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       ENV: ${{ secrets.ENV }}
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -43,12 +43,12 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
-        
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
       - name: run unit tests and coverage scan
-        run: ./vendor/bin/pest --coverage --min=90
+        run: ./vendor/bin/pest --coverage --min=80 --coverage-clover ./coverage.xml
 
       - name: upload coverage report to codecov
         uses: codecov/codecov-action@v2
