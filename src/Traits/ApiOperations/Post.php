@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace Flutterwave\Traits\ApiOperations;
 
-use Unirest\Exception;
-use Unirest\Request;
-use Unirest\Request\Body;
+use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Service\Service as Http;
+use Psr\Http\Client\ClientExceptionInterface;
 
 trait Post
 {
     /**
-     * @param array<mixed> $data
+     * @param ConfigInterface $config
+     * @param array $data
      *
-     * @throws Exception
+     * @return string
+     * @throws ClientExceptionInterface
      */
-    public function postURL(array $data): string
+    public function postURL(ConfigInterface $config, array $data): string
     {
-        // make request to endpoint using unirest
-        $bearerTkn = 'Bearer ' . $this->config->getSecretKey();
-        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
-        $body = Body::json($data);
-        $url = $this->baseUrl . '/' . $this->end_point;
-        $response = Request::post($url, $headers, $body);
-        return $response->raw_body;    // Unparsed body
+        $response = (new Http($config))->request($data, 'POST', $this->end_point);
+
+        return '';
     }
 }

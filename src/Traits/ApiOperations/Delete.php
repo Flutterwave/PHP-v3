@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Flutterwave\Traits\ApiOperations;
 
-use Unirest\Request;
+use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Service\Service as Http;
+use Psr\Http\Client\ClientExceptionInterface;
 
 trait Delete
 {
-    public function delURL(string $url): string
+    public function deleteURL(ConfigInterface  $config, string $url): string
     {
-        $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
-        //$body = Body::json($data);
-        $path = $this->baseUrl . '/' . $this->end_point;
-        $response = Request::delete($path . $url, $headers);
-        return $response->raw_body;
+        $response = (new Http($config))->request(null, 'DELETE', $url);
+
+        return '';
     }
 }
