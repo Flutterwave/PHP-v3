@@ -89,9 +89,9 @@ class CardPayment extends Service implements Payment
             'client' => $client,
         ];
 
-        CardEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST');
-        CardEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $this->handleAuthState($request, $payload);
     }
 
