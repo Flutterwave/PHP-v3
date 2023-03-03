@@ -302,11 +302,18 @@ if (isset($postData['amount'])) {
 Create a .env file and add the bootstrap method first before initiating a charge.
 ```php
 use \Flutterwave\Flutterwave;
+use \Flutterwave\Helper\Config;
 # normal configuration
-Flutterwave::bootstrap();
+Flutterwave::bootstrap(); # this will use the default configuration
 
 # for a custom configuration
-# your config must implement Flutterwave\Contract\ConfigInterface 
+# your config must implement Flutterwave\Contract\ConfigInterface
+$myConfig = Config::setUp(
+    getenv(Config::SECRET_KEY),
+    getenv(Config::PUBLIC_KEY),
+    getenv(Config::ENCRYPTION_KEY),
+    getenv(Config::ENV)
+); 
 Flutterwave::bootstrap($myConfig);
 ```
 
