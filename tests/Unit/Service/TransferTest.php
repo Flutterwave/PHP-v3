@@ -15,10 +15,10 @@ class TransferTest extends TestCase
     {
         $this->service = new Transfer(
             Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY], 
-                $_SERVER[Config::ENCRYPTION_KEY], 
-                $_SERVER[Config::ENV]
+                getenv(Config::SECRET_KEY),
+                getenv(Config::PUBLIC_KEY),
+                getenv(Config::ENCRYPTION_KEY),
+                getenv(Config::ENV)
             )
         );
     }

@@ -14,10 +14,10 @@ trait Configure
         if (\is_null($config)) {
             require __DIR__.'/../../../setup.php';
             $config = Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY],
-                $_SERVER[Config::ENCRYPTION_KEY],
-                $_SERVER['ENV']
+                getenv(Config::SECRET_KEY),
+                getenv(Config::PUBLIC_KEY),
+                getenv(Config::ENCRYPTION_KEY),
+                getenv(Config::ENV)
             );
         }
         self::$config = $config;
