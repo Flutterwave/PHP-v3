@@ -280,7 +280,7 @@ class Flutterwave extends AbstractPayment
 //        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
         echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
 //        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
-        echo '<script type="text/javascript" src="../assets/js/v3.js"></script>';
+        echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
 
         echo '<script>';
         echo 'document.addEventListener("DOMContentLoaded", function(event) {';
