@@ -1,4 +1,4 @@
-name: Publish to Packagist
+name: Pre-release
 
 on:
   release:
@@ -7,9 +7,12 @@ on:
 jobs:
   check-docs-update:
     runs-on: ubuntu-latest
-    env:
-      OS: ubuntu-latest
-      PYTHON: '3.7'
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [7.4, 8.1, 8.2]
+        
     steps:
       - uses: actions/checkout@v2
       - uses: technote-space/get-diff-action@v6
