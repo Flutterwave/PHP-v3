@@ -42,5 +42,13 @@
             "pestphp/pest-plugin": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "scripts": {
+        "php-insight": [
+            "./vendor/bin/phpinsights analyse src"
+        ],
+        "php-insight-fix": [
+            "vendor/bin/phpinsights fix src"
+        ]
     }
 }
