@@ -13,14 +13,7 @@ class BankTransferTest extends TestCase
 {
     protected function setUp(): void
     {
-        Flutterwave::bootstrap(
-            Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            )
-        );
+        Flutterwave::bootstrap();
     }
 
     public function testAuthModeReturnBankTransfer()

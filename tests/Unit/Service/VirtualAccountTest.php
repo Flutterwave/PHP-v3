@@ -14,14 +14,7 @@ class VirtualAccountTest extends TestCase
     public VirtualAccount $service;
     protected function setUp(): void
     {
-        $this->service = new VirtualAccount(
-            Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            )
-        );
+        $this->service = new VirtualAccount();
     }
 
     public function testVirtualAccountCreation()
@@ -29,6 +22,8 @@ class VirtualAccountTest extends TestCase
         $payload = [
             "email" => "kennyio@gmail.com",
             "bvn" => "12345678901",
+            "amount" => "3000",
+            "currency" => "NGN"
         ];
 
         $response = $this->service->create($payload);

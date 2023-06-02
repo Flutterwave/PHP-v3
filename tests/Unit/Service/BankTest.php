@@ -11,14 +11,7 @@ class BankTest extends TestCase
     public Banks $service;
     protected function setUp(): void
     {
-        $this->service = new Banks(
-            Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            )
-        );
+        $this->service = new Banks();
     }
 
     public function testRetrievingBankByCountry()

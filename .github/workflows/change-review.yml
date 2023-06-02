@@ -36,6 +36,14 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo PUBLIC_KEY=${{ secrets.PUBLIC_KEY }} >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
+          echo ENV=${{ secrets.ENV }} >> .env
+
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3

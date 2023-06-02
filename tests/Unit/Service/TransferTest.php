@@ -13,14 +13,7 @@ class TransferTest extends TestCase
     public Transfer $service;
     protected function setUp(): void
     {
-        $this->service = new Transfer(
-            Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            )
-        );
+        $this->service = new Transfer();
     }
 
     public function testInitiatingTransfer()
@@ -44,7 +37,7 @@ class TransferTest extends TestCase
         $customerObj = $this->service->customer->create([
             "full_name" => "Olaobaju Abraham",
             "email" => "olaobajua@gmail.com",
-            "phone" => "+2349067985861"
+            "phone" => "+234900000001"
         ]);
         $data['customer'] = $customerObj;
         $payload  = $this->service->payload->create($data);

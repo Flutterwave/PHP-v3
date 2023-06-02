@@ -14,14 +14,7 @@ class VirtualCardTest extends TestCase
     public VirtualCard $service;
     protected function setUp(): void
     {
-        $this->service = new VirtualCard(
-            Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            )
-        );
+        $this->service = new VirtualCard();
     }
 
     public function testVirtualCardCreation()
