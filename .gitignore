@@ -198,3 +198,4 @@ example.php
 .phpunit.cache
 coverage.xml
 .env.local
+.php-cs-fixer.cache
