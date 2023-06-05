@@ -23,12 +23,12 @@ class Preauth extends Service implements Payment
         parent::__construct($config);
         $this->cardService = new CardPayment($config);
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint;
+        $this->url = $this->baseUrl . '/' . $endpoint;
         $this->eventHandler = new PreEventHandler();
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array|null
      */
     public function initiate(Payload $payload): array
@@ -63,18 +63,18 @@ class Preauth extends Service implements Payment
     {
         $method = strtolower($method);
         switch ($method) {
-            case 'paypal':
-                $data = [
-                    'flw_ref' => $flw_ref,
-                ];
-                $this->logger->info("Preauth Service::Capturing PayPal Payment with FLW_REF:{$flw_ref}...");
-                $response = $this->request($data, 'POST', '/paypal-capture');
-                break;
-            default:
-                $data = ['amount' => $amount];
-                $this->logger->info("Preauth Service::Capturing Payment with FLW_REF:{$flw_ref}...");
-                $response = $this->request($data, 'POST', "/{$flw_ref}/capture");
-                break;
+        case 'paypal':
+            $data = [
+                'flw_ref' => $flw_ref,
+            ];
+            $this->logger->info("Preauth Service::Capturing PayPal Payment with FLW_REF:{$flw_ref}...");
+            $response = $this->request($data, 'POST', '/paypal-capture');
+            break;
+        default:
+            $data = ['amount' => $amount];
+            $this->logger->info("Preauth Service::Capturing Payment with FLW_REF:{$flw_ref}...");
+            $response = $this->request($data, 'POST', "/{$flw_ref}/capture");
+            break;
         }
 
         $data['message'] = null;
@@ -102,21 +102,21 @@ class Preauth extends Service implements Payment
     {
         $method = strtolower($method);
         switch ($method) {
-            case 'paypal':
-                $data = [
-                    'flw_ref' => $flw_ref,
-                ];
-                $this->logger->info("Preauth Service::Voiding Payment with FLW_REF:{$flw_ref}...");
-                PreEventHandler::startRecording();
-                $response = $this->request($data, 'POST', '/paypal-void');
-                PreEventHandler::setResponseTime();
-                break;
-            default:
-                PreEventHandler::startRecording();
-                $this->logger->info("Preauth Service::Voiding Payment with FLW_REF:{$flw_ref}...");
-                PreEventHandler::setResponseTime();
-                $response = $this->request(null, 'POST', "/{$flw_ref}/void");
-                break;
+        case 'paypal':
+            $data = [
+                'flw_ref' => $flw_ref,
+            ];
+            $this->logger->info("Preauth Service::Voiding Payment with FLW_REF:{$flw_ref}...");
+            PreEventHandler::startRecording();
+            $response = $this->request($data, 'POST', '/paypal-void');
+            PreEventHandler::setResponseTime();
+            break;
+        default:
+            PreEventHandler::startRecording();
+            $this->logger->info("Preauth Service::Voiding Payment with FLW_REF:{$flw_ref}...");
+            PreEventHandler::setResponseTime();
+            $response = $this->request(null, 'POST', "/{$flw_ref}/void");
+            break;
         }
 
         $data['message'] = null;
@@ -163,4 +163,3 @@ class Preauth extends Service implements Payment
         return $data ?? [ 'message' => 'Charge Refund Failed!'];
     }
 }
-

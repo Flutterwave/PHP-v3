@@ -17,6 +17,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 class CardPayment extends Service implements Payment
 {
     use Charge;
+
     public const ENDPOINT = 'charges';
     public const TYPE = 'card';
     protected static int $count = 0;
@@ -33,13 +34,13 @@ class CardPayment extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
 
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type='.self::TYPE;
-        $this->end_point = self::ENDPOINT.'?type='.self::TYPE;
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=' . self::TYPE;
+        $this->end_point = self::ENDPOINT . '?type=' . self::TYPE;
         $this->eventHandler = new CardEventHandler($config);
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      * @throws GuzzleException
      */
@@ -66,7 +67,7 @@ class CardPayment extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
      * @throws ClientExceptionInterface
@@ -96,9 +97,11 @@ class CardPayment extends Service implements Payment
     }
 
     /**
-     * this is the encrypt3Des function that generates an encryption Key for you by passing your transaction Util and Secret Key as a parameter.
-     * @param string $data
-     * @param $key
+     * this is the encrypt3Des function that generates an encryption Key for you
+     * by passing your transaction Util and Secret Key as a parameter.
+     *
+     * @param  string $data
+     * @param  $key
      * @return string
      */
 
@@ -121,8 +124,8 @@ class CardPayment extends Service implements Payment
     }
 
     /**
-     * @param \stdClass $response
-     * @param $payload
+     * @param  \stdClass $response
+     * @param  $payload
      * @return array
      * @throws Exception
      */

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Factories;
 
 use Flutterwave\Contract\CustomerInterface;

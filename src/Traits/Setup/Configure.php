@@ -6,21 +6,38 @@ namespace Flutterwave\Traits\Setup;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Helper\Config;
+use Flutterwave\Config\ForkConfig;
 
 trait Configure
 {
     public static function bootstrap(?ConfigInterface $config = null): void
     {
         if (\is_null($config)) {
-            require __DIR__.'/../../../setup.php';
-            $config = Config::setUp(
-                getenv(Config::SECRET_KEY),
-                getenv(Config::PUBLIC_KEY),
-                getenv(Config::ENCRYPTION_KEY),
-                getenv(Config::ENV)
-            );
+            include __DIR__ . '/../../../setup.php';
+
+            if ('composer' === $flutterwave_installation) {
+                $config = Config::setUp(
+                    $keys[Config::SECRET_KEY],
+                    $keys[Config::PUBLIC_KEY],
+                    $keys[Config::ENCRYPTION_KEY],
+                    $keys[Config::ENV]
+                );
+            }
+
+            if ('manual' === $flutterwave_installation) {
+                $config = ForkConfig::setUp(
+                    $keys[ForkConfig::SECRET_KEY],
+                    $keys[ForkConfig::PUBLIC_KEY],
+                    $keys[ForkConfig::ENCRYPTION_KEY],
+                    $keys[ForkConfig::ENV]
+                );
+            }
         }
-        self::$config = $config;
-        self::$methods = require __DIR__ . '/../../Util/methods.php';
+
+        if (\is_null(self::$config)) {
+            self::$config = $config;
+        }
+            
+        self::$methods = include __DIR__ . '/../../Util/methods.php';
     }
 }

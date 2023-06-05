@@ -12,7 +12,7 @@ class TransferEventHandler implements EventHandlerInterface
 {
     use EventTracker;
 
-    private static ConfigInterface $config;
+    private static ?ConfigInterface $config;
     public function __construct($config)
     {
         self::$config = $config;
@@ -90,21 +90,21 @@ class TransferEventHandler implements EventHandlerInterface
     public function onAuthorization(stdClass $response, ?array $resource = null): array
     {
         //        $auth = $response->meta->authorization;
-//        $mode = $auth->mode;
-//        $data['dev_instruction'] = "Display the transfer data for the user to make a transfer to the generated account number. verify via Webhook Service.";
-//        $data['instruction'] = $auth->transfer_note;
-//        $data['transfer_reference'] = $auth->transfer_reference;
-//        $data['transfer_account'] = $auth->transfer_account;
-//        $data['transfer_bank'] = $auth->transfer_bank;
-//        $data['account_expiration'] = $auth->account_expiration;
-//        $data['transfer_amount'] = $auth->transfer_amount;
-//        $data['mode'] = $mode;
-//
-//        if(is_array($resource) && !empty($resource))
-//        {
-//            $logger = $resource['logger'];
-//            $logger->notice("Transfer Authorization Mode: ".$mode);
-//        }
+        //        $mode = $auth->mode;
+        //        $data['dev_instruction'] = "Display the transfer data for the user to make a transfer to the generated account number. verify via Webhook Service.";
+        //        $data['instruction'] = $auth->transfer_note;
+        //        $data['transfer_reference'] = $auth->transfer_reference;
+        //        $data['transfer_account'] = $auth->transfer_account;
+        //        $data['transfer_bank'] = $auth->transfer_bank;
+        //        $data['account_expiration'] = $auth->account_expiration;
+        //        $data['transfer_amount'] = $auth->transfer_amount;
+        //        $data['mode'] = $mode;
+        //
+        //        if(is_array($resource) && !empty($resource))
+        //        {
+        //            $logger = $resource['logger'];
+        //            $logger->notice("Transfer Authorization Mode: ".$mode);
+        //        }
 
         return [];
     }

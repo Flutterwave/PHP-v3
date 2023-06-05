@@ -22,7 +22,7 @@ class Mpesa extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new MpesaEventHandler($config);
     }
 
@@ -85,7 +85,8 @@ class Mpesa extends Service implements Payment
         return [
             'status' => $response->data->status,
             'transactionId' => $response->data->id,
-            'dev_instruction' => 'The customer should authorize the payment on their Phones via the Mpesa. status is pending',
+            'dev_instruction' => 'The customer should authorize the payment on their Phones 
+            via the Mpesa. status is pending',
             'instruction' => 'Please kindly authorize the payment on your Mobile phone',
             'mode' => $mode,
         ];

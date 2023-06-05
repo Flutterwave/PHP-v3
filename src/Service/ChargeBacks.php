@@ -11,6 +11,7 @@ use Unirest\Exception;
 class ChargeBacks extends Service
 {
     use EventTracker;
+
     private string $name = 'chargebacks';
     public function __construct(?ConfigInterface $config = null)
     {
@@ -24,7 +25,7 @@ class ChargeBacks extends Service
     {
         $this->logger->notice("ChargeBacks Service::Retrieving Chargeback.[flw_ref:{$flw_ref}]");
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."?flw_ref={$flw_ref}");
+        $response = $this->request(null, 'GET', $this->name . "?flw_ref={$flw_ref}");
         self::setResponseTime();
         return $response;
     }
@@ -37,7 +38,7 @@ class ChargeBacks extends Service
         $query = http_build_query($filters) ?? '';
         $this->logger->notice('ChargeBacks Service::Retrieving Chargebacks.[all]');
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."?{$query}");
+        $response = $this->request(null, 'GET', $this->name . "?{$query}");
         self::setResponseTime();
         return $response;
     }
@@ -49,7 +50,7 @@ class ChargeBacks extends Service
     {
         $this->logger->notice("ChargeBacks Service::Accepting Chargeback [{$chargeback_id}].");
         self::startRecording();
-        $response = $this->request([ 'action' => 'accept'], 'PUT', $this->name."/{$chargeback_id}");
+        $response = $this->request([ 'action' => 'accept'], 'PUT', $this->name . "/{$chargeback_id}");
         self::setResponseTime();
         return $response;
     }
@@ -61,7 +62,7 @@ class ChargeBacks extends Service
     {
         $this->logger->notice("ChargeBacks Service::Declining Chargeback [{$chargeback_id}].");
         self::startRecording();
-        $response = $this->request([ 'action' => 'decline'], 'PUT', $this->name."/{$chargeback_id}");
+        $response = $this->request([ 'action' => 'decline'], 'PUT', $this->name . "/{$chargeback_id}");
         self::setResponseTime();
         return $response;
     }

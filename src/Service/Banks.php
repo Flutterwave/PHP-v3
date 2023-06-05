@@ -12,6 +12,7 @@ use stdClass;
 class Banks extends Service
 {
     use EventTracker;
+
     private string $name = 'banks';
     public function __construct(?ConfigInterface $config = null)
     {
@@ -25,7 +26,7 @@ class Banks extends Service
     {
         $this->logger->notice("Bank Service::Retrieving banks in country:({$country}).");
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$country}");
+        $response = $this->request(null, 'GET', $this->name . "/{$country}");
         self::setResponseTime();
         return $response;
     }
@@ -37,7 +38,7 @@ class Banks extends Service
     {
         $this->logger->notice("Bank Service::Retrieving Bank Branches bank_id:({$id}).");
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$id}/branches");
+        $response = $this->request(null, 'GET', $this->name . "/{$id}/branches");
         self::setResponseTime();
         return $response;
     }

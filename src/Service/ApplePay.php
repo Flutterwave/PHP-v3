@@ -25,7 +25,7 @@ class ApplePay extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new ApplePayEventHandler($config);
     }
 
@@ -40,7 +40,7 @@ class ApplePay extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
      * @throws ClientExceptionInterface

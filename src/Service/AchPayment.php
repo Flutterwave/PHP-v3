@@ -32,7 +32,7 @@ class AchPayment extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new AchEventHandler($config);
     }
 

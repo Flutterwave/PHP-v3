@@ -6,12 +6,12 @@ namespace Flutterwave;
 
 /**
  * Class Payload
- * @package Flutterwave
+ *
+ * @package    Flutterwave
  * @deprecated Use Flutterwave\Entities\Payload instead.
  */
 class Payload
 {
-
     private Entities\Payload $instance;
 
     public function __construct()

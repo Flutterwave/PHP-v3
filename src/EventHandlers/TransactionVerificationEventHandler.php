@@ -11,7 +11,6 @@ class TransactionVerificationEventHandler implements EventHandlerInterface
     /**
      * This is called only when a transaction is successful
      * */
-
     use EventTracker;
 
     private static ConfigInterface $config;

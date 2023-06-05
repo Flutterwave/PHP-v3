@@ -68,19 +68,23 @@ class Payload implements EntityInterface
         }
 
         switch ($payment_method) {
-            case 'card':
-                $card_details = $additionalData['card_details'];
-                unset($additionalData['card_details']);
-                $data = array_merge($data, $additionalData, $customer->toArray(), $card_details);
-                break;
-            case 'account':
-                $account_details = $additionalData['account_details'];
-                unset($additionalData['account_details']);
-                $data = array_merge($data, $additionalData, $customer->toArray(), $account_details);
-                break;
-            default:
-                $data = array_merge($data, $additionalData, $customer->toArray());
-                break;
+        case 'card':
+            $card_details = $additionalData['card_details'];
+            unset($additionalData['card_details']);
+            $data = array_merge($data, $additionalData, $customer->toArray(), $card_details);
+            break;
+        case 'account':
+            $account_details = $additionalData['account_details'];
+            unset($additionalData['account_details']);
+            $data = array_merge($data, $additionalData, $customer->toArray(), $account_details);
+            break;
+        default:
+            $data = array_merge($data, $additionalData, $customer->toArray());
+            break;
+        }
+
+        if ($payment_method === 'modal') {
+            return $data;
         }
 
         unset($data['customer']);

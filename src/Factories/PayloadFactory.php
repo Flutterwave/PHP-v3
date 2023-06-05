@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Flutterwave\Factories;
 
 use Flutterwave\Contract\FactoryInterface;
@@ -18,7 +20,10 @@ class PayloadFactory implements FactoryInterface
     {
         $check = $this->validSuppliedData($data);
         if (! $check['result']) {
-            throw new \InvalidArgumentException("<b><span style='color:red'>".$check['missing_param'].'</span></b>'.' is required in the payload');
+            throw new \InvalidArgumentException(
+                "<b><span style='color:red'>" . $check['missing_param'] . '</span></b>' .
+                ' is required in the payload'
+            );
         }
 
         $currency = $data['currency'];
@@ -40,7 +45,7 @@ class PayloadFactory implements FactoryInterface
 
         $tx_ref = $data['tx_ref'] ?? $payload->generateTxRef();
 
-//        $payload->set('phone_number', $phone_number); // customer factory handles that
+        //        $payload->set('phone_number', $phone_number); // customer factory handles that
         $payload->set('currency', $currency);
         $payload->set('amount', $amount);
         $payload->set('tx_ref', $tx_ref);

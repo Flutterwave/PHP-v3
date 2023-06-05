@@ -10,7 +10,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 
 trait Delete
 {
-    public function deleteURL(ConfigInterface  $config, string $url): string
+    public function deleteURL(ConfigInterface $config, string $url): string
     {
         $response = (new Http($config))->request(null, 'DELETE', $url);
 

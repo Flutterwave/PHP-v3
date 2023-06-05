@@ -46,12 +46,12 @@ class Ussd extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new UssdEventHandler($config);
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      * @throws ClientExceptionInterface
      */
@@ -62,7 +62,7 @@ class Ussd extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      * @throws ClientExceptionInterface
      */
@@ -87,8 +87,9 @@ class Ussd extends Service implements Payment
         $bank = $otherData['account_bank'];
 
         if (! array_key_exists($bank, $this->supported_banks)) {
-            $this->logger->error('USSD Service: We do not support your bank. please kindly use another. ');
-            throw new \InvalidArgumentException('USSD Service: We do not support your bank. please kindly use another. ');
+            $msg = 'We do not support your bank. please kindly use another. ';
+            $this->logger->error('USSD Service:' . $msg);
+            throw new \InvalidArgumentException('USSD Service:' . $msg);
         }
 
         $payload = $payload->toArray();
@@ -114,8 +115,8 @@ class Ussd extends Service implements Payment
     }
 
     /**
-     * @param \stdClass $response
-     * @param array $payload
+     * @param  \stdClass $response
+     * @param  array     $payload
      * @return array
      * @throws \Exception
      */

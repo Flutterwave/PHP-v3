@@ -8,6 +8,7 @@ use Flutterwave\Factories\PayloadFactory as Factory;
 
 /**
  * Class Payload.
+ *
  * @deprecated use \Flutterwave\Factories\PayloadFactory instead
  */
 class Payload

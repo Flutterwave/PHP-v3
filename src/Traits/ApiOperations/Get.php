@@ -13,8 +13,8 @@ use stdClass;
 trait Get
 {
     /**
-     * @param ConfigInterface $config
-     * @param string $url
+     * @param  ConfigInterface $config
+     * @param  string          $url
      * @return stdClass
      * @throws ClientExceptionInterface
      * @throws ApiException

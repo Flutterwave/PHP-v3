@@ -4,15 +4,15 @@ namespace Flutterwave\Adapter;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 
-class CurlClient implements \Psr\Http\Client\ClientInterface {
-
+class CurlClient implements \Psr\Http\Client\ClientInterface
+{
     /**
      * @var ResponseFactoryInterface
      */
     protected ResponseFactoryInterface $responseFactory;
 
     /**
-     * @var array<int, mixed>
+     * @var array
      */
     protected array $curlOptions;
 
@@ -23,7 +23,7 @@ class CurlClient implements \Psr\Http\Client\ClientInterface {
 
     public function sendRequest(\Psr\Http\Message\RequestInterface $request): \Psr\Http\Message\ResponseInterface
     {
-        if(!$this->isCompatible()) {
+        if (!$this->isCompatible()) {
             throw new \RuntimeException('You do not have the curl extension enabled or installed.');
         }
 
@@ -46,7 +46,7 @@ class CurlClient implements \Psr\Http\Client\ClientInterface {
         return $this->createResponse($response);
     }
 
-    private function createResponse(bool $response)
+    private function createResponse(bool $response): void
     {
         //TODO: complete createResponse method for curlclient implementation
     }

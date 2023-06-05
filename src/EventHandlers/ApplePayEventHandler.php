@@ -63,7 +63,7 @@ class ApplePayEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Apple Method Event::Apple Authorization Mode: '.$data['mode'] ?? 'redirect');
+            $logger->notice('Apple Method Event::Apple Authorization Mode: ' . $data['mode'] ?? 'redirect');
         }
 
         return $data;

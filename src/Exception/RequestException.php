@@ -11,7 +11,6 @@ use Throwable;
  */
 class RequestException extends ClientException implements RequestExceptionInterface
 {
-
     /**
      * @var RequestInterface
      */
@@ -21,9 +20,9 @@ class RequestException extends ClientException implements RequestExceptionInterf
      * Constructor of the class
      *
      * @param RequestInterface $request
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
+     * @param string           $message
+     * @param int              $code
+     * @param Throwable|null   $previous
      */
     public function __construct(
         RequestInterface $request,
@@ -39,7 +38,7 @@ class RequestException extends ClientException implements RequestExceptionInterf
     /**
      * {@inheritdoc}
      */
-    public function getRequest() : RequestInterface
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }

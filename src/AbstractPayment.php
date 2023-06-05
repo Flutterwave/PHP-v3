@@ -13,13 +13,15 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractPayment
 {
-    use Api\Post, Api\Get, Payload\Prepare;
+    use Api\Post;
+    use Api\Get;
+    use Payload\Prepare;
 
     public string $secretKey;
     public string $txref;
     public $type;
     public LoggerInterface $logger;
-//    protected ?string $integrityHash = null;
+    //    protected ?string $integrityHash = null;
     protected string $payButtonText = 'Proceed with Payment';
     protected string $redirectUrl;
     protected array $meta = [];
@@ -53,12 +55,17 @@ abstract class AbstractPayment
     //EndPoints
     protected string $end_point;
     protected string $flwRef;
-    protected static ConfigInterface $config;
+    protected static ?ConfigInterface $config = null;
 
-    public function __construct(string $prefix, bool $overrideRefWithPrefix)
+    public function __construct()
     {
-        $this->transactionPrefix = $overrideRefWithPrefix ? $prefix : self::$config::DEFAULT_PREFIX . '_';
+        $this->transactionPrefix = self::$config::DEFAULT_PREFIX . '_';
         $this->baseUrl = EnvVariables::BASE_URL;
+    }
+
+    public function getConfig()
+    {
+        return self::$config;
     }
 
     abstract public function initialize(): void;

@@ -15,6 +15,7 @@ use stdClass;
 class Beneficiaries extends Service
 {
     use EventTracker;
+
     private string $name = 'beneficiaries';
     private array $requiredParams = [
         'account_bank','account_number','beneficiary_name',
@@ -25,7 +26,7 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return stdClass
      * @throws ClientExceptionInterface
      */
@@ -34,14 +35,16 @@ class Beneficiaries extends Service
         $payload = $payload->toArray();
 
         if (array_key_exists('customer', $payload)) {
-            $this->logger->error('Beneficiaries Service::The required parameter customer Object is not present in payload');
-            throw new InvalidArgumentException('Beneficiaries Service:The required parameter Object is not present in payload');
+            $msg = 'The required parameter customer Object is not present in payload';
+            $this->logger->error('Beneficiaries Service::' . $msg);
+            throw new InvalidArgumentException('Beneficiaries Service:' . $msg);
         }
 
         foreach ($this->requiredParams as $param) {
             if (! array_key_exists($param, $payload)) {
-                $this->logger->error("Beneficiaries Service::The required parameter {$param} is not present in payload");
-                throw new InvalidArgumentException("Beneficiaries Service:The required parameter {$param} is not present in payload");
+                $msg = 'The required parameter {$param} is not present in payload';
+                $this->logger->error("Beneficiaries Service::$msg");
+                throw new InvalidArgumentException("Beneficiaries Service:$msg");
             }
         }
 
@@ -69,7 +72,7 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @param string $id
+     * @param  string $id
      * @return stdClass
      * @throws ClientExceptionInterface
      */
@@ -77,13 +80,13 @@ class Beneficiaries extends Service
     {
         $this->logger->notice('Beneficiaries Service::Retrieving a Beneficiary.');
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$id}");
+        $response = $this->request(null, 'GET', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }
 
     /**
-     * @param string $id
+     * @param  string $id
      * @return stdClass
      * @throws ClientExceptionInterface
      */
@@ -91,7 +94,7 @@ class Beneficiaries extends Service
     {
         $this->logger->notice('Beneficiaries Service::Delete a Beneficiary.');
         self::startRecording();
-        $response = $this->request(null, 'DELETE', $this->name."/{$id}");
+        $response = $this->request(null, 'DELETE', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }

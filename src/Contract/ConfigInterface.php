@@ -9,7 +9,6 @@ use Psr\Log\LoggerInterface;
 
 interface ConfigInterface
 {
-
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface;
     public function getHttp(): ClientInterface;
 

@@ -18,6 +18,7 @@ use stdClass;
 class AccountPayment extends Service implements Payment
 {
     use Charge;
+
     public const ENDPOINT = 'charge';
     public const DEBIT_NG = 'debit_ng_account';
     public const DEBIT_UK = 'debit_uk_account';
@@ -35,7 +36,7 @@ class AccountPayment extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
 
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new AccountEventHandler($config);
     }
 
@@ -63,7 +64,7 @@ class AccountPayment extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
      * @throws ClientExceptionInterface
@@ -98,7 +99,7 @@ class AccountPayment extends Service implements Payment
     private function checkSpecialCasesParams(Payload $payload)
     {
         $details = $payload->get('otherData')['account_details'];
-        $banks = require __DIR__ . '/../Util/unique_bank_cases.php';
+        $banks = include __DIR__ . '/../Util/unique_bank_cases.php';
 
         foreach ($banks as $code => $case) {
             if ($details['account_bank'] === $code) {
@@ -127,7 +128,7 @@ class AccountPayment extends Service implements Payment
 
     /**
      * @param stdClass $response
-     * @param array $payload
+     * @param array    $payload
      *
      * @return array
      *

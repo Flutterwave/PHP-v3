@@ -12,7 +12,7 @@ trait Post
 {
     /**
      * @param ConfigInterface $config
-     * @param array $data
+     * @param array           $data
      *
      * @return string
      * @throws ClientExceptionInterface

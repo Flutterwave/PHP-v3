@@ -65,8 +65,8 @@ class BankTransferEventHandler implements EventHandlerInterface
     }
 
     /**
-     * @param \stdClass $response
-     * @param array|null $resource
+     * @param  \stdClass  $response
+     * @param  array|null $resource
      * @return array
      */
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
@@ -84,8 +84,8 @@ class BankTransferEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Transfer Authorization Mode: '.$mode);
-            $logger->info('Bank Transfer Event::Created Account Info :'.json_encode($data));
+            $logger->notice('Transfer Authorization Mode: ' . $mode);
+            $logger->info('Bank Transfer Event::Created Account Info :' . json_encode($data));
         }
 
         return $data;

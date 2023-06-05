@@ -20,7 +20,7 @@ class PayoutSubaccount extends Service
     {
         parent::__construct($config);
         $endpoint = $this->name;
-        $this->url = $this->baseUrl.'/'.$endpoint;
+        $this->url = $this->baseUrl . '/' . $endpoint;
         $this->eventHandler = new PayoutSubaccoutEventHandler();
     }
 
@@ -42,7 +42,7 @@ class PayoutSubaccount extends Service
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return stdClass
      * @throws ClientExceptionInterface
      */

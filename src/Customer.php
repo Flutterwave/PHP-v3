@@ -6,7 +6,8 @@ namespace Flutterwave;
 
 /**
  * Class Customer
- * @package Flutterwave
+ *
+ * @package    Flutterwave
  * @deprecated Use Flutterwave\Entities\Customer instead.
  */
 class Customer

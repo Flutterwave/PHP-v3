@@ -11,6 +11,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 class Settlement extends Service
 {
     use EventTracker;
+
     private string $name = 'settlements';
     public function __construct(?ConfigInterface $config = null)
     {
@@ -24,7 +25,7 @@ class Settlement extends Service
     {
         $this->logger->notice("Settlement Service::Retrieving Settlement [{$id}].");
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$id}");
+        $response = $this->request(null, 'GET', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }

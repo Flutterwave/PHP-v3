@@ -11,6 +11,7 @@ use InvalidArgumentException;
 
 /**
  * Class Customer.
+ *
  * @deprecated use \Flutterwave\Factories\CustomerFactory instead
  */
 class Customer
@@ -24,6 +25,6 @@ class Customer
 
     public function create(array $data = []): Person
     {
-           return $this->customerFactory->create($data);
+        return $this->customerFactory->create($data);
     }
 }

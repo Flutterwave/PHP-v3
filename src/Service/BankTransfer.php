@@ -27,7 +27,7 @@ class BankTransfer extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
         $this->eventHandler = new BankTransferEventHandler($config);
     }
 
@@ -39,7 +39,7 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
      * @throws ClientExceptionInterface
@@ -50,7 +50,7 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
      * @throws ClientExceptionInterface
@@ -78,8 +78,8 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param stdClass $response
-     * @param array $payload
+     * @param  stdClass $response
+     * @param  array    $payload
      * @return array
      * @throws Exception
      */

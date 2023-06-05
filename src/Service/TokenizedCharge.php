@@ -21,7 +21,7 @@ class TokenizedCharge extends Service implements Payment
     {
         parent::__construct($config);
         $endpoint = "tokenized-{$this->getEndpoint()}";
-        $this->url = $this->baseUrl.'/'.$endpoint;
+        $this->url = $this->baseUrl . '/' . $endpoint;
         $this->eventHandler = new TkEventHandler();
     }
 
@@ -46,7 +46,7 @@ class TokenizedCharge extends Service implements Payment
      */
     public function charge(\Flutterwave\Entities\Payload $payload): array
     {
-        # format the customer object to extract the first_name and the last name.
+        // format the customer object to extract the first_name and the last name.
         $customer = $payload->get('customer')->toArray();
         $fullname = $customer['fullname'];
         $names = explode(' ', $fullname);

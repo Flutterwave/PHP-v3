@@ -109,7 +109,7 @@ class UssdEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Ussd Authorization Mode: '.$data['mode']);
+            $logger->notice('Ussd Authorization Mode: ' . $data['mode']);
         }
 
         return $data;

@@ -11,7 +11,6 @@ use Throwable;
  */
 class NetworkException extends ClientException implements NetworkExceptionInterface
 {
-
     /**
      * @var RequestInterface
      */
@@ -21,9 +20,9 @@ class NetworkException extends ClientException implements NetworkExceptionInterf
      * Constructor of the class
      *
      * @param RequestInterface $request
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
+     * @param string           $message
+     * @param int              $code
+     * @param Throwable|null   $previous
      */
     public function __construct(
         RequestInterface $request,
@@ -39,7 +38,7 @@ class NetworkException extends ClientException implements NetworkExceptionInterf
     /**
      * {@inheritdoc}
      */
-    public function getRequest() : RequestInterface
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }

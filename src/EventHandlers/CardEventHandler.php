@@ -107,30 +107,30 @@ class CardEventHandler implements EventHandlerInterface
         }
 
         switch ($mode) {
-            case AuthMode::PIN:
-                $data['dev_instruction'] = "Redirect user to a form to enter his pin and re-initiate the charge adding the params ['pin' => 'USERS_PIN'] to the payload.";
-                $data['instruction'] = 'Enter the pin of your card';
-                break;
-            case AuthMode::REDIRECT:
-                $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
-                $data['url'] = $response->meta->authorization->redirect;
-                break;
-            case AuthMode::AVS:
-                $data['dev_instruction'] = "Redirect user to a form to enter certain details and re-initiate the charge adding the params ['mode' => 'avs_noauth', 'city' => 'USER_CITY', 'state' => 'USER_STATE', 'country' => 'USER_COUNTRY', 'zipcode' => 'USER_ZIP'] to the payload.";
-                $data['instruction'] = 'please complete the form for Address Verification.';
-                break;
-            case AuthMode::OTP:
-                $data['dev_instruction'] = 'Redirect user to a form to validate with OTP code sent to their Phone.';
-                $data['instruction'] = $response->data->processor_response;
-                $data['validate'] = true;
-                break;
+        case AuthMode::PIN:
+            $data['dev_instruction'] = "Redirect user to a form to enter his pin and re-initiate the charge adding the params ['pin' => 'USERS_PIN'] to the payload.";
+            $data['instruction'] = 'Enter the pin of your card';
+            break;
+        case AuthMode::REDIRECT:
+            $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
+            $data['url'] = $response->meta->authorization->redirect;
+            break;
+        case AuthMode::AVS:
+            $data['dev_instruction'] = "Redirect user to a form to enter certain details and re-initiate the charge adding the params ['mode' => 'avs_noauth', 'city' => 'USER_CITY', 'state' => 'USER_STATE', 'country' => 'USER_COUNTRY', 'zipcode' => 'USER_ZIP'] to the payload.";
+            $data['instruction'] = 'please complete the form for Address Verification.';
+            break;
+        case AuthMode::OTP:
+            $data['dev_instruction'] = 'Redirect user to a form to validate with OTP code sent to their Phone.';
+            $data['instruction'] = $response->data->processor_response;
+            $data['validate'] = true;
+            break;
         }
 
         $data['mode'] = $mode;
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Card Event::Authorization Mode: '.$mode);
+            $logger->notice('Card Event::Authorization Mode: ' . $mode);
         }
 
         return $data;
