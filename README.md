@@ -40,34 +40,37 @@ Available features include:
 ## Requirements
 
 1. Flutterwave for business [API Keys](https://developer.flutterwave.com/docs/integration-guides/authentication)
-2. Acceptable PHP versions: >= 5.4.0
+2. Acceptable PHP versions: >= 7.4.0. for older versions of PHP use the [Legacy Branch]( https://github.com/Flutterwave/PHP-v3/tree/legacy )
 
 
 <a id="installation"></a>
 
 ## Installation
 
-The vendor folder is committed into the project to allow easy installation for those who do not have composer installed.
-It is recommended to update the project dependencies using:
+### Installation via Composer.
 
+To install the package via Composer, run the following command.
 ```shell
-$ composer require flutterwavedev/flutterwave-v3
+composer require flutterwavedev/flutterwave-v3
 ```
 
 <a id="initialization"></a>
 
 ## Initialization
 
-Create a .env file and follow the format of the .env.example file
-Save your PUBLIC_KEY, SECRET_KEY, ENV in the .env file
+Create a .env file and follow the format of the `.env.example` file
+Save your PUBLIC_KEY, SECRET_KEY, ENV in the `.env` file
+
+```bash
+cp .env.example .env
+```
+Your `.env` file should look this.
 
 ```env
-
-PUBLIC_KEY="****YOUR**PUBLIC**KEY****" // can be gotten from the dashboard
-SECRET_KEY="****YOUR**SECRET**KEY****" // can be gotten from the dashboard
-ENCRYPTION_KEY="Encryption key"
-ENV="development/production"
-
+PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
+SECRET_KEY=FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
+ENCRYPTION_KEY=FLWSECK_XXXXXXXXXXXXXXXX
+ENV='staging/production'
 ```
 
 
@@ -75,8 +78,16 @@ ENV="development/production"
 
 ## Usage
 
-### Card Charge
-This is used to facilitate card transactions.
+### Render Payment Modal
+
+The SDK provides two easy methods of making collections via the famous payment modal. [Learn more](#)
+
+1. [Flutterwave Inline]( https://developer.flutterwave.com/docs/collecting-payments/inline )
+2. [Flutterwave Standard]( https://developer.flutterwave.com/docs/collecting-payments/standard )
+
+### Get Started
+
+
 
 Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
 
@@ -85,216 +96,69 @@ Simply redirect to the `paymentForm.php` file on your browser to process a payme
 In this implementation, we are expecting a form encoded POST request to this script.
 The request will contain the following parameters.
 
-- payment_method `Can be card, account, both`
-- description `Your transaction description`
-- logo `Your logo url`
-- title `Your transaction title`
-- country `Your transaction country`
-- currency `Your transaction currency`
-- email `Your customer's email`
-- firstname `Your customer's first name`
-- lastname `Your customer's last name`
-- phonenumber `Your customer's phonenumber`
-- pay_button_text `The payment button text you prefer`
-- ref `Your transaction reference. It must be unique per transaction.  By default, the Rave class generates a unique transaction reference for each transaction. Pass this parameter only if you uncommented the related section in the script below.`
+```json
+
+ {
+    "amount": "The amount required to be charged. (*)",
+    "currency": "The currency to charge in. (*)",
+    "first_name": "The first name of the customer. (*)",
+    "last_name" : "The last name of the customer. (*)",
+    "email": "The customers email address. (*)",
+    "phone_number": "The customer's phone number. (Optional).",
+    "success_url": "The url to redirect customer to after successful payment.",
+    "failure_url": "The url to redirect customer to after a failed payment.",
+    "tx_ref":"The unique transaction identifier. if ommited the apiclient would generate one"
+ }
+
+```
+
+The script in `paymentProcess.php` handles the request data via the `PaymentController`. If you are using a Framework like Laravel or CodeIgniter you might want to take a look at the [PaymentController](#)
 
 ```php
 <?php
 
-require __DIR__."/vendor/autoload.php";
+declare(strict_types=1);
 
+# if vendor file is not present, notify developer to run composer install.
+require __DIR__.'/vendor/autoload.php';
+
+use Flutterwave\Controller\PaymentController;
+use Flutterwave\EventHandlers\ModalEventHandler as PaymentHandler;
+use Flutterwave\Flutterwave;
+use Flutterwave\Library\Modal;
+
+# start a session.
 session_start();
 
-const BASEPATH = 1;
-
-use Flutterwave\EventHandlers\EventHandlerInterface;
-use Flutterwave\Flutterwave;
-
-\Flutterwave\Flutterwave::bootstrap();
-
-$URL = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-$getData = $_GET;
-$postData = $_POST;
-$publicKey = $_SERVER['PUBLIC_KEY'];
-$secretKey = $_SERVER['SECRET_KEY'];
-if (isset($_POST) && isset($postData['successurl']) && isset($postData['failureurl'])) {
-    $success_url = $postData['successurl'];
-    $failure_url = $postData['failureurl'];
+try {
+    Flutterwave::bootstrap();
+    $customHandler = new PaymentHandler();
+    $client = new Flutterwave();
+    $modalType = Modal::POPUP; // Modal::POPUP or Modal::STANDARD
+    $controller = new PaymentController( $client, $customHandler, $modalType );
+} catch(\Exception $e ) {
+    echo $e->getMessage();
 }
 
-$env = $_SERVER['ENV'];
-
-if (isset($postData['amount'])) {
-    $_SESSION['publicKey'] = $publicKey;
-    $_SESSION['secretKey'] = $secretKey;
-    $_SESSION['env'] = $env;
-    $_SESSION['successurl'] = $success_url;
-    $_SESSION['failureurl'] = $failure_url;
-    $_SESSION['currency'] = $postData['currency'];
-    $_SESSION['amount'] = $postData['amount'];
-}
-
-$prefix = 'RV'; // Change this to the name of your business or app
-$overrideRef = false;
-
-// Uncomment here to enforce the useage of your own ref else a ref will be generated for you automatically
-if (isset($postData['ref'])) {
-    $prefix = $postData['ref'];
-    $overrideRef = true;
-}
-
-$payment = new Flutterwave($prefix, $overrideRef);
-
-function getURL($url, $data = array()) {
-    $urlArr = explode('?', $url);
-    $params = array_merge($_GET, $data);
-    $new_query_string = http_build_query($params) . '&' . $urlArr[1];
-    $newUrl = $urlArr[0] . '?' . $new_query_string;
-    return $newUrl;
-}
-
-```
-
-In order to handle events that at occurs at different transaction stages. You define a class that implements the ```EventHandlerInterface```
-
-```php
-// This is where you set how you want to handle the transaction at different stages
-class myEventHandler implements EventHandlerInterface
-{
-    /**
-     * This is called when the Rave class is initialized
-     * */
-    function onInit($initializationData) {
-        // Save the transaction to your DB.
-    }
-
-    /**
-     * This is called only when a transaction is successful
-     * */
-    function onSuccessful($transactionData) {
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Check if you have previously given value for the transaction. If you have, redirect to your successpage else, continue
-        // Comfirm that the transaction is successful
-        // Confirm that the chargecode is 00 or 0
-        // Confirm that the currency on your db transaction is equal to the returned currency
-        // Confirm that the db transaction amount is equal to the returned amount
-        // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
-        // Give value for the transaction
-        // Update the transaction to note that you have given value for the transaction
-        // You can also redirect to your success page from here
-        if ($transactionData->status === 'successful') {
-            if ($transactionData->currency == $_SESSION['currency'] && $transactionData->amount == $_SESSION['amount']) {
-
-                if ($_SESSION['publicKey']) {
-                    header('Location: ' . getURL($_SESSION['successurl'], array('event' => 'successful')));
-                    $_SESSION = array();
-                    session_destroy();
-                }
-            } else {
-                if ($_SESSION['publicKey']) {
-                    header('Location: ' . getURL($_SESSION['failureurl'], array('event' => 'suspicious')));
-                    $_SESSION = array();
-                    session_destroy();
-                }
-            }
-        } else {
-            $this->onFailure($transactionData);
-        }
-    }
-
-    /**
-     * This is called only when a transaction failed
-     * */
-    function onFailure($transactionData) {
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
-        // You can also redirect to your failure page from here
-        if ($_SESSION['publicKey']) {
-            header('Location: ' . getURL($_SESSION['failureurl'], array('event' => 'failed')));
-            $_SESSION = array();
-            session_destroy();
-        }
-    }
-
-    /**
-     * This is called when a transaction is requeryed from the payment gateway
-     * */
-    function onRequery($transactionReference) {
-        // Do something, anything!
-    }
-
-    /**
-     * This is called a transaction requery returns with an error
-     * */
-    function onRequeryError($requeryResponse) {
-        echo 'the transaction was not found';
-    }
-
-    /**
-     * This is called when a transaction is canceled by the user
-     * */
-    function onCancel($transactionReference) {
-        // Do something, anything!
-        // Note: Somethings a payment can be successful, before a user clicks the cancel button so proceed with caution
-        if ($_SESSION['publicKey']) {
-            header('Location: ' . getURL($_SESSION['failureurl'], array('event' => 'canceled')));
-            $_SESSION = array();
-            session_destroy();
-        }
-    }
-
-    /**
-     * This is called when a transaction doesn't return with a success or a failure response. This can be a timedout transaction on the Rave server or an abandoned transaction by the customer.
-     * */
-    function onTimeout($transactionReference, $data) {
-        // Get the transaction from your DB using the transaction reference (txref)
-        // Queue it for requery. Preferably using a queue system. The requery should be about 15 minutes after.
-        // Ask the customer to contact your support and you should escalate this issue to the flutterwave support team. Send this as an email and as a notification on the page. just incase the page timesout or disconnects
-        if ($_SESSION['publicKey']) {
-            header('Location: ' . getURL($_SESSION['failureurl'], array('event' => 'timedout')));
-            $_SESSION = array();
-            session_destroy();
-        }
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $request = $_REQUEST;
+    $request['redirect_url'] = $_SERVER['HTTP_ORIGIN'] . $_SERVER['REQUEST_URI'];
+    try {
+        $controller->process( $request );
+    } catch(\Exception $e) {
+        echo $e->getMessage();
     }
 }
 
-if (isset($postData['amount'])) {
-    // Make payment
-    $payment
-        ->eventHandler(new myEventHandler)
-        ->setAmount($postData['amount'])
-        ->setPaymentOptions($postData['payment_options']) // value can be card, account or both
-        ->setDescription($postData['description'])
-        ->setLogo($postData['logo'])
-        ->setTitle($postData['title'])
-        ->setCountry($postData['country'])
-        ->setCurrency($postData['currency'])
-        ->setEmail($postData['email'])
-        ->setFirstname($postData['firstname'])
-        ->setLastname($postData['lastname'])
-        ->setPhoneNumber($postData['phonenumber'])
-        ->setPayButtonText($postData['pay_button_text'])
-        ->setRedirectUrl($URL)
-        // ->setMetaData(array('metaname' => 'SomeDataName', 'metavalue' => 'SomeValue')) // can be called multiple times. Uncomment this to add meta datas
-        // ->setMetaData(array('metaname' => 'SomeOtherDataName', 'metavalue' => 'SomeOtherValue')) // can be called multiple times. Uncomment this to add meta datas
-        ->initialize();
+$request = $_GET;
+# Confirming Payment.
+if(isset($request['tx_ref'])) {
+    $controller->callback( $request );
 } else {
-    if (isset($getData['cancelled'])) {
-        // Handle canceled payments
-        $payment
-            ->eventHandler(new myEventHandler)
-            ->paymentCanceled($getData['cancel_ref']);
-    } elseif (isset($getData['tx_ref'])) {
-        // Handle completed payments
-        $payment->logger->notice('Payment completed. Now requerying payment.');
-        $payment
-            ->eventHandler(new myEventHandler)
-            ->requeryTransaction($getData['transaction_id']);
-    } else {
-        $payment->logger->warning('Stop!!! Please pass the txref parameter!');
-        echo 'Stop!!! Please pass the txref parameter!';
-    }
+    
 }
+exit();
+
 ```
 <br>
 
@@ -304,15 +168,15 @@ Create a .env file and add the bootstrap method first before initiating a charge
 use \Flutterwave\Flutterwave;
 use \Flutterwave\Helper\Config;
 # normal configuration
-Flutterwave::bootstrap(); # this will use the default configuration
+Flutterwave::bootstrap(); # this will use the default configuration set in .env
 
 # for a custom configuration
 # your config must implement Flutterwave\Contract\ConfigInterface
 $myConfig = Config::setUp(
-    getenv(Config::SECRET_KEY),
-    getenv(Config::PUBLIC_KEY),
-    getenv(Config::ENCRYPTION_KEY),
-    getenv(Config::ENV)
+    'FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
+    'FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
+    'FLWSECK_XXXXXXXXXXXXXXXX',
+    'staging'
 ); 
 Flutterwave::bootstrap($myConfig);
 ```
@@ -413,8 +277,8 @@ $data = [
 $cardpayment = \Flutterwave\Flutterwave::create("card");
 $customerObj = $cardpayment->customer->create([
     "full_name" => "Olaobaju Abraham",
-    "email" => "olaobajua@gmail.com",
-    "phone" => "+2349067985861"
+    "email" => "ola2fhahfj@gmail.com",
+    "phone" => "+234900154861"
 ]);
 $data['customer'] = $customerObj;
 $payload  = $cardpayment->payload->create($data);
@@ -529,8 +393,8 @@ $data = [
 $service = new Transfer();
 $customerObj = $service->customer->create([
     "full_name" => "Olaobaju Abraham",
-    "email" => "olaobajua@gmail.com",
-    "phone" => "+2349067985861"
+    "email" => "38djsdjfjc954@gmail.com",
+    "phone" => "+234900085861"
 ]);
 $data['customer'] = $customerObj;
 $payload  = $service->payload->create($data);
@@ -730,8 +594,8 @@ $data['redirectUrl'] = "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.
 
 $customerObj = $tokenpayment->customer->create([
     "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "olaobajua@gmail.com",
-    "phone" => "+2349067985861"
+    "email" => "ola3785yfhf@gmail.com",
+    "phone" => "+2349062947561"
 ]);
 $data['customer'] = $customerObj;
 $tokenpayment = \Flutterwave\Flutterwave::create("tokenize");
