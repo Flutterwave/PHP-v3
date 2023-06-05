@@ -91,7 +91,7 @@ class UssdTest extends TestCase
 
         $data['customer'] = $customerObj;
         $payload  = $ussdpayment->payload->create($data);
-        $this->expectExceptionMessage("USSD Service: We do not support your bank. please kindly use another.");
+        $this->expectExceptionMessage("USSD Service:We do not support your bank. please kindly use another. ");
         $result = $ussdpayment->initiate($payload);
     }
 }

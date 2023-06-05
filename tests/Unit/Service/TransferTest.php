@@ -35,8 +35,8 @@ class TransferTest extends TestCase
         ];
 
         $customerObj = $this->service->customer->create([
-            "full_name" => "Olaobaju Abraham",
-            "email" => "olaobajua@gmail.com",
+            "full_name" => "Time Squad",
+            "email" => "ol868gjdfjua@gmail.com",
             "phone" => "+234900000001"
         ]);
         $data['customer'] = $customerObj;
