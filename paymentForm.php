@@ -24,31 +24,28 @@
 
 
 <form method="POST" action="processPayment.php" id="paymentForm">
-    <input type="hidden" name="amount" value="200"/> <!-- Replace the value with your transaction amount -->
-    <input type="hidden" name="payment_options" value=""/>
-    <!-- Can be card, account, ussd, qr, mpesa, mobilemoneyghana  (optional) -->
+    <input type="hidden" name="amount" value="200"/> 
+    <!-- Replace the value with your transaction amount -->
     <input type="hidden" name="description" value="I Phone X, 100GB, 32GB RAM"/>
     <!-- Replace the value with your transaction description -->
-    <input type="hidden" name="logo" value="http://brandmark.io/logo-rank/random/apple.png"/>
-    <!-- Replace the value with your logo url (optional) -->
-    <input type="hidden" name="title" value="Victor Store"/>
-    <!-- Replace the value with your transaction title (optional) -->
-    <input type="hidden" name="country" value="NG"/> <!-- Replace the value with your transaction country -->
-    <input type="hidden" name="currency" value="NGN"/> <!-- Replace the value with your transaction currency -->
-    <input type="hidden" name="email" value="busa@yahoo.com"/> <!-- Replace the value with your customer email -->
-    <input type="hidden" name="firstname" value="Olaobaju"/>
+    <input type="hidden" name="currency" value="NGN"/> 
+    <!-- Replace the value with your transaction currency -->
+    <input type="hidden" name="payment_method" value="card"/> 
+    <input type="hidden" name="email" value="busa@yahoo.com"/> 
+    <!-- Replace the value with your customer email -->
+    <input type="hidden" name="first_name" value="Olaobaju"/>
     <!-- Replace the value with your customer firstname (optional) -->
-    <input type="hidden" name="lastname" value="Abraham"/>
+    <input type="hidden" name="last_name" value="Abraham"/>
     <!-- Replace the value with your customer lastname (optional) -->
-    <input type="hidden" name="phonenumber" value="08098787676"/>
+    <input type="hidden" name="phone_number" value="08098787676"/>
     <!-- Replace the value with your customer phonenumber (optional if email is passes) -->
     <input type="hidden" name="pay_button_text" value="Complete Payment"/>
     <!-- Replace the value with the payment button text you prefer (optional) -->
-<!--    <input type="hidden" name="ref" value="TEST_TXREF_--><?//= uniqid() ?><!--"/>-->
+<!--    <input type="hidden" name="tx_ref" value="TEST_TXREF_--><?//= uniqid() ?><!--"/>-->
     <!-- Replace the value with your transaction reference. It must be unique per transaction. You can delete this line if you want one to be generated for you. -->
-    <input type="hidden" name="successurl" value="http://request.lendlot.com/13b9gxc1?status=success">
+    <input type="hidden" name="success_url" value="http://request.lendlot.com/13b9gxc1?status=success">
     <!-- Put your success url here -->
-    <input type="hidden" name="failureurl" value="http://request.lendlot.com/13b9gxc1?status=failed">
+    <input type="hidden" name="failure_url" value="http://request.lendlot.com/13b9gxc1?status=failed">
     <!-- Put your failure url here -->
     <center><input id="btn-of-destiny" class="btn btn-warning" type="submit" value="Pay Now"/></center>
 </form>
