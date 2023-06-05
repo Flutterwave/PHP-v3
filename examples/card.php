@@ -41,8 +41,8 @@ try {
 
     $customerObj = $cardpayment->customer->create([
         "full_name" => "Olaobaju Abraham",
-        "email" => "olaobajua@gmail.com",
-        "phone" => "+2349067985861"
+        "email" => "ol3746ydgsbc@gmail.com",
+        "phone" => "+2349035462461"
     ]);
 
     $data['customer'] = $customerObj;

@@ -27,8 +27,8 @@ try {
 
     $customerObj = $tokenpayment->customer->create([
         "full_name" => "Olaobaju Jesulayomi Abraham",
-        "email" => "olaobajua@gmail.com",
-        "phone" => "+2349067985861"
+        "email" => "olr75756uruf@gmail.com",
+        "phone" => "+2349067263131"
     ]);
 
     $data['customer'] = $customerObj;

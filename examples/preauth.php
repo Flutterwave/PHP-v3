@@ -39,9 +39,9 @@ try {
     $data['redirectUrl'] = "http://{$_SERVER['HTTP_HOST']}/examples/endpoint/verify.php?tx_ref={$data['tx_ref']}";
 
     $customerObj = $preauthpayment->customer->create([
-        "full_name" => "Olaobaju Jesulayomi Abraham",
-        "email" => "olaobajua@gmail.com",
-        "phone" => "+2349067985861"
+        "full_name" => "Jack Logan Hugh",
+        "email" => "Jhughck@gmail.com",
+        "phone" => "+2349062919861"
     ]);
 
     $data['customer'] = $customerObj;
