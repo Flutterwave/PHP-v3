@@ -39,10 +39,11 @@ jobs:
       - name: 'Create env file'
         run: |
           touch .env
-          echo PUBLIC_KEY=${{ secrets.PUBLIC_KEY }} >> .env
-          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-          echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
-          echo ENV=${{ secrets.ENV }} >> .env
+          echo PUBLIC_KEY="$PUBLIC_KEY" >> .env
+          echo SECRET_KEY="$SECRET_KEY" >> .env
+          echo ENCRYPTION_KEY="$ENCRYPTION_KEY" >> .env
+          echo ENV="$ENV" >> .env
+          ls ${{ github.workspace }}
 
       - name: Cache Composer packages
         id: composer-cache
