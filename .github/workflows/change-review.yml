@@ -43,7 +43,7 @@ jobs:
           echo SECRET_KEY="$SECRET_KEY" >> .env
           echo ENCRYPTION_KEY="$ENCRYPTION_KEY" >> .env
           echo ENV="$ENV" >> .env
-          ls ${{ github.workspace }}
+          ls -a ${{ github.workspace }}
 
       - name: Cache Composer packages
         id: composer-cache
