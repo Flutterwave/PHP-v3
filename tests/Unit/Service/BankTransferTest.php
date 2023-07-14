@@ -37,4 +37,28 @@ class BankTransferTest extends TestCase
         $result = $btpayment->initiate($payload);
         $this->assertSame(AuthMode::BANKTRANSFER, $result['mode']);
     }
+
+
+    public function testExpiryOption()
+    {
+        $data = [
+            "amount" => 2000,
+            "currency" => Currency::NGN,
+            "tx_ref" => uniqid().time(),
+            "redirectUrl" => "https://google.com",
+            "expires" => 3600
+        ];
+
+        $btpayment = Flutterwave::create("bank-transfer");
+        $customerObj = $btpayment->customer->create([
+            "full_name" => "Olaobaju Jesulayomi Abraham",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067985011"
+        ]);
+
+        $data['customer'] = $customerObj;
+        $payload  = $btpayment->payload->create($data);
+        $result = $btpayment->initiate($payload);
+        $this->assertTrue(isset($result['account_expiration']));
+    }
 }
