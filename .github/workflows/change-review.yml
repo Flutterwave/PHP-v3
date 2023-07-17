@@ -56,7 +56,6 @@ jobs:
           envkey_ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
           envkey_ENV: ${{ secrets.ENV }}
           some_other_variable: foobar
-          directory: ${{ github.workspace }}
           file_name: .env
           fail_on_empty: false
           sort_keys: false
