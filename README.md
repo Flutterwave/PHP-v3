@@ -573,6 +573,33 @@ $response = $service->create($payload);
 ```
 <br>
 
+### Enaira
+
+```php
+use Flutterwave\Util\Currency;
+
+$data = [
+    "amount" => 2000,
+    "is_token" => 1,
+    "currency" => Currency::NGN,
+    "tx_ref" => uniqid().time(),
+    "redirectUrl" => "https://example.com"
+];
+
+$payment = \Flutterwave\Flutterwave::create("enaira");
+$customerObj = $payment->customer->create([
+    "full_name" => "Olaobaju Jesulayomi Abraham",
+    "email" => "developers@flutterwavego.com",
+    "phone" => "+2349060085861"
+]);
+
+$data['customer'] = $customerObj;
+$payload  = $payment->payload->create($data);
+$result = $payment->initiate($payload);
+```
+
+<br>
+
 ### Tokenized Charge
 
 Once the charge and validation process is complete for the first charge on the card, you can make use of the token for subsequent charges.

@@ -17,6 +17,7 @@ use Flutterwave\Service\TokenizedCharge;
 use Flutterwave\Service\Transfer;
 use Flutterwave\Service\Ussd;
 use Flutterwave\Service\GooglePay;
+use Flutterwave\Service\Enaira;
 
 //use Flutterwave\Service\PayPal;
 //use Flutterwave\Service\Remita;
@@ -37,7 +38,8 @@ return [
     'tokenize' => TokenizedCharge::class,
     'transfer' => Transfer::class,
     'ussd' => Ussd::class,
-    'google' => GooglePay::class
+    'google' => GooglePay::class,
+    'enaira' => Enaira::class
 //    "paypal" => PayPal::class,
 //    "remita" => Remita::class,
 //    "voucher" => VoucherPayment::class,
