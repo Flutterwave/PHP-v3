@@ -26,7 +26,7 @@ class EnairaTest extends TestCase
 
         $payment = \Flutterwave\Flutterwave::create("enaira");
         $customerObj = $payment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
+            "full_name" => "Flutterwave Developers",
             "email" => "olaobaju@gmail.com",
             "phone" => "+2349067985861"
         ]);

@@ -47,13 +47,7 @@ class Enaira extends Service implements Payment
     {
         $this->logger->notice('Enaira Service::Started Charging Process ...');
 
-        if($payload->has('is_qr') || $payload->has('is_token')) {
-            dd($payload);
-        }
-
         $payload = $payload->toArray();
-
-//        dd($payload);
 
         //request payload
         $body = $payload;
