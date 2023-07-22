@@ -18,4 +18,5 @@ class Currency
     public const RWF = 'RWF';
     public const XAF = 'XAF';
     public const XOF = 'XOF';
+    public const EGP = 'EGP';
 }
