@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class AccountEventHandler implements EventHandlerInterface
 {
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
+
     use EventTracker;
 
     /**
@@ -83,7 +91,8 @@ class AccountEventHandler implements EventHandlerInterface
      * */
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
     {
-        $mode = $response->meta->authorization->mode;
+
+        $mode = $response->data->meta->authorization->mode;
 
         if (property_exists($response, 'data')) {
             $transactionId = $response->data->id;
@@ -95,35 +104,35 @@ class AccountEventHandler implements EventHandlerInterface
         }
 
         switch ($mode) {
-            case 'pin':
-                $data['dev_instruction'] = "Redirect user to a form to enter his pin and re-initiate the charge adding the params ['pin' => 'USERS_PIN'] to the previous request.";
-                $data['instruction'] = 'Enter the pin of your card';
-                break;
-            case 'redirect':
-                $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
-                $data['url'] = $response->meta->authorization->redirect;
-                break;
-            case 'avs':
-                throw new \Exception('AVS is currently not available via the SDK. please call the endpoint directly.');
+        case 'pin':
+            $data['dev_instruction'] = "Redirect user to a form to enter his pin and re-initiate the charge adding the params ['pin' => 'USERS_PIN'] to the previous request.";
+            $data['instruction'] = 'Enter the pin of your card';
+            break;
+        case 'redirect':
+            $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
+            $data['url'] = $response->data->meta->authorization->redirect;
+            break;
+        case 'avs':
+            throw new \Exception('AVS is currently not available via the SDK. please call the endpoint directly.');
 
-            case 'otp':
-                $data['dev_instruction'] = 'Redirect user to a form to validate with OTP code sent to their Phone.';
+        case 'otp':
+            $data['dev_instruction'] = 'Redirect user to a form to validate with OTP code sent to their Phone.';
 
-                if (property_exists($response->data, 'processor_response')) {
-                    $data['instruction'] = $response->data->processor_response;
-                } else {
-                    $data['instruction'] = $response->meta->authorization->validate_instructions;
-                }
+            if (property_exists($response->data, 'processor_response')) {
+                $data['instruction'] = $response->data->processor_response;
+            } else {
+                $data['instruction'] = $response->data->meta->authorization->validate_instructions;
+            }
 
-                $data['validate'] = true;
-                break;
+            $data['validate'] = true;
+            break;
         }
 
         $data['mode'] = $mode;
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Account Service::Authorization Mode: '.$mode);
+            $logger->notice('Account Service::Authorization Mode: ' . $mode);
         }
 
         return $data;

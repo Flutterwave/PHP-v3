@@ -23,7 +23,7 @@ if (isset($data['otp']) && isset($data['flw_ref']))
         if ($res->status === 'success') {
             echo "Your payment status: " . $res->processor_response;
         }
-    } catch (\Unirest\Exception $e) {
+    } catch (\Psr\Http\Client\ClientExceptionInterface $e) {
 
         echo "error: ". $e->getMessage();
     }

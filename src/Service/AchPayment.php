@@ -8,8 +8,9 @@ use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AchEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
+use Flutterwave\Util\Currency;
 use GuzzleHttp\Exception\GuzzleException;
 use stdClass;
 
@@ -18,12 +19,11 @@ class AchPayment extends Service implements Payment
     use Charge;
 
     public const TYPE = 'ach_payment';
-    public const USD = 'USD';
-    public const ZAR = 'ZAR';
+
     protected string $country = 'US';
     protected array $currency = [
-        self::USD => 'US',
-        self::ZAR => 'ZA',
+        Currency::USD => 'US',
+        Currency::ZAR => 'ZA',
     ];
     private AchEventHandler $eventHandler;
 
@@ -32,8 +32,8 @@ class AchPayment extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new AchEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
+        $this->eventHandler = new AchEventHandler($config);
     }
 
     public function setCountry(string $country): void

@@ -6,11 +6,12 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class PaymentPlan extends Service
 {
     use EventTracker;
+
     private array $requiredParams = [
         'amount','name','interval','duration',
     ];
@@ -21,15 +22,16 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function create(\Flutterwave\Payload $payload): \stdClass
     {
         $payload = $payload->toArray();
         foreach ($this->requiredParams as $param) {
             if (! array_key_exists($param, $payload)) {
-                $this->logger->error("Payment Plan Service::The required parameter {$param} is not present in payload");
-                throw new \InvalidArgumentException("Payment Plan Service:The required parameter {$param} is not present in payload");
+                $msg = "The required parameter {$param} is not present in payload";
+                $this->logger->error("Payment Plan Service::" . $msg);
+                throw new \InvalidArgumentException("Payment Plan Service:" . $msg);
             }
         }
 
@@ -44,19 +46,19 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): \stdClass
     {
         $this->logger->notice("Payment Plan Service::Retrieving a Plan ({$id}).");
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$id}");
+        $response = $this->request(null, 'GET', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function list(): \stdClass
     {
@@ -68,7 +70,7 @@ class PaymentPlan extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function update(string $id, \Flutterwave\Payload $payload): \stdClass
     {
@@ -80,19 +82,19 @@ class PaymentPlan extends Service
 
         $this->logger->notice("Payment Plan Service::Updating Plan id:({$id})");
         self::startRecording();
-        $response = $this->request(null, 'PUT', $this->name."/{$id}");
+        $response = $this->request(null, 'PUT', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function cancel(string $id): \stdClass
     {
         $this->logger->notice("Payment Plan Service::Canceling Plan id:({$id})");
         self::startRecording();
-        $response = $this->request(null, 'PUT', $this->name."/{$id}/cancel");
+        $response = $this->request(null, 'PUT', $this->name . "/{$id}/cancel");
         self::setResponseTime();
         return $response;
     }

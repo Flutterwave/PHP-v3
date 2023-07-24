@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Util\AuthMode;
 
 class MomoEventHandler implements EventHandlerInterface
 {
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     /**
      * This is called only when a transaction is successful
@@ -89,20 +96,21 @@ class MomoEventHandler implements EventHandlerInterface
             $data['data_to_save'] = [
                 'transactionId' => $transactionId,
                 'tx_ref' => $tx_ref,
+                'status' => $response->data->status
             ];
         }
 
         if (property_exists($response, 'meta')) {
             $mode = $response->meta->authorization->mode;
             switch ($mode) {
-                case AuthMode::REDIRECT:
-                    $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
-                    $data['url'] = $response->meta->authorization->redirect;
-                    break;
-                case AuthMode::CALLBACK:
-                    $data['dev_instruction'] = "The customer needs to authorize with their mobile money service, and then we'll send you a webhook.";
-                    $data['instruction'] = 'please kindly authorize with your mobile money service';
-                    break;
+            case AuthMode::REDIRECT:
+                $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
+                $data['url'] = $response->meta->authorization->redirect;
+                break;
+            case AuthMode::CALLBACK:
+                $data['dev_instruction'] = "The customer needs to authorize with their mobile money service, and then we'll send you a webhook.";
+                $data['instruction'] = 'please kindly authorize with your mobile money service';
+                break;
             }
         }
 
@@ -110,7 +118,7 @@ class MomoEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Momo Service::Authorization Mode: '.($mode ?? 'none'));
+            $logger->notice('Momo Service::Authorization Mode: ' . ($mode ?? 'none'));
         }
 
         return $data;

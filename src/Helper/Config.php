@@ -6,19 +6,24 @@ namespace Flutterwave\Helper;
 
 use Flutterwave\Contract\ConfigInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use function is_null;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 
+use function is_null;
+
+/**
+ * Class Payload.
+ *
+ * @deprecated use \Flutterwave\Config\PackageConfig instead
+ */
 class Config implements ConfigInterface
 {
     public const PUBLIC_KEY = 'PUBLIC_KEY';
     public const SECRET_KEY = 'SECRET_KEY';
     public const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
-    public const VERSION = 'v3';
-    public const BASE_URL = 'https://api.flutterwave.com/'.self::VERSION;
+    public const ENV = 'ENV';
     public const DEFAULT_PREFIX = 'FW|PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
     protected Logger $logger;
@@ -37,14 +42,12 @@ class Config implements ConfigInterface
         $this->enc = $encryptKey;
         $this->env = $env;
 
-        $this->http = new Client([
-            'base_uri' => $this->getBaseUrl(),
-            'timeout' => 60,
-        ]);
-
+        // when creating a custom config, you may choose to use other dependencies here.
+        // http-client - Guzzle, logger - Monolog.
+        $this->http = new Client(['base_uri' => EnvVariables::BASE_URL, 'timeout' => 60 ]);
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $log->pushHandler(new RotatingFileHandler(__DIR__."../../../../../../".self::LOG_FILE_NAME, 90));
+        $log->pushHandler(new RotatingFileHandler(__DIR__ . "../../../../../../" . self::LOG_FILE_NAME, 90));
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env): ConfigInterface
@@ -73,11 +76,6 @@ class Config implements ConfigInterface
     public function getPublicKey(): string
     {
         return $this->public;
-    }
-
-    public static function getBaseUrl(): string
-    {
-        return self::BASE_URL;
     }
 
     public function getSecretKey(): string

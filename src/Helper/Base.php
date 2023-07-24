@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flutterwave\Helper;
 
-class Base
+final class Base
 {
     public static function getPhpVersion(): string
     {
@@ -22,5 +22,20 @@ class Base
             return 'https';
         }
         return 'http';
+    }
+
+    public function isSSL(): bool
+    {
+        if (isset($_SERVER['HTTPS']) ) {
+            if ('on' == strtolower($_SERVER['HTTPS']) ) {
+                return true;
+            }
+            if ('1' == $_SERVER['HTTPS'] ) {
+                return true;
+            }
+        } elseif (isset($_SERVER['SERVER_PORT']) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
+            return true;
+        }
+        return false;
     }
 }

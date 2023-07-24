@@ -13,14 +13,7 @@ class PaymentPlanTest extends TestCase
     public PaymentPlan $service;
     protected function setUp(): void
     {
-        $this->service = new PaymentPlan(
-            Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY], 
-                $_SERVER[Config::ENCRYPTION_KEY], 
-                $_SERVER[Config::ENV]
-            )
-        );
+        $this->service = new PaymentPlan();
     }
 
     public function testPlanCreation()

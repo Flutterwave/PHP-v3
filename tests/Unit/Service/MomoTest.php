@@ -12,14 +12,7 @@ class MomoTest extends TestCase
 {
     protected function setUp(): void
     {
-        Flutterwave::bootstrap(
-            Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY],
-                $_SERVER[Config::ENCRYPTION_KEY],
-                $_SERVER[Config::ENV]
-            )
-        );
+        Flutterwave::bootstrap();
     }
 
     public function testAuthModeRwandaRedirect(){
@@ -47,6 +40,32 @@ class MomoTest extends TestCase
         $result = $momopayment->initiate($payload);
 
         $this->assertSame(AuthMode::REDIRECT,$result['mode']);
+    }
+
+
+    public function testInitiateTanzaniaRedirect(){
+        $data = [
+            "amount" => 2000,
+            "currency" => Currency::TZS,
+            "tx_ref" => uniqid().time(),
+            "redirectUrl" => null,
+            "additionalData" => [
+                "network" => "VODAFONE",
+            ]
+        ];
+
+        $momopayment = \Flutterwave\Flutterwave::create("momo");
+        $customerObj = $momopayment->customer->create([
+            "full_name" => "Abiodun Abrahams",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067982061"
+        ]);
+
+        $data['customer'] = $customerObj;
+
+        $payload  = $momopayment->payload->create($data);
+        $result = $momopayment->initiate($payload);
+        $this->assertSame('pending',$result['data_to_save']['status']);
     }
 
     public function testAuthModeGhanaRedirect(){

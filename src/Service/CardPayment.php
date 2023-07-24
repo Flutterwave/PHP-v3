@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Flutterwave\Service;
 
+use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\CardEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class CardPayment extends Service implements Payment
 {
     use Charge;
+
     public const ENDPOINT = 'charges';
     public const TYPE = 'card';
     protected static int $count = 0;
@@ -31,17 +34,17 @@ class CardPayment extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
 
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type='.self::TYPE;
-        $this->end_point = self::ENDPOINT.'?type='.self::TYPE;
-        $this->eventHandler = new CardEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=' . self::TYPE;
+        $this->end_point = self::ENDPOINT . '?type=' . self::TYPE;
+        $this->eventHandler = new CardEventHandler($config);
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      * @throws GuzzleException
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(Payload $payload): array
     {
         if (self::$count >= 2) {
             //TODO: if payload does not have pin on 2nd request, trigger a warning.
@@ -64,11 +67,12 @@ class CardPayment extends Service implements Payment
     }
 
     /**
+     * @param  Payload $payload
      * @return array
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(Payload $payload): array
     {
         $tx_ref = $payload->get('tx_ref');
         $this->logger->notice("Card Service::Started Charging Card tx_ref:({$tx_ref})...");
@@ -86,16 +90,18 @@ class CardPayment extends Service implements Payment
             'client' => $client,
         ];
 
-        CardEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST');
-        CardEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $this->handleAuthState($request, $payload);
     }
 
     /**
-     * this is the encrypt3Des function that generates an encryption Key for you by passing your transaction Util and Secret Key as a parameter.
-     * @param string $data
-     * @param $key
+     * this is the encrypt3Des function that generates an encryption Key for you
+     * by passing your transaction Util and Secret Key as a parameter.
+     *
+     * @param  string $data
+     * @param  $key
      * @return string
      */
 
@@ -118,7 +124,10 @@ class CardPayment extends Service implements Payment
     }
 
     /**
-     * @throws \Exception
+     * @param  \stdClass $response
+     * @param  $payload
+     * @return array
+     * @throws Exception
      */
     public function handleAuthState(\stdClass $response, $payload): array
     {

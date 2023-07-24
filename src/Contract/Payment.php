@@ -6,9 +6,9 @@ namespace Flutterwave\Contract;
 
 interface Payment
 {
-    public function initiate(\Flutterwave\Payload $payload): array;
+    public function initiate(\Flutterwave\Entities\Payload $payload): array;
 
-    public function charge(\Flutterwave\Payload $payload): array;
+    public function charge(\Flutterwave\Entities\Payload $payload): array;
 
     public function save(callable $callback): void;
 

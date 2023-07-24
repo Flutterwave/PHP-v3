@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class ApplePayEventHandler implements EventHandlerInterface
 {
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     public function onSuccessful($transactionData): void
     {
@@ -55,7 +63,7 @@ class ApplePayEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Apple Method Event::Apple Authorization Mode: '.$data['mode'] ?? 'redirect');
+            $logger->notice('Apple Method Event::Apple Authorization Mode: ' . $data['mode'] ?? 'redirect');
         }
 
         return $data;

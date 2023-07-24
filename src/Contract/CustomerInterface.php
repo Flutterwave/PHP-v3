@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flutterwave\Contract;
 
-use Flutterwave\Customer;
+use Flutterwave\Entities\Customer;
 
 interface CustomerInterface
 {

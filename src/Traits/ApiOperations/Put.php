@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Flutterwave\Traits\ApiOperations;
 
-use Unirest\Exception;
-use Unirest\Request;
-use Unirest\Request\Body;
+use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Service\Service as Http;
+use Psr\Http\Client\ClientExceptionInterface;
 
 trait Put
 {
     /**
-     * @param array<mixed> $data
+     * @param ConfigInterface $config
+     * @param array           $data
      *
-     * @throws Exception
+     * @return string
+     * @throws ClientExceptionInterface
      */
-    public function putURL(array $data): string
+    public function putURL(ConfigInterface $config, array $data): string
     {
-        $bearerTkn = 'Bearer ' . $this->secretKey;
-        $headers = ['Content-Type' => 'application/json', 'Authorization' => $bearerTkn];
-        $body = Body::json($data);
-        $url = $this->baseUrl . '/' . $this->end_point;
-        $response = Request::put($url, $headers, $body);
-        return $response->raw_body;
+        $response = (new Http($config))->request($data, 'PUT', $this->end_point);
+
+        return '';
     }
 }

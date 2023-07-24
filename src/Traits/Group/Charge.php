@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flutterwave\Traits\Group;
 
 use Flutterwave\Service\Transactions;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 trait Charge
 {
@@ -15,7 +15,7 @@ trait Charge
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function verify(?string $transactionId = null): \stdClass
     {
@@ -26,7 +26,7 @@ trait Charge
         return (new Transactions($this->config))->verify($transactionId);
     }
 
-    private function checkPayloadIsValid(\Flutterwave\Payload $payload, string $criteria): bool
+    private function checkPayloadIsValid(\Flutterwave\Entities\Payload $payload, string $criteria): bool
     {
         $this->logger->notice('Charge Group::Verifying Payload  ...');
         //if does not payload contains $criteria :: false

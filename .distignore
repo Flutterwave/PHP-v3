@@ -3,3 +3,5 @@ docker-compose.yml
 .gitignore
 .github
 .env.example
+.docker
+Makefile

@@ -6,11 +6,12 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Bill extends Service
 {
     use EventTracker;
+
     protected ?array $categories = null;
     private string $name = 'bill-categories';
     private array $requiredParams = [
@@ -19,11 +20,11 @@ class Bill extends Service
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
-        $this->categories = require __DIR__ . '/../Util/bill_categories.php';
+        $this->categories = include __DIR__ . '/../Util/bill_categories.php';
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getCategories(): \stdClass
     {
@@ -35,28 +36,28 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function validateService(string $item_code): \stdClass
     {
         $this->logger->notice('Bill Payment Service::Retrieving all Plans.');
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."bill-item/{$item_code}/validate");
+        $response = $this->request(null, 'GET', $this->name . "bill-item/{$item_code}/validate");
         self::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function createPayment(\Flutterwave\Payload $payload): \stdClass
     {
-        $payload =
         $payload = $payload->toArray();
         foreach ($this->requiredParams as $param) {
             if (! array_key_exists($param, $payload)) {
-                $this->logger->error("Bill Payment Service::The required parameter {$param} is not present in payload");
-                throw new \InvalidArgumentException("Bill Payment Service:The required parameter {$param} is not present in payload");
+                $msg = 'The required parameter {$param} is not present in payload';
+                $this->logger->error("Bill Payment Service::$msg");
+                throw new \InvalidArgumentException("Bill Payment Service:$msg");
             }
         }
 
@@ -73,8 +74,9 @@ class Bill extends Service
     public function createBulkPayment(array $bulkPayload): \stdClass
     {
         if (empty($bulkPayload)) {
-            $this->logger->error('Bill Payment Service::Bulk Payload is empty. Pass a filled array');
-            throw new \InvalidArgumentException('Bill Payment Service::Bulk Payload is currently empty. Pass a filled array');
+            $msg = 'Bulk Payload is empty. Pass a filled array';
+            $this->logger->error('Bill Payment Service::' . $msg);
+            throw new \InvalidArgumentException('Bill Payment Service::' . $msg);
         }
 
         $body = $bulkPayload;
@@ -87,7 +89,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBillStatus(string $reference): \stdClass
     {
@@ -99,7 +101,7 @@ class Bill extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBillPayments(): \stdClass
     {

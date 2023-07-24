@@ -8,7 +8,7 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\TkEventHandler;
 use Flutterwave\Traits\Group\Charge;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class TokenizedCharge extends Service implements Payment
 {
@@ -21,14 +21,14 @@ class TokenizedCharge extends Service implements Payment
     {
         parent::__construct($config);
         $endpoint = "tokenized-{$this->getEndpoint()}";
-        $this->url = $this->baseUrl.'/'.$endpoint;
+        $this->url = $this->baseUrl . '/' . $endpoint;
         $this->eventHandler = new TkEventHandler();
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload)
+    public function initiate(\Flutterwave\Entities\Payload $payload): array
     {
         $this->logger->notice('Tokenize Service::Initiating Card Payment...');
         if (! $this->checkPayloadIsValid($payload, 'token')) {
@@ -42,11 +42,11 @@ class TokenizedCharge extends Service implements Payment
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(\Flutterwave\Entities\Payload $payload): array
     {
-        # format the customer object to extract the first_name and the last name.
+        // format the customer object to extract the first_name and the last name.
         $customer = $payload->get('customer')->toArray();
         $fullname = $customer['fullname'];
         $names = explode(' ', $fullname);

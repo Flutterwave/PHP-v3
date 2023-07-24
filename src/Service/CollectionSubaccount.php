@@ -6,20 +6,27 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\SubaccountEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use GuzzleHttp\Exception\GuzzleException;
 
 class CollectionSubaccount extends Service
 {
     private SubaccountEventHandler $eventHandler;
+
     private string $name = 'subaccounts';
-    private array $requiredParams = [ 'account_bank', 'account_number', 'business_name', 'split_value', 'business_mobile','business_email', 'country' ];
+
+    private array $requiredParams = [
+        'account_bank', 'account_number',
+        'business_name', 'split_value',
+        'business_mobile','business_email', 'country'
+    ];
     private array $requiredParamsUpdate = [ 'split_value'];
+
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $endpoint = $this->name;
-        $this->url = $this->baseUrl.'/'.$endpoint;
+        $this->url = $this->baseUrl . '/' . $endpoint;
         $this->eventHandler = new SubaccountEventHandler();
     }
 
@@ -27,8 +34,9 @@ class CollectionSubaccount extends Service
     {
         foreach ($this->requiredParams as $param) {
             if (! $payload->has($param)) {
-                $this->logger->error("Subaccount Service::The required parameter {$param} is not present in payload");
-                throw new \InvalidArgumentException("Subaccount Service:The required parameter {$param} is not present in payload");
+                $msg = "The required parameter {$param} is not present in payload";
+                $this->logger->error("Subaccount Service::" . $msg);
+                throw new \InvalidArgumentException("Subaccount Service:" . $msg);
             }
         }
 
@@ -36,7 +44,7 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return \stdClass
      * @throws GuzzleException
      */
@@ -71,7 +79,7 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @param string $id
+     * @param  string $id
      * @return \stdClass
      * @throws GuzzleException
      */
@@ -84,8 +92,8 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @param string $id
-     * @param Payload $payload
+     * @param  string  $id
+     * @param  Payload $payload
      * @return \stdClass
      * @throws GuzzleException
      */
@@ -93,8 +101,9 @@ class CollectionSubaccount extends Service
     {
         foreach ($this->requiredParamsUpdate as $param) {
             if (! $payload->has($param)) {
-                $this->logger->error("Subaccount Service::The required parameter {$param} is not present in payload");
-                throw new \InvalidArgumentException("Subaccount Service:The required parameter {$param} is not present in payload");
+                $msg = "The required parameter {$param} is not present in payload";
+                $this->logger->error("Subaccount Service::" . $msg);
+                throw new \InvalidArgumentException("Subaccount Service:" . $msg);
             }
         }
 
@@ -106,7 +115,7 @@ class CollectionSubaccount extends Service
     }
 
     /**
-     * @param string $id
+     * @param  string $id
      * @return \stdClass
      * @throws GuzzleException
      */

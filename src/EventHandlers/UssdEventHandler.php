@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class UssdEventHandler implements EventHandlerInterface
 {
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     /**
      * This is called only when a transaction is successful
@@ -101,7 +109,7 @@ class UssdEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Ussd Authorization Mode: '.$data['mode']);
+            $logger->notice('Ussd Authorization Mode: ' . $data['mode']);
         }
 
         return $data;

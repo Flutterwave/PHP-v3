@@ -5,20 +5,26 @@ declare(strict_types=1);
 namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Contract\FactoryInterface;
 use Flutterwave\Contract\ServiceInterface;
+use Flutterwave\Config\ForkConfig;
+use Flutterwave\Factories\CustomerFactory as Customer;
+use Flutterwave\Factories\PayloadFactory as Payload;
 use Flutterwave\Helper\Config;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
+use Flutterwave\Helper\EnvVariables;
+use Psr\Http\Client\ClientInterface;
 use InvalidArgumentException;
-use function is_null;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
+
+use function is_null;
 
 class Service implements ServiceInterface
 {
     public const ENDPOINT = '';
-    public ?Payload $payload;
-    public ?Customer $customer;
+    public ?FactoryInterface $payload;
+    public ?FactoryInterface $customer;
     protected string $baseUrl;
     protected LoggerInterface $logger;
     protected ConfigInterface $config;
@@ -37,8 +43,8 @@ class Service implements ServiceInterface
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
         $this->secret = $this->config->getSecretKey();
-        $this->url = $this->config::getBaseUrl().'/';
-        $this->baseUrl = $this->config::getBaseUrl();
+        $this->url = EnvVariables::BASE_URL . '/';
+        $this->baseUrl = EnvVariables::BASE_URL;
     }
 
     public function getName(): string
@@ -47,55 +53,69 @@ class Service implements ServiceInterface
     }
 
     /**
-     * @param array|null $data
-     * @param string $verb
-     * @param string $additionalurl
+     * @param  array|null $data
+     * @param  string     $verb
+     * @param  string     $additionalurl
      * @return stdClass
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    protected function request(?array $data = null, string $verb = 'GET', string $additionalurl = ''): stdClass
-    {
+    public function request(
+        ?array $data = null,
+        string $verb = 'GET',
+        string $additionalurl = '',
+        bool $overrideUrl = false
+    ): stdClass {
+
         $secret = $this->config->getSecretKey();
+        $url = $this->getUrl($overrideUrl, $additionalurl);
 
         switch ($verb) {
-            case 'POST':
-                $response = $this->http->request('POST', $this->url.$additionalurl, [
-                    'debug' => false, # TODO: turn to false  on release.
-                    'headers' => [
-                        'Authorization' => "Bearer $secret",
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data,
-                ]);
-                break;
-            case 'PUT':
-                $response = $this->http->request('PUT', $this->url.$additionalurl, [
-                    'debug' => false, # TODO: turn to false  on release.
-                    'headers' => [
-                        'Authorization' => "Bearer $secret",
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json' => $data ?? [],
-                ]);
-                break;
-            case 'DELETE':
-                $response = $this->http->request('DELETE', $this->url.$additionalurl, [
-                    'debug' => false,
-                    'headers' => [
-                        'Authorization' => "Bearer $secret",
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
-                break;
-            default:
-                $response = $this->http->request('GET', $this->url.$additionalurl, [
-                    'debug' => false,
-                    'headers' => [
-                        'Authorization' => "Bearer $secret",
-                        'Content-Type' => 'application/json',
-                    ],
-                ]);
-                break;
+        case 'POST':
+            $response = $this->http->request(
+                'POST', $url, [
+                'debug' => false, // TODO: turn to false  on release.
+                'headers' => [
+                    'Authorization' => "Bearer $secret",
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $data,
+                    ]
+            );
+            break;
+        case 'PUT':
+            $response = $this->http->request(
+                'PUT', $url, [
+                'debug' => false, // TODO: turn to false  on release.
+                'headers' => [
+                    'Authorization' => "Bearer $secret",
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $data ?? [],
+                    ]
+            );
+            break;
+        case 'DELETE':
+            $response = $this->http->request(
+                'DELETE', $url, [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer $secret",
+                    'Content-Type' => 'application/json',
+                ],
+                    ]
+            );
+            break;
+        default:
+            $response = $this->http->request(
+                'GET', $url, [
+                'debug' => false,
+                'headers' => [
+                    'Authorization' => "Bearer $secret",
+                    'Content-Type' => 'application/json',
+                ],
+                    ]
+            );
+            break;
         }
 
         $body = $response->getBody()->getContents();
@@ -116,14 +136,34 @@ class Service implements ServiceInterface
     private static function bootstrap(?ConfigInterface $config = null): void
     {
         if (is_null($config)) {
-            require __DIR__.'/../../setup.php';
-            $config = Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY],
-                $_SERVER[Config::ENCRYPTION_KEY],
-                $_SERVER['ENV']
-            );
+            include __DIR__ . '/../../setup.php';
+
+            if ('composer' === $flutterwave_installation) {
+                $config = Config::setUp(
+                    $keys[Config::SECRET_KEY],
+                    $keys[Config::PUBLIC_KEY],
+                    $keys[Config::ENCRYPTION_KEY],
+                    $keys[Config::ENV]
+                );
+            }
+
+            if ('manual' === $flutterwave_installation) {
+                $config = ForkConfig::setUp(
+                    $keys[Config::SECRET_KEY],
+                    $keys[Config::PUBLIC_KEY],
+                    $keys[Config::ENCRYPTION_KEY],
+                    $keys[Config::ENV]
+                );
+            }
         }
         self::$spareConfig = $config;
+    }
+    private function getUrl(bool $overrideUrl, string $additionalurl): string
+    {
+        if ($overrideUrl) {
+            return $additionalurl;
+        }
+
+        return $this->url . $additionalurl;
     }
 }

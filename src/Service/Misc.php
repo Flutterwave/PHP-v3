@@ -6,11 +6,12 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Misc extends Service
 {
     use EventTracker;
+
     private string $name = 'balances';
     private array $requiredParamsHistory = [
         'from','to','currency',
@@ -27,7 +28,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getWallet($currency): \stdClass
     {
@@ -39,7 +40,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getWallets(): \stdClass
     {
@@ -51,14 +52,15 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBalanceHistory(array $queryParams): \stdClass
     {
         foreach ($this->requiredParamsHistory as $param) {
             if (! array_key_exists($param, $queryParams)) {
-                $this->logger->error("Misc Service::The following parameter is missing to check balance history: {$param}");
-                throw new \InvalidArgumentException("The following parameter is missing to check balance history: {$param}");
+                $msg = "The following parameter is missing to check balance history: {$param}";
+                $this->logger->error("Misc Service::$msg");
+                throw new \InvalidArgumentException($msg);
             }
         }
 
@@ -71,7 +73,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveAccount(\Flutterwave\Payload $payload): \stdClass
     {
@@ -91,7 +93,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveBvn(string $bvn): \stdClass
     {
@@ -103,7 +105,7 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resolveCardBin(string $bin): \stdClass
     {
@@ -115,14 +117,15 @@ class Misc extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function userBackgroundCheck(array $data): \stdClass
     {
         foreach ($this->requiredParamsUserBackground as $param) {
             if (! array_key_exists($param, $data)) {
-                $this->logger->error("Misc Service::The following parameter is missing to check user background: {$param}");
-                throw new \InvalidArgumentException("The following parameter is missing to check user background: {$param}");
+                $msg = "The following parameter is missing to check user background: {$param}";
+                $this->logger->error("Misc Service::$msg");
+                throw new \InvalidArgumentException($msg);
             }
         }
 

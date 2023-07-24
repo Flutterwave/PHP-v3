@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Flutterwave;
 
+use Flutterwave\Config\ForkConfig;
 use Flutterwave\EventHandlers\EventHandlerInterface;
+use Flutterwave\Exception\ApiException;
+use Flutterwave\Helper\CheckCompatibility;
 use Flutterwave\Traits\PaymentFactory;
 use Flutterwave\Traits\Setup\Configure;
+use Flutterwave\Library\Modal;
+use Psr\Http\Client\ClientExceptionInterface;
 
-define('FLW_PHP_ASSET_DIR', __DIR__.'../assets/');
+define('FLW_PHP_ASSET_DIR', __DIR__ . '../assets/');
 
 /**
  * Flutterwave PHP SDK
@@ -19,25 +24,35 @@ define('FLW_PHP_ASSET_DIR', __DIR__.'../assets/');
  */
 class Flutterwave extends AbstractPayment
 {
-    use Configure,PaymentFactory;
+    use Configure;
+    use PaymentFactory;
 
     /**
      * Flutterwave Construct
+     *
      * @param string $prefix
-     * @param bool $overrideRefWithPrefix Set this parameter to true to use your prefix as the transaction reference
+     * @param bool   $overrideRefWithPrefix Set this parameter to true to use your prefix as the transaction reference
      */
-    public function __construct(string $prefix, bool $overrideRefWithPrefix = false)
+    public function __construct()
     {
-        parent::__construct($prefix, $overrideRefWithPrefix);
-        $this->overrideTransactionReference = $overrideRefWithPrefix;
+        parent::__construct();
+        $this->checkPageIsSecure();
         // create a log channel
         $this->logger = self::$config->getLoggerInstance();
         $this->createReferenceNumber();
         $this->logger->notice('Main Class Initializes....');
     }
 
+    private function checkPageIsSecure()
+    {
+        if(!CheckCompatibility::isSsl() && 'production' === $this->getConfig()->getEnv()) {
+            throw new \Exception('Flutterwave: cannot load checkout modal on an unsecure page - no SSL detected. ');
+        }
+    }
+
     /**
      * Sets the transaction amount
+     *
      * @param string $amount Transaction amount
      * */
     public function setAmount(string $amount): object
@@ -55,6 +70,16 @@ class Flutterwave extends AbstractPayment
     {
         $this->paymentOptions = $paymentOptions;
         return $this;
+    }
+
+    /**
+     * get event handler.
+     *
+     * @param string $paymentOptions The allowed payment methods. Can be card, account or both
+     */
+    public function getEventHandler()
+    {
+        return $this->handler;
     }
 
     /**
@@ -82,7 +107,8 @@ class Flutterwave extends AbstractPayment
     /**
      * Sets the payment page title
      *
-     * @param string $customTitle A title for the payment. It can be the product name, your business name or anything short and descriptive
+     * @param string $customTitle A title for the payment.
+     *                            It can be the product name, your business name or anything short and descriptive
      */
     public function setTitle(string $customTitle): object
     {
@@ -159,7 +185,8 @@ class Flutterwave extends AbstractPayment
     /**
      * Sets the payment page button text
      *
-     * @param string $payButtonText This is the text that should appear on the payment button on the Rave payment gateway.
+     * @param string $payButtonText This is the text that should appear
+     *                              on the payment button on the Rave payment gateway.
      */
     public function setPayButtonText(string $payButtonText): object
     {
@@ -170,7 +197,8 @@ class Flutterwave extends AbstractPayment
     /**
      * Sets the transaction redirect url
      *
-     * @param string $redirectUrl This is where the Rave payment gateway will redirect to after completing a payment
+     * @param string $redirectUrl This is where the Flutterwave will redirect to after
+     *                            completing a payment
      */
     public function setRedirectUrl(string $redirectUrl): object
     {
@@ -181,7 +209,9 @@ class Flutterwave extends AbstractPayment
     /**
      * Sets the transaction meta data. Can be called multiple time to set multiple meta data
      *
-     * @param array $meta This are the other information you will like to store with the transaction. It is a key => value array. eg. PNR for airlines, product colour or attributes. Example. array('name' => 'femi')
+     * @param array $meta This are the other information you will like to store
+     *                    with the transaction. It is a key => value array. eg. PNR for airlines,
+     *                    product colour or attributes. Example. array('name' => 'femi')
      */
     public function setMetaData(array $meta): object
     {
@@ -192,7 +222,8 @@ class Flutterwave extends AbstractPayment
     /**
      * Sets the event hooks for all available triggers
      *
-     * @param EventHandlerInterface $handler This is a class that implements the Event Handler Interface
+     * @param EventHandlerInterface $handler This is a class that implements the
+     *                                       Event Handler Interface
      */
     public function eventHandler(EventHandlerInterface $handler): object
     {
@@ -203,7 +234,9 @@ class Flutterwave extends AbstractPayment
     /**
      * Requerys a previous transaction from the Rave payment gateway
      *
-     * @param string $referenceNumber This should be the reference number of the transaction you want to requery
+     * @param  string $referenceNumber This should be the reference number of the transaction you want to requery
+     * @throws ClientExceptionInterface
+     * @throws ApiException
      */
     public function requeryTransaction(string $referenceNumber): object
     {
@@ -219,37 +252,35 @@ class Flutterwave extends AbstractPayment
             // 'only_successful' => '1'
         ];
 
-        // make request to endpoint using unirest.
-        $headers = ['Content-Type' => 'application/json', 'Authorization' => 'Bearer '.self::$config->getSecretKey()];
-        $body = Body::json($data);
-        $url = $this->baseUrl . '/transactions/' . $data['id'] . '/verify';
-        // Make `POST` request and handle response with unirest
-        $response = Request::get($url, $headers);
+        $url = '/transactions/' . $data['id'] . '/verify';
 
-//         print_r($response);
+        $response = $this->getURL(static::$config, $url);
 
-        //check the status is success
-        if ($response->body && $response->body->status === 'success') {
-            if ($response->body && $response->body->data && $response->body->data->status === 'successful') {
-                $this->logger->notice('Requeryed a successful transaction....' . json_encode($response->body->data));
-                // Handle successful
+        //check the status is success.
+        if ($response->status === 'success') {
+            if ($response->data && $response->data->status === 'successful') {
+                $this->logger->notice('Requeryed a successful transaction....' . json_encode($response->data));
+                // Handle successful.
                 if (isset($this->handler)) {
-                    $this->handler->onSuccessful($response->body->data);
+                    $this->handler->onSuccessful($response->data);
                 }
-            } elseif ($response->body && $response->body->data && $response->body->data->status === 'failed') {
+            } elseif ($response->data && $response->data->status === 'failed') {
                 // Handle Failure
-                $this->logger->warning('Requeryed a failed transaction....' . json_encode($response->body->data));
+                $this->logger->warning('Requeryed a failed transaction....' . json_encode($response->data));
                 if (isset($this->handler)) {
-                    $this->handler->onFailure($response->body->data);
+                    $this->handler->onFailure($response->data);
                 }
             } else {
                 // Handled an undecisive transaction. Probably timed out.
-                $this->logger->warning('Requeryed an undecisive transaction....' . json_encode($response->body->data));
-                // I will requery again here. Just incase we have some devs that cannot setup a queue for requery. I don't like this.
+                $this->logger->warning(
+                    'Requeryed an undecisive transaction....' . json_encode($response->data)
+                );
+                // I will requery again here. Just incase we have some devs that cannot setup a queue for requery.
+                // I don't like this.
                 if ($this->requeryCount > 4) {
                     // Now you have to setup a queue by force. We couldn't get a status in 5 requeries.
                     if (isset($this->handler)) {
-                        $this->handler->onTimeout($this->txref, $response->body);
+                        $this->handler->onTimeout($this->txref, $response->data);
                     }
                 } else {
                     $this->logger->notice('delaying next requery for 3 seconds');
@@ -259,10 +290,9 @@ class Flutterwave extends AbstractPayment
                 }
             }
         } else {
-            // $this->logger->warn('Requery call returned error for transaction reference.....'.json_encode($response->body).'Transaction Reference: '. $this->txref);
             // Handle Requery Error
             if (isset($this->handler)) {
-                $this->handler->onRequeryError($response->body);
+                $this->handler->onRequeryError($response->data);
             }
         }
         return $this;
@@ -279,10 +309,11 @@ class Flutterwave extends AbstractPayment
 
         echo '<html lang="en">';
         echo '<body>';
-//        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
-        echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
-//        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
-        echo '<script type="text/javascript" src="../assets/js/v3.js"></script>';
+        //        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
+        echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
+        Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
+        //        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
+        echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
 
         echo '<script>';
         echo 'document.addEventListener("DOMContentLoaded", function(event) {';
@@ -292,7 +323,8 @@ class Flutterwave extends AbstractPayment
             amount: ' . $this->amount . ',
             currency: "' . $this->currency . '",
             country: "' . $this->country . '",
-            payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,banktransfer,account",
+            payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,
+            mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,banktransfer,account",
             redirect_url:"' . $this->redirectUrl . '",
             customer: {
               email: "' . $this->customerEmail . '",
@@ -303,7 +335,7 @@ class Flutterwave extends AbstractPayment
               console.log(data);
             },
             onclose: function() {
-                window.location = "?cancelled=cancelled&cancel_ref='.$this->txref.'";
+                window.location = "?cancelled=cancelled&cancel_ref=' . $this->txref . '";
               },
             customizations: {
               title: "' . $this->customTitle . '",
@@ -330,5 +362,23 @@ class Flutterwave extends AbstractPayment
             $this->handler->onCancel($referenceNumber);
         }
         return $this;
+    }
+
+    public static function setUp(array $config): void
+    {
+        self::$config = ForkConfig::setUp(
+            $config['secret_key'],
+            $config['public_key'],
+            $config['encryption_key'],
+            $config['environment']
+        );
+    }
+
+    public function render(string $modalType): Modal
+    {
+        $data = [
+            'tx_ref' => $this->txref,
+        ];
+        return new Modal($modalType, $data, $this->getEventHandler(), self::$config);
     }
 }

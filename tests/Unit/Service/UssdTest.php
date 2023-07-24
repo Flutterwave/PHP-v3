@@ -12,14 +12,7 @@ class UssdTest extends TestCase
 {
     protected function setUp(): void
     {
-        Flutterwave::bootstrap(
-            Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY],
-                $_SERVER[Config::ENCRYPTION_KEY],
-                $_SERVER[Config::ENV]
-            )
-        );
+        Flutterwave::bootstrap();
     }
 
 //    public function testAuthModeReturnUssd()
@@ -98,7 +91,7 @@ class UssdTest extends TestCase
 
         $data['customer'] = $customerObj;
         $payload  = $ussdpayment->payload->create($data);
-        $this->expectExceptionMessage("USSD Service: We do not support your bank. please kindly use another.");
+        $this->expectExceptionMessage("USSD Service:We do not support your bank. please kindly use another. ");
         $result = $ussdpayment->initiate($payload);
     }
 }

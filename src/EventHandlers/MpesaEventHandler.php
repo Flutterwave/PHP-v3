@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+use Psr\Http\Client\ClientExceptionInterface;
+
 class MpesaEventHandler implements EventHandlerInterface
 {
     use EventTracker;
 
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
+
     /**
      * This is called only when a transaction is successful
      *
-     * @param array
-     * */
+     * @param array $transactionData
+     *
+     * @throws ClientExceptionInterface
+     */
     public function onSuccessful($transactionData): void
     {
         // Get the transaction from your DB using the transaction reference (txref)

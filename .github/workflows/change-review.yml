@@ -1,0 +1,78 @@
+name: Review changes on Dev (Commits/PRs)
+
+on:
+  push:
+    branches: ["dev"]
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  code-check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [7.4, 8.1, 8.2]
+
+    env:
+      XDEBUG_MODE: coverage
+      PUBLIC_KEY: ${{ secrets.PUBLIC_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      ENV: ${{ secrets.ENV }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: xdebug
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo PUBLIC_KEY=${PUBLIC_KEY} >> .env
+          echo SECRET_KEY=${SECRET_KEY} >> .env
+          echo ENCRYPTION_KEY=${ENCRYPTION_KEY} >> .env
+          echo ENV=${ENV} >> .env
+          ls -a ${{ github.workspace }}
+
+      - name: run unit tests and coverage scan
+        run: ./vendor/bin/pest --coverage --min=20 --coverage-clover ./coverage.xml
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODE_COV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
+
+      - name: push build status to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        if: always()

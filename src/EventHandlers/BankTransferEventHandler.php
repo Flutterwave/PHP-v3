@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class BankTransferEventHandler implements EventHandlerInterface
 {
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     /**
      * @inheritDoc
@@ -57,8 +65,8 @@ class BankTransferEventHandler implements EventHandlerInterface
     }
 
     /**
-     * @param \stdClass $response
-     * @param array|null $resource
+     * @param  \stdClass  $response
+     * @param  array|null $resource
      * @return array
      */
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
@@ -76,8 +84,8 @@ class BankTransferEventHandler implements EventHandlerInterface
 
         if (is_array($resource) && ! empty($resource)) {
             $logger = $resource['logger'];
-            $logger->notice('Transfer Authorization Mode: '.$mode);
-            $logger->info('Bank Transfer Event::Created Account Info :'.json_encode($data));
+            $logger->notice('Transfer Authorization Mode: ' . $mode);
+            $logger->info('Bank Transfer Event::Created Account Info :' . json_encode($data));
         }
 
         return $data;

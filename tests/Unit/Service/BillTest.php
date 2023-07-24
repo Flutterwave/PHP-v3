@@ -13,14 +13,7 @@ class BillTest extends \PHPUnit\Framework\TestCase
     public Bill $service;
     protected function setUp(): void
     {
-        $this->service = new Bill(
-            Config::setUp(
-                $_SERVER[Config::SECRET_KEY],
-                $_SERVER[Config::PUBLIC_KEY], 
-                $_SERVER[Config::ENCRYPTION_KEY], 
-                $_SERVER[Config::ENV]
-            )
-        );
+        $this->service = new Bill();
     }
 //    public function testBillCreation()
 //    {

@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Contract\ConfigInterface;
+
 class TransactionVerificationEventHandler implements EventHandlerInterface
 {
     /**
      * This is called only when a transaction is successful
      * */
-
     use EventTracker;
+
+    private static ConfigInterface $config;
+    public function __construct($config)
+    {
+        self::$config = $config;
+    }
 
     public function onSuccessful($transactionData): void
     {

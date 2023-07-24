@@ -6,14 +6,16 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class Beneficiaries extends Service
 {
     use EventTracker;
+
     private string $name = 'beneficiaries';
     private array $requiredParams = [
         'account_bank','account_number','beneficiary_name',
@@ -24,21 +26,25 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @param  Payload $payload
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function create(Payload $payload): stdClass
     {
         $payload = $payload->toArray();
 
         if (array_key_exists('customer', $payload)) {
-            $this->logger->error('Beneficiaries Service::The required parameter customer Object is not present in payload');
-            throw new InvalidArgumentException('Beneficiaries Service:The required parameter Object is not present in payload');
+            $msg = 'The required parameter customer Object is not present in payload';
+            $this->logger->error('Beneficiaries Service::' . $msg);
+            throw new InvalidArgumentException('Beneficiaries Service:' . $msg);
         }
 
         foreach ($this->requiredParams as $param) {
             if (! array_key_exists($param, $payload)) {
-                $this->logger->error("Beneficiaries Service::The required parameter {$param} is not present in payload");
-                throw new InvalidArgumentException("Beneficiaries Service:The required parameter {$param} is not present in payload");
+                $msg = 'The required parameter {$param} is not present in payload';
+                $this->logger->error("Beneficiaries Service::$msg");
+                throw new InvalidArgumentException("Beneficiaries Service:$msg");
             }
         }
 
@@ -53,7 +59,8 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function list(): stdClass
     {
@@ -65,25 +72,29 @@ class Beneficiaries extends Service
     }
 
     /**
-     * @throws GuzzleException
+     * @param  string $id
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function get(string $id): stdClass
     {
         $this->logger->notice('Beneficiaries Service::Retrieving a Beneficiary.');
         self::startRecording();
-        $response = $this->request(null, 'GET', $this->name."/{$id}");
+        $response = $this->request(null, 'GET', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws GuzzleException
+     * @param  string $id
+     * @return stdClass
+     * @throws ClientExceptionInterface
      */
     public function delete(string $id): stdClass
     {
         $this->logger->notice('Beneficiaries Service::Delete a Beneficiary.');
         self::startRecording();
-        $response = $this->request(null, 'DELETE', $this->name."/{$id}");
+        $response = $this->request(null, 'DELETE', $this->name . "/{$id}");
         self::setResponseTime();
         return $response;
     }

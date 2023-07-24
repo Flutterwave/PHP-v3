@@ -8,7 +8,7 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\MpesaEventHandler;
 use Flutterwave\Traits\Group\Charge;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Mpesa extends Service implements Payment
 {
@@ -22,23 +22,23 @@ class Mpesa extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new MpesaEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
+        $this->eventHandler = new MpesaEventHandler($config);
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(\Flutterwave\Entities\Payload $payload): array
     {
         return $this->charge($payload);
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      * @throws \Exception
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(\Flutterwave\Entities\Payload $payload): array
     {
         $this->logger->notice('Charging via Mpesa ...');
 
@@ -63,9 +63,9 @@ class Mpesa extends Service implements Payment
         unset($body['country']);
         unset($body['address']);
 
-        MpesaEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST', self::TYPE);
-        MpesaEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
 
         return $this->handleAuthState($request, $body);
     }
@@ -85,7 +85,8 @@ class Mpesa extends Service implements Payment
         return [
             'status' => $response->data->status,
             'transactionId' => $response->data->id,
-            'dev_instruction' => 'The customer should authorize the payment on their Phones via the Mpesa. status is pending',
+            'dev_instruction' => 'The customer should authorize the payment on their Phones 
+            via the Mpesa. status is pending',
             'instruction' => 'Please kindly authorize the payment on your Mobile phone',
             'mode' => $mode,
         ];

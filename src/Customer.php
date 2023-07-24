@@ -4,33 +4,37 @@ declare(strict_types=1);
 
 namespace Flutterwave;
 
+/**
+ * Class Customer
+ *
+ * @package    Flutterwave
+ * @deprecated Use Flutterwave\Entities\Customer instead.
+ */
 class Customer
 {
-    private array $data = [];
-
+    private Entities\Customer $instance;
     public function __construct(array $data = [])
     {
-        //TODO: validate data contains the required fields.
-        $this->data = [...$data];
+        $this->instance = new \Flutterwave\Entities\Customer($data);
     }
 
     public function get(string $param)
     {
-        return $this->data[$param];
+        return $this->instance->get($param);
     }
 
     public function set(string $param, $value): void
     {
-        $this->data[$param] = $value;
+        $this->instance->set($param, $value);
     }
 
     public function has(string $param): bool
     {
-        return isset($this->data[$param]);
+        return $this->instance->has($param);
     }
 
     public function toArray(): array
     {
-        return $this->data;
+        return $this->instance->toArray();
     }
 }

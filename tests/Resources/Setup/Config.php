@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Flutterwave\Test\Resources\Setup;
 
 use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Helper\EnvVariables;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
+
 use function is_null;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Client\ClientInterface;
 
 class Config implements ConfigInterface
 {
@@ -18,8 +20,6 @@ class Config implements ConfigInterface
     public const SECRET_KEY = 'SECRET_KEY';
     public const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
     public const ENV = 'ENV';
-    public const VERSION = 'v3';
-    public const BASE_URL = 'https://api.flutterwave.com/'.self::VERSION;
     public const DEFAULT_PREFIX = 'FW|PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
     protected Logger $logger;
@@ -31,19 +31,21 @@ class Config implements ConfigInterface
     private ClientInterface $http;
     private string $enc;
 
-    private function __construct(string $secretKey, string $publicKey, string $encryptKey, string $env)
+    private function __construct(
+        string $secretKey,
+        string $publicKey,
+        string $encryptKey,
+        string $env
+    )
     {
         $this->secret = $secretKey;
         $this->public = $publicKey;
         $this->enc = $encryptKey;
         $this->env = $env;
-
-        $this->http = new Client([
-            'base_uri' => $this->getBaseUrl(),
-            'timeout' => 60,
-        ]);
-
-        $log = new Logger('Flutterwave/PHP');
+        # when creating a custom config, you may choose to use other dependencies here.
+        # http-client - Guzzle, logger - Monolog.
+        $this->http = new Client(['base_uri' => EnvVariables::BASE_URL, 'timeout' => 60 ]);
+        $log = new Logger('Flutterwave/PHP'); // making use of Monolog;
         $this->logger = $log;
         $log->pushHandler(new RotatingFileHandler(self::LOG_FILE_NAME, 90));
     }
@@ -58,6 +60,7 @@ class Config implements ConfigInterface
 
     public function getHttp(): ClientInterface
     {
+        # for custom implementation, please ensure the
         return $this->http ?? new Client();
     }
 
@@ -74,11 +77,6 @@ class Config implements ConfigInterface
     public function getPublicKey(): string
     {
         return $this->public;
-    }
-
-    public static function getBaseUrl(): string
-    {
-        return self::BASE_URL;
     }
 
     public function getSecretKey(): string

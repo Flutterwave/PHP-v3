@@ -6,9 +6,9 @@ namespace Flutterwave\Enum;
 
 //use Cerbero\Enum\Concerns\Enumerates;
 
-enum Bill:string
+enum Bill: string
 {
-//    use Enumerates;
+    //    use Enumerates;
     case AIRTIME = 'AIRTIME';
     case DSTV = 'DSTV';
     case DSTV_BOX_OFFICE = 'DSTV BOX OFFICE';

@@ -7,9 +7,10 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\UssdEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Ussd extends Service implements Payment
 {
@@ -45,27 +46,27 @@ class Ussd extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new UssdEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
+        $this->eventHandler = new UssdEventHandler($config);
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
-     * @throws \Exception
+     * @throws ClientExceptionInterface
      */
-    public function initiate(\Flutterwave\Payload $payload): array
+    public function initiate(Payload $payload): array
     {
         $this->logger->info('Ussd Service::Initiated Ussd Charge');
         return $this->charge($payload);
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    public function charge(\Flutterwave\Payload $payload): array
+    public function charge(Payload $payload): array
     {
         $otherData = $payload->get('otherData');
 
@@ -86,8 +87,9 @@ class Ussd extends Service implements Payment
         $bank = $otherData['account_bank'];
 
         if (! array_key_exists($bank, $this->supported_banks)) {
-            $this->logger->error('USSD Service: We do not support your bank. please kindly use another. ');
-            throw new \InvalidArgumentException('USSD Service: We do not support your bank. please kindly use another. ');
+            $msg = 'We do not support your bank. please kindly use another. ';
+            $this->logger->error('USSD Service:' . $msg);
+            throw new \InvalidArgumentException('USSD Service:' . $msg);
         }
 
         $payload = $payload->toArray();
@@ -98,11 +100,11 @@ class Ussd extends Service implements Payment
         unset($body['country']);
         unset($body['address']);
 
-        UssdEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $this->logger->info('Ussd Service::Generating Ussd Code');
         $request = $this->request($body, 'POST', self::TYPE);
         $this->logger->info('Ussd Service::Generated Ussd Code Successfully');
-        UssdEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
 
         return $this->handleAuthState($request, $body);
     }
@@ -113,8 +115,8 @@ class Ussd extends Service implements Payment
     }
 
     /**
-     * @param \stdClass $response
-     * @param array $payload
+     * @param  \stdClass $response
+     * @param  array     $payload
      * @return array
      * @throws \Exception
      */

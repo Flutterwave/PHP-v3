@@ -16,11 +16,7 @@ trait Prepare
     public function createReferenceNumber(): self
     {
         $this->logger->notice('Generating Reference Number....');
-        if ($this->overrideTransactionReference) {
-            $this->txref = $this->transactionPrefix;
-        } else {
-            $this->txref = uniqid($this->transactionPrefix);
-        }
+        $this->txref = uniqid($this->transactionPrefix);
         $this->logger->notice('Generated Reference Number....' . $this->txref);
         return $this;
     }

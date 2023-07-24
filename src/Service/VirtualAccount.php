@@ -6,11 +6,12 @@ namespace Flutterwave\Service;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventTracker;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class VirtualAccount extends Service
 {
     use EventTracker;
+
     private string $name = 'virtual-account-numbers';
     public function __construct(?ConfigInterface $config = null)
     {
@@ -18,7 +19,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function create(array $payload): \stdClass
     {
@@ -26,8 +27,9 @@ class VirtualAccount extends Service
 
         //check email and bvn are in payload
         if (! isset($payload['email']) || ! isset($payload['bvn'])) {
-            $this->logger->error('VirtualAccount Service::The required parameter email or bvn is not present in payload');
-            throw new \InvalidArgumentException('The required parameter email or bvn is not present in payload');
+            $msg = 'The required parameter email or bvn is not present in payload';
+            $this->logger->error('VirtualAccount Service::' . $msg);
+            throw new \InvalidArgumentException($msg);
         }
 
         $this->logger->notice('VirtualAccount Service::Payload Confirmed.');
@@ -38,7 +40,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function createBulk(array $payload): \stdClass
     {
@@ -49,8 +51,9 @@ class VirtualAccount extends Service
         $this->logger->notice('VirtualAccount Service::Creating Bulk Virtual Accounts.');
         //check accounts and email are in payload
         if (! isset($payload['accounts']) || ! isset($payload['email'])) {
-            $this->logger->error('VirtualAccount Service::The required parameter accounts or email is not present in payload');
-            throw new \InvalidArgumentException('The required parameter accounts or email is not present in payload');
+            $msg = 'The required parameter accounts or email is not present in payload';
+            $this->logger->error('VirtualAccount Service::' . $msg);
+            throw new \InvalidArgumentException($msg);
         }
 
         $this->logger->notice('VirtualAccount Service:: Payload Confirmed [Bulk].');
@@ -62,7 +65,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function get($order_ref): \stdClass
     {
@@ -74,7 +77,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getBulk($batch_id): \stdClass
     {
@@ -86,14 +89,15 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function update(array $payload): \stdClass
     {
         //check email and bvn are in payload
         if (! isset($payload['order_ref']) || ! isset($payload['bvn'])) {
-            $this->logger->error('VirtualAccount Service::The required parameter order_ref or bvn is not present in payload');
-            throw new \InvalidArgumentException('The required parameter order_ref or bvn is not present in payload');
+            $msg = 'The required parameter order_ref or bvn is not present in payload';
+            $this->logger->error('VirtualAccount Service::' . $msg);
+            throw new \InvalidArgumentException($msg);
         }
 
         $order_ref = $payload['order_ref'];
@@ -108,7 +112,7 @@ class VirtualAccount extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function delete($order_ref): \stdClass
     {

@@ -7,13 +7,14 @@ namespace Flutterwave\Service;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\TransactionVerificationEventHandler;
 use Flutterwave\Traits\ApiOperations\Post;
-use Unirest\Exception;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Transactions extends Service
 {
     use Post;
+
     public const ENDPOINT = 'transactions';
-    public const REFUND_PATH = '/:id'.'/refund';
+    public const REFUND_PATH = '/:id' . '/refund';
     public const MULTI_REFUND_ENDPOINT = '/refunds';
     public const REFUND_DETAILS_PATH = 'refunds/:id';
     public const TRANSACTION_FEE_PATH = '/fee';
@@ -36,17 +37,17 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function verify(string $transactionId): \stdClass
     {
         $this->checkTransactionId($transactionId);
-        $this->logger->notice('Transaction Service::Verifying Transaction...'.$transactionId);
+        $this->logger->notice('Transaction Service::Verifying Transaction...' . $transactionId);
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT."/{$transactionId}/verify",
+            self::ENDPOINT . "/{$transactionId}/verify",
         );
         TransactionVerificationEventHandler::setResponseTime();
 
@@ -54,23 +55,23 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function verifyWithTxref(string $tx_ref): \stdClass
     {
-        $this->logger->notice('Transaction Service::Verifying Transaction...'.$tx_ref);
+        $this->logger->notice('Transaction Service::Verifying Transaction...' . $tx_ref);
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT.'/verify_by_reference?tx_ref='.$tx_ref,
+            self::ENDPOINT . '/verify_by_reference?tx_ref=' . $tx_ref,
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function refund(string $trasanctionId): \stdClass
     {
@@ -80,14 +81,14 @@ class Transactions extends Service
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT."/{$trasanctionId}/refund",
+            self::ENDPOINT . "/{$trasanctionId}/refund",
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getAllTransactions(): \stdClass
     {
@@ -103,7 +104,7 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function getRefundInfo(string $trasanctionId): \stdClass
     {
@@ -120,10 +121,13 @@ class Transactions extends Service
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
-    public function getTransactionFee(string $amount, string $currency = 'NGN', string $payment_type = 'card'): \stdClass
-    {
+    public function getTransactionFee(
+        string $amount,
+        string $currency = 'NGN',
+        string $payment_type = 'card'
+    ): \stdClass {
         if (! $amount) {
             $msg = 'Please pass a valid amount';
             $this->logger->warning($msg);
@@ -151,14 +155,14 @@ class Transactions extends Service
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT."/fee?{$query}",
+            self::ENDPOINT . "/fee?{$query}",
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function resendFailedHooks(string $transactionId): \stdClass
     {
@@ -168,31 +172,33 @@ class Transactions extends Service
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT."/{$transactionId}/resend-hook",
+            self::ENDPOINT . "/{$transactionId}/resend-hook",
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function retrieveTimeline(string $transactionId): \stdClass
     {
         $this->checkTransactionId($transactionId);
-        $this->logger->notice("Transaction Service::Retrieving Transaction Timeline: TransactionId => {$transactionId}");
+        $this->logger->notice(
+            "Transaction Service::Retrieving Transaction Timeline: TransactionId => {$transactionId}"
+        );
         TransactionVerificationEventHandler::startRecording();
         $response = $this->request(
             null,
             'GET',
-            self::ENDPOINT."/{$transactionId}/timeline",
+            self::ENDPOINT . "/{$transactionId}/timeline",
         );
         TransactionVerificationEventHandler::setResponseTime();
         return $response;
     }
 
     /**
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function validate(string $otp, string $flw_ref): \stdClass
     {
@@ -203,12 +209,12 @@ class Transactions extends Service
             ]
         );
 
-        $this->logger->notice('Transaction Service::Validating Transaction ...'.$logData);
+        $this->logger->notice('Transaction Service::Validating Transaction ...' . $logData);
 
         $data = [
             'otp' => $otp,
             'flw_ref' => $flw_ref,
-//            "type" => "card" //default would be card
+        //            "type" => "card" //default would be card
         ];
 
         return $this->request(

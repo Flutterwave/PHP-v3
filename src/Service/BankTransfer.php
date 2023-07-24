@@ -8,9 +8,10 @@ use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\BankTransferEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class BankTransfer extends Service implements Payment
@@ -26,8 +27,8 @@ class BankTransfer extends Service implements Payment
         parent::__construct($config);
 
         $endpoint = $this->getEndpoint();
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new BankTransferEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
+        $this->eventHandler = new BankTransferEventHandler($config);
     }
 
     public function makePermanent(): void
@@ -38,10 +39,10 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
     public function initiate(Payload $payload): array
     {
@@ -49,11 +50,11 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param Payload $payload
+     * @param  Payload $payload
      * @return array
      *
-     * @throws GuzzleException
-     * @throws Exception
+     * @throws ClientExceptionInterface
+     * @throws Exception|ClientExceptionInterface
      */
     public function charge(Payload $payload): array
     {
@@ -65,9 +66,9 @@ class BankTransfer extends Service implements Payment
         //request payload
         $body = $payload;
 
-        BankTransferEventHandler::startRecording();
+        $this->eventHandler::startRecording();
         $request = $this->request($body, 'POST', self::TYPE);
-        BankTransferEventHandler::setResponseTime();
+        $this->eventHandler::setResponseTime();
         return $this->handleAuthState($request, $body);
     }
 
@@ -77,8 +78,8 @@ class BankTransfer extends Service implements Payment
     }
 
     /**
-     * @param stdClass $response
-     * @param array $payload
+     * @param  stdClass $response
+     * @param  array    $payload
      * @return array
      * @throws Exception
      */

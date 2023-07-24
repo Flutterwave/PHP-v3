@@ -8,23 +8,27 @@ use Exception;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Contract\Payment;
 use Flutterwave\EventHandlers\AccountEventHandler;
-use Flutterwave\Payload;
+use Flutterwave\Entities\Payload;
 use Flutterwave\Traits\Group\Charge;
+use Flutterwave\Util\Currency;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
+use Psr\Http\Client\ClientExceptionInterface;
 use stdClass;
 
 class AccountPayment extends Service implements Payment
 {
     use Charge;
+
     public const ENDPOINT = 'charge';
-    public const DEBIT_NG = 'debit_ng_account';
-    public const DEBIT_UK = 'debit_uk_account';
+    public const DEBIT_NG = 'mono';
+    public const DEBIT_UK = 'account-ach-uk';
     public const TYPE = 'account';
     protected array $accounts = [
-        'NG' => self::DEBIT_NG,
-        'UK' => self::DEBIT_UK,
-    ];
+        Currency::NGN => self::DEBIT_NG,
+        Currency::GBP => self::DEBIT_UK,
+        Currency::EUR => self::DEBIT_UK
+     ];
     protected string $country = 'NG';
     private AccountEventHandler $eventHandler;
 
@@ -34,8 +38,8 @@ class AccountPayment extends Service implements Payment
 
         $endpoint = $this->getEndpoint();
 
-        $this->url = $this->baseUrl.'/'.$endpoint.'?type=';
-        $this->eventHandler = new AccountEventHandler();
+        $this->url = $this->baseUrl . '/' . $endpoint . '?type=';
+        $this->eventHandler = new AccountEventHandler($config);
     }
 
     public function setCountry(string $country): void
@@ -53,6 +57,12 @@ class AccountPayment extends Service implements Payment
      */
     public function initiate(Payload $payload): array
     {
+        if($payload->has('currency') && !key_exists($payload->get('currency'), $this->accounts)) {
+            $msg = 'Account Service: The Currency passed is not supported. kindy pass NGN, GBP or EUR.';
+            $this->logger->info($msg);
+            throw new InvalidArgumentException($msg);
+        }
+
         if ($this->checkPayloadIsValid($payload, 'account_details')) {
             return $this->charge($payload);
         }
@@ -62,23 +72,26 @@ class AccountPayment extends Service implements Payment
     }
 
     /**
+     * @param  Payload $payload
      * @return array
      *
-     * @throws GuzzleException
-     * @throws Exception
+     * @throws ClientExceptionInterface
      */
     public function charge(Payload $payload): array
     {
         $this->logger->notice('Account Service::Charging Account ...');
 
-        $this->checkSpecialCasesParams($payload);
+        if($payload->has('currency') &&   $payload->get('currency') === Currency::NGN ) {
+            $this->checkSpecialCasesParams($payload);
+        }
+
         $payload = $payload->toArray(self::TYPE);
 
         //request payload
         $body = $payload;
 
         //check which country was passed.
-        $account = $this->accounts[$payload['country']];
+        $account = $this->accounts[$payload['currency']];
 
         unset($body['country']);
         unset($body['address']);
@@ -97,7 +110,7 @@ class AccountPayment extends Service implements Payment
     private function checkSpecialCasesParams(Payload $payload)
     {
         $details = $payload->get('otherData')['account_details'];
-        $banks = require __DIR__ . '/../Util/unique_bank_cases.php';
+        $banks = include __DIR__ . '/../Util/unique_bank_cases.php';
 
         foreach ($banks as $code => $case) {
             if ($details['account_bank'] === $code) {
@@ -125,7 +138,8 @@ class AccountPayment extends Service implements Payment
     }
 
     /**
-     * @param array $payload
+     * @param stdClass $response
+     * @param array    $payload
      *
      * @return array
      *

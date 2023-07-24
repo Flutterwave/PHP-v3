@@ -16,6 +16,10 @@ use Flutterwave\Service\Preauth;
 use Flutterwave\Service\TokenizedCharge;
 use Flutterwave\Service\Transfer;
 use Flutterwave\Service\Ussd;
+use Flutterwave\Service\GooglePay;
+use Flutterwave\Service\Enaira;
+use Flutterwave\Service\Fawry;
+
 //use Flutterwave\Service\PayPal;
 //use Flutterwave\Service\Remita;
 //use Flutterwave\Service\VoucherPayment;
@@ -35,6 +39,9 @@ return [
     'tokenize' => TokenizedCharge::class,
     'transfer' => Transfer::class,
     'ussd' => Ussd::class,
+    'google' => GooglePay::class,
+    'enaira' => Enaira::class,
+    'fawry' => Fawry::class
 //    "paypal" => PayPal::class,
 //    "remita" => Remita::class,
 //    "voucher" => VoucherPayment::class,
