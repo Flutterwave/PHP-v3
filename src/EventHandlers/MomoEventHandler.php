@@ -96,6 +96,7 @@ class MomoEventHandler implements EventHandlerInterface
             $data['data_to_save'] = [
                 'transactionId' => $transactionId,
                 'tx_ref' => $tx_ref,
+                'status' => $response->data->status
             ];
         }
 

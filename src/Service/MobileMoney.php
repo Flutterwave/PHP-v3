@@ -23,12 +23,14 @@ class MobileMoney extends Service implements Payment
         Currency::UGX => 'mobile_money_uganda',
         Currency::XAF => 'mobile_money_franco',
         Currency::ZMW => 'mobile_money_zambia',
+        Currency::TZS => 'mobile_money_tanzania'
     ];
 
     private array $networks = [
         'GH' => ['MTN','VODOFONE','TIGO'],
         'UG' => ['MTN', 'AIRTEL'],
         'ZM' => ['MTN', 'ZAMTEL'],
+        'Tz' => ['AIRTEL', 'TIGO', 'HALOPESA', 'VODOFONE' ]
     ];
 
     private array $supported_countries_franco = [
@@ -89,7 +91,6 @@ class MobileMoney extends Service implements Payment
         MomoEventHandler::startRecording();
         $request = $this->request($body, 'POST', $type);
         MomoEventHandler::setResponseTime();
-
         return $this->handleAuthState($request, $body);
     }
 
