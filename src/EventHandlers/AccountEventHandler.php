@@ -91,7 +91,8 @@ class AccountEventHandler implements EventHandlerInterface
      * */
     public function onAuthorization(\stdClass $response, ?array $resource = null): array
     {
-        $mode = $response->meta->authorization->mode;
+
+        $mode = $response->data->meta->authorization->mode;
 
         if (property_exists($response, 'data')) {
             $transactionId = $response->data->id;
@@ -109,7 +110,7 @@ class AccountEventHandler implements EventHandlerInterface
             break;
         case 'redirect':
             $data['dev_instruction'] = 'Redirect the user to the auth link for validation';
-            $data['url'] = $response->meta->authorization->redirect;
+            $data['url'] = $response->data->meta->authorization->redirect;
             break;
         case 'avs':
             throw new \Exception('AVS is currently not available via the SDK. please call the endpoint directly.');
@@ -120,7 +121,7 @@ class AccountEventHandler implements EventHandlerInterface
             if (property_exists($response->data, 'processor_response')) {
                 $data['instruction'] = $response->data->processor_response;
             } else {
-                $data['instruction'] = $response->meta->authorization->validate_instructions;
+                $data['instruction'] = $response->data->meta->authorization->validate_instructions;
             }
 
             $data['validate'] = true;

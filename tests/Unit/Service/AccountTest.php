@@ -15,7 +15,7 @@ class AccountTest extends TestCase
         Flutterwave::bootstrap();
     }
 
-    public function testAuthModeReturn()
+    public function testNgnAuthModeReturn()
     {
         //currently returning "Sorry, we could not connect to your bank";
 
@@ -41,11 +41,8 @@ class AccountTest extends TestCase
 
         $data['customer'] = $customerObj;
         $payload  = $accountpayment->payload->create($data);
-        $this->expectException(\Exception::class);
         $result = $accountpayment->initiate($payload);
-
-        //check mode returned is either OTP or Redirect
-//        $this->assertTrue($result['mode'] === AuthMode::OTP || $result['mode'] === AuthMode::REDIRECT );
+        $this->assertTrue( $result['mode'] === AuthMode::REDIRECT );
     }
 
     public function testInvalidParam()
@@ -68,5 +65,33 @@ class AccountTest extends TestCase
         $payload  = $accountpayment->payload->create($data);
         $this->expectException(\InvalidArgumentException::class);
         $result = $accountpayment->initiate($payload);
+    }
+
+    public function testUKBankAccountAuthMode() {
+        $data = [
+            "amount" => 2000,
+            "currency" => Currency::NGN,
+            "tx_ref" => uniqid().time(),
+            "additionalData" => [
+                "account_details" => [
+                    "account_bank" => "044",
+                    "account_number" => "0690000034",
+                    "country" => "UK" //or EU
+                ]
+            ],
+        ];
+
+        $accountpayment = \Flutterwave\Flutterwave::create("account");
+        $customerObj = $accountpayment->customer->create([
+            "full_name" => "Jake Jesulayomi Ola",
+            "email" => "developers@flutterwavego.com",
+            "phone" => "+2349067985861"
+        ]);
+
+        $data['customer'] = $customerObj;
+        $payload  = $accountpayment->payload->create($data);
+        $result = $accountpayment->initiate($payload);
+
+        $this->assertTrue( $result['mode'] === AuthMode::REDIRECT );
     }
 }

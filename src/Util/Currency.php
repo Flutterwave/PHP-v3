@@ -19,4 +19,5 @@ class Currency
     public const XAF = 'XAF';
     public const XOF = 'XOF';
     public const EGP = 'EGP';
+    public const GBP = 'GBP';
 }
