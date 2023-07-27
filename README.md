@@ -191,7 +191,7 @@ use Flutterwave\Util\Currency;
 
 $data = [
     "amount" => 2000,
-    "currency" => Currency::NGN,
+    "currency" => Currency::NGN, // or EUR or GBP for EU Collection.
     "tx_ref" => uniqid().time(),
     "additionalData" => [
         "account_details" => [
@@ -341,6 +341,33 @@ $data['customer'] = $customerObj;
 $payload  = $ussdpayment->payload->create($data);
 $result = $ussdpayment->initiate($payload);
 ```
+<br>
+
+### FawryPay
+
+Receive Fawry payments from customers in Egypt. Read the [overview](https://developer.flutterwave.com/docs/direct-charge/fawry) for this payment method before proceeding.
+
+```php
+use Flutterwave\Util\Currency;
+
+$data = [
+    "amount" => 2000,
+    "currency" => Currency::EGP,
+    "tx_ref" => uniqid().time(),
+    "redirectUrl" => "https://example.com"
+];
+
+$payment = \Flutterwave\Flutterwave::create("fawry");
+$customerObj = $payment->customer->create([
+    "full_name" => "Olaobaju Jesulayomi Abraham",
+    "email" => "vicomma@gmail.com",
+    "phone" => "+2349060085861"
+]);
+
+$data['customer'] = $customerObj;
+$payload  = $payment->payload->create($data);
+$result = $payment->initiate($payload);
+```
 
 <br>
 
@@ -374,6 +401,8 @@ $result = $mpesapayment->initiate($payload);
 How to make a transfer payment
 
 ```php
+use Flutterwave\Util\Currency;
+
 $data = [
     "amount" => 2000,
     "currency" => Currency::NGN,
