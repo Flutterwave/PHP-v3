@@ -73,11 +73,6 @@ ENCRYPTION_KEY=FLWSECK_XXXXXXXXXXXXXXXX
 ENV='staging/production'
 ```
 
-
-<a id="usage"></a>
-
-## Usage
-
 ### Render Payment Modal
 
 The SDK provides two easy methods of making collections via the famous payment modal. [Learn more](#)
@@ -166,292 +161,54 @@ exit();
 Create a .env file and add the bootstrap method first before initiating a charge.
 ```php
 use \Flutterwave\Flutterwave;
-use \Flutterwave\Helper\Config;
+
 # normal configuration
 Flutterwave::bootstrap(); # this will use the default configuration set in .env
+```
 
-# for a custom configuration
-# your config must implement Flutterwave\Contract\ConfigInterface
+if you do not wish to use a .env, you can simply pass your API keys like the example below.
+
+```php
+use \Flutterwave\Helper\Config;
+
 $myConfig = Config::setUp(
     'FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
     'FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
     'FLWSECK_XXXXXXXXXXXXXXXX',
     'staging'
-); 
+);
+ 
 Flutterwave::bootstrap($myConfig);
-```
+````
 
-### Account Charge
+<a id="usage"></a>
 
-The following implementation shows how to initiate a direct bank charge. <br /> 
-want to see it work real time? a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/account.php).
+## Usage
 
-```php
-use Flutterwave\Util\Currency;
+### Charge
+1. [Account Charge](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#account)
+2. [ACH Charge](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#ach)
+3. [Card Charge](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#card)
+4. [Mobile Money](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#mobile-money)
+5. [FawryPay](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#fawry-pay)
+6. [GooglePay](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#google-pay)
+7. [ApplePay](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#apple-pay)
+8. [Mpesa](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#mpesa)
+9. [BankTransfer](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#bank-transfers)
+10. [USSD](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#ussd)
+11. [eNaira](https://github.com/Flutterwave/PHP-v3/wiki/Direct-Charge#enaira)
 
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::NGN, // or EUR or GBP for EU Collection.
-    "tx_ref" => uniqid().time(),
-    "additionalData" => [
-        "account_details" => [
-            "account_bank" => "044",
-            "account_number" => "0690000034",
-            "country" => "NG"
-        ]
-    ],
-];
-
-$accountpayment = \Flutterwave\Flutterwave::create("account");
-$customerObj = $accountpayment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349067985861"
-]);
-
-$data['customer'] = $customerObj;
-$payload  = $accountpayment->payload->create($data);
-$result = $accountpayment->initiate($payload);
-```
-<br>
-
-### ACH Charge
-
-The following implementation shows how to accept payments directly from customers in the US and South Africa. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ach.php).
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::ZAR,
-    "tx_ref" => uniqid().time(),
-    "redirectUrl" => "https://google.com"
-];
-
-$achpayment = \Flutterwave\Flutterwave::create("ach");
-$customerObj = $achpayment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349067985861"
-]);
-
-$data['customer'] = $customerObj;
-$payload  = $achpayment->payload->create($data);
-
-$result = $achpayment->initiate($payload);
-```
-
-<br>
-
-### Direct Card Charge
-
-The following implementation shows how to initiate a card charge. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/card.php)
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::NGN,
-    "tx_ref" => "TEST-".uniqid().time(),
-    "redirectUrl" => "https://www.example.com",
-    "additionalData" => [
-        "subaccounts" => [
-            ["id" => "RSA_345983858845935893"]
-        ],
-        "meta" => [
-            "unique_id" => uniqid().uniqid()
-        ],
-        "preauthorize" => false,
-        "payment_plan" => null,
-        "card_details" => [
-            "card_number" => "5531886652142950",
-            "cvv" => "564",
-            "expiry_month" => "09",
-            "expiry_year" => "32"
-        ]
-    ],
-];
-
-$cardpayment = \Flutterwave\Flutterwave::create("card");
-$customerObj = $cardpayment->customer->create([
-    "full_name" => "Olaobaju Abraham",
-    "email" => "ola2fhahfj@gmail.com",
-    "phone" => "+234900154861"
-]);
-$data['customer'] = $customerObj;
-$payload  = $cardpayment->payload->create($data);
-$result = $cardpayment->initiate($payload);
-```
-
-### Mobile Money Payments
-
-The following implementation shows how to initiate a mobile money payment. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/momo.php).
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::XOF,
-    "tx_ref" => uniqid().time(),
-    "redirectUrl" => null,
-    "additionalData" => [
-        "network" => "MTN",
-    ]
-];
-
-$momopayment = \Flutterwave\Flutterwave::create("momo");
-$customerObj = $momopayment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349067985861"
-]);
-$data['customer'] = $customerObj;
-$payload  = $momopayment->payload->create($data);
-$result = $momopayment->initiate($payload);
-```
-
-### USSD
-
-Collect payments via ussd. a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/ussd.php)
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::NGN,
-    "tx_ref" => uniqid().time(),
-    "redirectUrl" => null,
-    "additionalData" => [
-        "account_bank" => "044",
-        "account_number" => "000000000000"
-    ]
-];
-
-$ussdpayment = \Flutterwave\Flutterwave::create("ussd");
-$customerObj = $ussdpayment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349067985861"
-]);
-$data['customer'] = $customerObj;
-$payload  = $ussdpayment->payload->create($data);
-$result = $ussdpayment->initiate($payload);
-```
-<br>
-
-### FawryPay
-
-Receive Fawry payments from customers in Egypt. Read the [overview](https://developer.flutterwave.com/docs/direct-charge/fawry) for this payment method before proceeding.
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::EGP,
-    "tx_ref" => uniqid().time(),
-    "redirectUrl" => "https://example.com"
-];
-
-$payment = \Flutterwave\Flutterwave::create("fawry");
-$customerObj = $payment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349060085861"
-]);
-
-$data['customer'] = $customerObj;
-$payload  = $payment->payload->create($data);
-$result = $payment->initiate($payload);
-```
-
-<br>
-
-### Mpesa
-
-Collect payments from your customers via Mpesa.a quick sample implementation  can be found [here](https://github.com/Flutterwave/PHP/blob/fix/add-support-for-php7-8/examples/mpesa.php)
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::NGN,
-    "tx_ref" => uniqid().time(),
-    "redirectUrl" => "https://google.com"
-];
-
-$mpesapayment = \Flutterwave\Flutterwave::create("mpesa");
-$customerObj = $mpesapayment->customer->create([
-    "full_name" => "Olaobaju Jesulayomi Abraham",
-    "email" => "vicomma@gmail.com",
-    "phone" => "+2349067985861"
-]);
-$data['customer'] = $customerObj;
-$payload  = $mpesapayment->payload->create($data);
-$result = $mpesapayment->initiate($payload);
-```
-
-### Transfer Implementation
-
-How to make a transfer payment
-
-```php
-use Flutterwave\Util\Currency;
-
-$data = [
-    "amount" => 2000,
-    "currency" => Currency::NGN,
-    "tx_ref" => "TEST-".uniqid().time()."_PMCKDU_1",
-    "redirectUrl" => "https://www.example.com",
-    "additionalData" => [
-        "account_details" => [
-            "account_bank" => "044",
-            "account_number" => "0690000032",
-            "amount" => "2000",
-            "callback" => null
-        ],
-        "narration" => "Good Times in the making",
-    ],
-];
-
-$service = new Transfer();
-$customerObj = $service->customer->create([
-    "full_name" => "Olaobaju Abraham",
-    "email" => "38djsdjfjc954@gmail.com",
-    "phone" => "+234900085861"
-]);
-$data['customer'] = $customerObj;
-$payload  = $service->payload->create($data);
-$response = $service->initiate($payload);
-```
-
-<br>
-
-### Virtual Card
-
-The following implementation shows how to create virtual cards on rave. Use the Playground Directory to view Responses and samples of use.
-
-```php
-use Flutterwave\Payload;
-use Flutterwave\Service\VirtualCard;
-use Flutterwave\Util\Currency;
-
-$payload = new Payload();
-$service = new VirtualCard();
-
-$payload->set("currency", Currency::NGN);
-$payload->set("amount", "5000");
-$payload->set("debit_currency", Currency::NGN);
-$payload->set("business_mobile", "+234505394568");
-$payload->set("billing_name", "Abraham Smith");
-$payload->set("firstname", "Abraham");
-$response = $service->create($payload);
-```
+### Resources
+1. [Banks](https://github.com/Flutterwave/PHP-v3/wiki/Banks)
+2. [Beneficiaries](https://github.com/Flutterwave/PHP-v3/wiki/Beneficiaries)
+3. [Payment Plans](https://github.com/Flutterwave/PHP-v3/wiki/Payment-Plan)
+4. [Collection Subaccounts](https://github.com/Flutterwave/PHP-v3/wiki/Collection-Subaccounts)
+5. [Payout Subaccounts](https://github.com/Flutterwave/PHP-v3/wiki/Payout-Subaccounts)
+6. [Subscriptions](https://github.com/Flutterwave/PHP-v3/wiki/Subscriptions)
+7. [Transfers](https://github.com/Flutterwave/PHP-v3/wiki/Transfer-(Payouts))
+8. [Transactions](https://github.com/Flutterwave/PHP-v3/wiki/Transactions)
+9. [Virtual Cards](https://github.com/Flutterwave/PHP-v3/wiki/Virtual-Cards)
+10. [Misc](https://github.com/Flutterwave/PHP-v3/wiki/Misc)
 
 ### BVN Verification
 
