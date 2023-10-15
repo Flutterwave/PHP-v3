@@ -35,6 +35,8 @@ DG\BypassFinals::setWhitelist([
     '*/src/Controller/*',
 ]);
 
-# flutterwave setup.
-require_once __DIR__ . '/../setup.php';
+// Load test cards.
+require_once __DIR__ . '/Resources/Card/test_cards.php';
+
+
 
