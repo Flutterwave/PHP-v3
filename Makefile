@@ -9,4 +9,7 @@ check:
 test:
 	@./vendor/bin/pest --coverage --min=0 --coverage-clover ./coverage.xml
 
+debug:
+	XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --coverage-html .log
+
 
