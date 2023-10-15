@@ -51,14 +51,15 @@ jobs:
       - name: 'Create env file'
         run: |
           touch .env
-          echo PUBLIC_KEY=${PUBLIC_KEY} >> .env
-          echo SECRET_KEY=${SECRET_KEY} >> .env
-          echo ENCRYPTION_KEY=${ENCRYPTION_KEY} >> .env
-          echo ENV=${ENV} >> .env
+          echo PUBLIC_KEY=${{ secrets.PUBLIC_KEY }} >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} >> .env
+          echo ENV=${{ secrets.ENV }} >> .env
           ls -a ${{ github.workspace }}
+          echo ${{ secrets.ENV }}
 
       - name: run unit tests and coverage scan
-        run: PUBLIC_KEY=${PUBLIC_KEY} SECRET_KEY=${SECRET_KEY} ENCRYPTION_KEY=${ENCRYPTION_KEY} ENV=${ENV} ./vendor/bin/pest --coverage --min=20 --coverage-clover ./coverage.xml
+        run: ./vendor/bin/pest --coverage --min=20 --coverage-clover ./coverage.xml
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v2
