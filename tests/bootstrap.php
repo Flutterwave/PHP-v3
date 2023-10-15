@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * ################   #######        ############               ############
@@ -22,21 +23,20 @@
  *
  */
 
-# include vendor directory
+// include vendor directory
 require_once __DIR__ . '/../vendor/autoload.php';
 
-# by pass final definitions.
+// by pass final definitions.
 DG\BypassFinals::enable();
-DG\BypassFinals::setWhitelist([
-    '*/src/Library/*',
-    '*/src/Entities/*',
-    '*/src/Factories/*',
-    '*/src/HttpAdapter/*',
-    '*/src/Controller/*',
-]);
+DG\BypassFinals::setWhitelist(
+    [
+        '*/src/Library/*',
+        // '*/src/Entities/*',
+        // '*/src/Factories/*',
+        // '*/src/HttpAdapter/*',
+        '*/src/Controller/*',
+    ]
+);
 
 // Load test cards.
 require_once __DIR__ . '/Resources/Card/test_cards.php';
-
-
-
