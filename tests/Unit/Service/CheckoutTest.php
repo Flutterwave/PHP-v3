@@ -12,6 +12,20 @@ use Flutterwave\Flutterwave;
 use Flutterwave\Library\Modal;
 use Flutterwave\Util\Currency;
 use PHPUnit\Framework\TestCase;
+use DG\BypassFinals;
+
+BypassFinals::enable();
+BypassFinals::setWhitelist(
+    [
+        '*/src/Library/*',
+        // '*/src/Entities/*',
+        // '*/src/Factories/*',
+        // '*/src/HttpAdapter/*',
+        '*/src/Controller/*',
+    ]
+);
+
+
 
 class CheckoutTest extends TestCase 
 {
