@@ -6,21 +6,22 @@ namespace Flutterwave\Traits\Setup;
 
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\Helper\Config;
+use Flutterwave\Config\PackageConfig;
 use Flutterwave\Config\ForkConfig;
 
 trait Configure
 {
     public static function bootstrap(?ConfigInterface $config = null): void
     {
-        if (\is_null($config)) {
+        if (\is_null($config) && \is_null(self::$config)) {
             include __DIR__ . '/../../../setup.php';
 
             if ('composer' === $flutterwave_installation) {
-                $config = Config::setUp(
-                    $keys[Config::SECRET_KEY],
-                    $keys[Config::PUBLIC_KEY],
-                    $keys[Config::ENCRYPTION_KEY],
-                    $keys[Config::ENV]
+                $config = PackageConfig::setUp(
+                    $keys[PackageConfig::SECRET_KEY],
+                    $keys[PackageConfig::PUBLIC_KEY],
+                    $keys[PackageConfig::ENCRYPTION_KEY],
+                    $keys[PackageConfig::ENV]
                 );
             }
 
