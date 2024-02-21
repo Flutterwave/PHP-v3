@@ -5,7 +5,7 @@ use Dotenv\Dotenv;
 
 $flutterwave_installation = 'composer';
 
-if( !file_exists( '.env' )) {
+if( !file_exists( '.env' ) && !is_dir('vendor')) {
     $dotenv = Dotenv::createImmutable(__DIR__."/../../../"); # on the event that the package is install via composer.
 } else {
     $flutterwave_installation = "manual";
