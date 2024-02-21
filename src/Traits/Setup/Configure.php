@@ -35,7 +35,7 @@ trait Configure
             }
         }
 
-        if (\is_null(self::$config)) {
+        if (\is_null(self::$config) && !\is_null($config)) {
             self::$config = $config;
         }
             
