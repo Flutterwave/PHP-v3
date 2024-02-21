@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Service;
+namespace Unit\Checkout;
 
 use Eloquent\Liberator\Liberator;
 use Flutterwave\Config\ForkConfig;
@@ -14,16 +14,16 @@ use Flutterwave\Util\Currency;
 use PHPUnit\Framework\TestCase;
 use DG\BypassFinals;
 
-// BypassFinals::enable();
-// BypassFinals::setWhitelist(
-//     [
-//         '*/src/Library/*',
-//         // '*/src/Entities/*',
-//         // '*/src/Factories/*',
-//         // '*/src/HttpAdapter/*',
-//         '*/src/Controller/*',
-//     ]
-// );
+BypassFinals::enable();
+BypassFinals::setWhitelist(
+    [
+        '*/src/Library/*',
+        // '*/src/Entities/*',
+        // '*/src/Factories/*',
+        // '*/src/HttpAdapter/*',
+        '*/src/Controller/*',
+    ]
+);
 
 
 
