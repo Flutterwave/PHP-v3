@@ -43,6 +43,7 @@ class CardTest extends TestCase
             "email" => "ol868gjdfjua@gmail.com",
             "phone" => "+2349067985861"
         ]);
+        
         $data['customer'] = $customerObj;
         $payload  = $cardpayment->payload->create($data);
         $result = $cardpayment->initiate($payload);

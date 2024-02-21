@@ -144,7 +144,7 @@ class CardPayment extends Service implements Payment
             ['logger' => $this->logger, 'mode' => $mode]
         );
         
-        return [ 'request_data' => $data['request_data'], ...$extra_data ];
+        return array_merge([ 'request_data' => $data['request_data'] ], $extra_data);
     }
 
     public function getName(): string
