@@ -15,8 +15,14 @@ class Bill extends Service
     protected ?array $categories = null;
     private string $name = 'bill-categories';
     private array $requiredParams = [
-        'country','customer','amount','type','reference',
+        'country',
+        'customer_id',
+        'amount',
+        'reference',
+        'biller_code',
+        'item_code'
     ];
+
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
@@ -25,6 +31,7 @@ class Bill extends Service
 
     /**
      * @throws ClientExceptionInterface
+     * @deprecated Use `getBillCategories()` instead.
      */
     public function getCategories(): \stdClass
     {
@@ -36,13 +43,68 @@ class Bill extends Service
     }
 
     /**
+     * This retrieves the categories of bills that can be paid for.
+     */
+    public function getBillCategories(): \stdClass
+    {
+        $this->logger->notice('Bill Payment Service::Retrieving Top Categories.');
+        self::startRecording();
+        $response = $this->request(null, 'GET', "top-".$this->name);
+        self::setResponseTime();
+        return $response;
+    }
+
+    /**
+     * Retrieve items under a specific biller code.
+     */
+    public function getBillerItems(string $biller_code = null): \stdClass 
+    {
+        if(is_null($biller_code)) {
+            $msg = "The required parameter" . $biller_code . " is not present in payload";
+            $this->logger->error("Bill Payment Service::$msg");
+            throw new \InvalidArgumentException("Bill Payment Service:$msg");
+        }
+
+        $this->logger->notice('Bill Payment Service::Retrieving items under biller '. $biller_code);
+        self::startRecording();
+        $response = $this->request(null, 'GET', sprintf('billers/%s/items', $biller_code));
+        self::setResponseTime();
+        return $response;
+    }
+
+    /**
      * @throws ClientExceptionInterface
+     * @deprecated Use `validateCustomerInfo()` instead.
      */
     public function validateService(string $item_code): \stdClass
     {
         $this->logger->notice('Bill Payment Service::Retrieving all Plans.');
         self::startRecording();
         $response = $this->request(null, 'GET', $this->name . "bill-item/{$item_code}/validate");
+        self::setResponseTime();
+        return $response;
+    }
+
+    public function validateCustomerInfo(\Flutterwave\Payload $payload): \stdClass
+    {
+        $payload = $payload->toArray();
+
+        foreach (['biller_code', 'customer', 'item_code'] as $param) {
+            if (! array_key_exists($param, $payload)) {
+                $msg = "The required parameter ". $param. " is not present in payload";
+                $this->logger->error("Bill Payment Service::$msg");
+                throw new \InvalidArgumentException("Bill Payment Service:$msg");
+            }
+        }
+
+        $code = $payload['biller_code'];
+        $customer = $payload['customer'];
+        $customer = $customer[0] == '+' ? substr($customer, 1) : $customer;
+        $item_code = $payload['item_code'];
+    
+        $this->logger->notice('Bill Payment Service::Retrieving all Plans.');
+        self::startRecording();
+        $response = $this->request(null, 'GET', sprintf("bill-items/{$item_code}/validate?code=%s&customer=%s", $code, $customer));
         self::setResponseTime();
         return $response;
     }
@@ -55,7 +117,7 @@ class Bill extends Service
         $payload = $payload->toArray();
         foreach ($this->requiredParams as $param) {
             if (! array_key_exists($param, $payload)) {
-                $msg = 'The required parameter {$param} is not present in payload';
+                $msg = "The required parameter ". $param. " is not present in payload";
                 $this->logger->error("Bill Payment Service::$msg");
                 throw new \InvalidArgumentException("Bill Payment Service:$msg");
             }
@@ -63,9 +125,12 @@ class Bill extends Service
 
         $body = $payload;
 
+        $biller_code = $payload['biller_code'];
+        $item_code = $payload['item_code'];
+
         $this->logger->notice('Bill Payment Service::Creating a Bill Payment.');
         self::startRecording();
-        $response = $this->request($body, 'POST', 'bills');
+        $response = $this->request($body, 'POST', sprintf('billers/%s/items/%s/payment', $biller_code, $item_code));
         $this->logger->notice('Bill Payment Service::Created a Bill Payment Successfully.');
         self::setResponseTime();
         return $response;
