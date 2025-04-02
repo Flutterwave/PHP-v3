@@ -132,19 +132,27 @@ class CardPayment extends Service implements Payment
     public function handleAuthState(\stdClass $response, $payload): array
     {
         // dd($response);
-        $data['request_data'] = null;
-
-        $mode = (\property_exists($response, 'meta') ) ? 
-        $response->meta->authorization->mode: $response->data->auth_model;
-        if ($mode === 'pin') {
-            $data['request_data'] = $payload;
+        if(property_exists( $response, 'data' ) && property_exists( $response->data, 'status' ) && $response->data->status === 'successful') {
+            return [
+                'card_info' => $response->data->card,
+                'transaction_id' => $response->data->id,
+                'reference' => $response->data->tx_ref,
+                'amount' => $response->data->amount,
+                'mode' => $response->data->auth_model,
+                'currency' => $response->data->currency,
+                'customer' => $response->data->customer,
+                'fraud_status' => $response->data->fraud_status
+            ];
         }
-        $extra_data = $this->eventHandler->onAuthorization(
-            $response, 
-            ['logger' => $this->logger, 'mode' => $mode]
-        );
-        
-        return array_merge([ 'request_data' => $data['request_data'] ], $extra_data);
+
+        $mode = $response->meta->authorization->mode;
+        if ($mode === 'pin') {
+            $data = $this->eventHandler->onAuthorization($response, ['logger' => $this->logger]);
+            $data['request_data'] = $payload;
+            return $data;
+        }
+
+        return $this->eventHandler->onAuthorization($response, ['logger' => $this->logger]);
     }
 
     public function getName(): string
