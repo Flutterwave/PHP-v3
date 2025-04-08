@@ -30,6 +30,7 @@ BypassFinals::setWhitelist(
 class CheckoutTest extends TestCase 
 {
     protected Flutterwave $paymentClient;
+    protected ModalEventHandler $paymentHandler;
 
     protected function setUp(): void
     {

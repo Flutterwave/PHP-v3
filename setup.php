@@ -53,9 +53,16 @@ try{
     exit;
 }
 
+// $keys = [
+//     'SECRET_KEY' => $_ENV['FLW_SECRET_KEY'] ?? \getenv('FLW_SECRET_KEY') ?? $_ENV['SECRET_KEY'] ?? \getenv('SECRET_KEY'),
+//     'PUBLIC_KEY' => $_ENV['FLW_PUBLIC_KEY'] ?? \getenv('FLW_PUBLIC_KEY') && $_ENV['PUBLIC_KEY'] ?? \getenv('PUBLIC_KEY'),
+//     'ENV' => $_ENV['FLW_ENV'] ?? \getenv('FLW_ENV') ?? $_ENV['ENV'] ?? \getenv('ENV'),
+//     'ENCRYPTION_KEY' => $_ENV['FLW_ENCRYPTION_KEY'] ?? \getenv('FLW_ENCRYPTION_KEY') ?? $_ENV['ENCRYPTION_KEY'] ?? \getenv('ENCRYPTION_KEY')
+// ];
+
 $keys = [
-    'SECRET_KEY' => $_ENV['FLW_SECRET_KEY'] ?? \getenv('FLW_SECRET_KEY') ?? $_ENV['SECRET_KEY'] ?? \getenv('SECRET_KEY'),
-    'PUBLIC_KEY' => $_ENV['FLW_PUBLIC_KEY'] ?? \getenv('FLW_PUBLIC_KEY') && $_ENV['PUBLIC_KEY'] ?? \getenv('PUBLIC_KEY'),
-    'ENV' => $_ENV['FLW_ENV'] ?? \getenv('FLW_ENV') ?? $_ENV['ENV'] ?? \getenv('ENV'),
-    'ENCRYPTION_KEY' => $_ENV['FLW_ENCRYPTION_KEY'] ?? \getenv('FLW_ENCRYPTION_KEY') ?? $_ENV['ENCRYPTION_KEY'] ?? \getenv('ENCRYPTION_KEY')
+    'SECRET_KEY' => $_ENV['FLW_SECRET_KEY'] ?? ($_ENV['SECRET_KEY'] ?? getenv('FLW_SECRET_KEY') ?: getenv('SECRET_KEY')),
+    'PUBLIC_KEY' => $_ENV['FLW_PUBLIC_KEY'] ?? ($_ENV['PUBLIC_KEY'] ?? getenv('FLW_PUBLIC_KEY') ?: getenv('PUBLIC_KEY')),
+    'ENV' => $_ENV['FLW_ENV'] ?? ($_ENV['ENV'] ?? getenv('FLW_ENV') ?: getenv('ENV')),
+    'ENCRYPTION_KEY' => $_ENV['FLW_ENCRYPTION_KEY'] ?? ($_ENV['ENCRYPTION_KEY'] ?? getenv('FLW_ENCRYPTION_KEY') ?: getenv('ENCRYPTION_KEY'))
 ];

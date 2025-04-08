@@ -199,3 +199,5 @@ example.php
 coverage.xml
 .env.local
 .php-cs-fixer.cache
+.idx/
+.vscode/
