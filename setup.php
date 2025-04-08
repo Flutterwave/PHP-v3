@@ -33,10 +33,13 @@ asort($flutterwaveKeys);
 try{
     foreach($flutterwaveKeys as $key)
     {
-        if(empty($_ENV[ $key ]) && empty(\getenv($key)))
+
+        $new_key = sprintf( 'FLW_%s', $key );
+        if(empty($_ENV[ $new_key ]) && empty(\getenv($new_key)) && empty($_ENV[ $key ]) && empty(\getenv($key)))
         {
-            throw new InvalidArgumentException("$key environment variable missing.");
+            throw new InvalidArgumentException("$new_key or $key environment variable missing.");
         }
+
     }
 }catch(\Exception $e)
 {
@@ -44,16 +47,15 @@ try{
         echo "❌❌Flutterwave sdk: " .$e->getMessage();
         echo "Kindly create a .env in the project root and add the required environment variables. ❌". PHP_EOL;
     } else {
-        echo "<code>Flutterwave sdk: " .$e->getMessage()."</code>";
-        echo "<br /> Kindly create a <code>.env </code> in the project root and add the required environment variables.";
+        echo "Flutterwave: Setup incomplete. check your environment variables are set currently. confirm .env contains the required variables.";
     }
 
     exit;
 }
 
 $keys = [
-    'SECRET_KEY' => $_ENV['SECRET_KEY'] ?? \getenv('SECRET_KEY'),
-    'PUBLIC_KEY' => $_ENV['PUBLIC_KEY'] ?? \getenv('PUBLIC_KEY'),
-    'ENV' => $_ENV['ENV'] ?? \getenv('ENV'),
-    'ENCRYPTION_KEY' => $_ENV['ENCRYPTION_KEY'] ?? \getenv('ENCRYPTION_KEY')
+    'SECRET_KEY' => $_ENV['FLW_SECRET_KEY'] ?? \getenv('FLW_SECRET_KEY') ?? $_ENV['SECRET_KEY'] ?? \getenv('SECRET_KEY'),
+    'PUBLIC_KEY' => $_ENV['FLW_PUBLIC_KEY'] ?? \getenv('FLW_PUBLIC_KEY') && $_ENV['PUBLIC_KEY'] ?? \getenv('PUBLIC_KEY'),
+    'ENV' => $_ENV['FLW_ENV'] ?? \getenv('FLW_ENV') ?? $_ENV['ENV'] ?? \getenv('ENV'),
+    'ENCRYPTION_KEY' => $_ENV['FLW_ENCRYPTION_KEY'] ?? \getenv('FLW_ENCRYPTION_KEY') ?? $_ENV['ENCRYPTION_KEY'] ?? \getenv('ENCRYPTION_KEY')
 ];
