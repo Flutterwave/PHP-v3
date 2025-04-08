@@ -23,7 +23,7 @@ abstract class AbstractConfig
     public const ENV = 'ENV';
     public const DEFAULT_PREFIX = 'FW|PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
-    protected Logger $logger;
+    public Logger $logger;
     protected string $secret;
     protected string $public;
 

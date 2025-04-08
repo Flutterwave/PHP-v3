@@ -32,7 +32,6 @@ class Transactions extends Service
     {
         parent::__construct($config);
         $this->end_point = Transactions::ENDPOINT;
-        
     }
 
     /**
