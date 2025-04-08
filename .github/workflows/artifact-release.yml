@@ -59,6 +59,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: artifact/*  # Path to all files in the artifact folder
+        tag_name: v1.1.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
