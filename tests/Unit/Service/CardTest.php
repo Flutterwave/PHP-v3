@@ -33,7 +33,7 @@ class CardTest extends TestCase
                 ],
                 "preauthorize" => false,
                 "payment_plan" => null,
-                "card_details" => Test_Cards::MSTR_CARD_PIN_TWO
+                "card_details" => Test_Cards::MSTR_CARD_PIN_ONE
             ],
         ];
 
@@ -161,7 +161,8 @@ class CardTest extends TestCase
                 "meta" => [
                     "unique_id" => uniqid().uniqid()
                 ],
-                "preauthorize" => false,
+                "usesecureauth" => true,
+                "preauthorize" => true,
                 "payment_plan" => null,
                 "card_details" => Test_Cards::PREATH
             ],
@@ -177,7 +178,7 @@ class CardTest extends TestCase
         $payload  = $cardpayment->payload->create($data);
         $result = $cardpayment->initiate($payload);
 
-        $this->assertTrue(!empty($result['url']));
+        $this->assertTrue(AuthMode::REDIRECT === $result['mode']);
     }
 
     public function testAuthModelReturnNoauth()
