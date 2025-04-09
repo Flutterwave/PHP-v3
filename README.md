@@ -47,6 +47,9 @@ Available features include:
 
 ## Installation
 
+### Download Release Artifact
+If you do not want to make use of composer. each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip with all the dependencies installed. Simply download the one that supports your php version.
+
 ### Installation via Composer.
 
 To install the package via Composer, run the following command.
