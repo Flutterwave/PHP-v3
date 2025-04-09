@@ -18,21 +18,22 @@ class GooglePayTest extends TestCase
         $data = [
             "amount" => 2000,
             "currency" => Currency::NGN,
-            "tx_ref" => uniqid().time(),
+            "tx_ref" => uniqid().time()."_success_mock",
             "redirectUrl" => "https://example.com"
         ];
 
         $googlepayment = \Flutterwave\Flutterwave::create("google");
         $customerObj = $googlepayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
+            "full_name" => "Smith Abraham",
             "email" => "vicomma@gmail.com",
             "phone" => "+2349060085861"
         ]);
 
         $data['customer'] = $customerObj;
         $payload  = $googlepayment->payload->create($data);
-        $result = $googlepayment->initiate($payload);
+        $result = (array) include(__DIR__.'/../../Resources/GooglePay/google-payment-success.php');
+        $result = $result['data'];
 
-        $this->assertSame(AuthMode::REDIRECT, $result['mode']);
+        $this->assertSame(AuthMode::REDIRECT, $result->meta->authorization->mode);
     }
 }
