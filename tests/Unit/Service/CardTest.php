@@ -79,7 +79,7 @@ class CardTest extends TestCase
         $data = [
             "amount" => 2000,
             "currency" => Currency::NGN,
-            "tx_ref" => "TEST-".uniqid().time(),
+            "tx_ref" => "TEST-".uniqid().rand(1, 2_050_050),
             "redirectUrl" => "https://www.example.com",
             "additionalData" => [
                 "subaccounts" => [
