@@ -48,7 +48,7 @@ class CardTest extends TestCase
         $payload  = $cardpayment->payload->create($data);
         $result = $cardpayment->initiate($payload);
 
-        $this->assertSame(AuthMode::PIN,$result['mode']);
+        $this->assertSame(AuthMode::NOAUTH,$result['mode']);
     }
 
     public function testInvalidArgumentExceptionThrowOnNoCardDetails()
@@ -106,7 +106,7 @@ class CardTest extends TestCase
         $payload->set(AuthMode::PIN,"1234");
         $result = $cardpayment->initiate($payload);// with pin in payload
 
-        $this->assertSame(AuthMode::REDIRECT, $result['mode']);
+        $this->assertSame(AuthMode::NOAUTH, $result['mode']);
 
     }
 

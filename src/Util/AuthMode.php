@@ -14,4 +14,5 @@ class AuthMode
     public const USSD = 'ussd';
     public const AVS = 'avs_noauth';
     public const BANKTRANSFER = 'banktransfer';
+    public const NOAUTH = 'NOAUTH';
 }
