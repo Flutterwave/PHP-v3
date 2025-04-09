@@ -22,7 +22,6 @@ final class PackageConfig extends AbstractConfig implements ConfigInterface
     private function __construct(string $secretKey, string $publicKey, string $encryptKey, string $env)
     {
         parent::__construct($secretKey, $publicKey, $encryptKey, $env);
-        $this->logger->pushHandler(new RotatingFileHandler(__DIR__ . "../../../../../../" . self::LOG_FILE_NAME, 90));
     }
 
     public static function setUp(string $secretKey, string $publicKey, string $enc, string $env, ?LoggerInterface $customLogger = null): ConfigInterface
@@ -32,9 +31,12 @@ final class PackageConfig extends AbstractConfig implements ConfigInterface
             if ($customLogger) {
                 $instance->logger = $customLogger;
             } else {
-                $rootPath = __DIR__ . '/../../../../../../';
-                $logDir = $rootPath . $_ENV['FLW_LOG_DIR'] ?? 'logs';
-                
+                $vendorPath = dirname(__DIR__, 4);
+                $rootPath = dirname($vendorPath);
+
+                $logSubDir = $_ENV['FLW_LOG_DIR'] ?? 'logs';
+                $logDir = $rootPath . DIRECTORY_SEPARATOR . $logSubDir;
+
                 if (!is_dir($logDir)) {
                     if (!mkdir($logDir, 0775, true) && !is_dir($logDir)) {
                         throw new \RuntimeException("Flutterwave: Failed to create log directory at $logDir");
