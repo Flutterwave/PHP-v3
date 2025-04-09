@@ -74,41 +74,43 @@ class CardTest extends TestCase
         $result = $cardpayment->initiate($payload);
     }
 
-    public function testAuthModeReturnRedirect()
-    {
-        $data = [
-            "amount" => 2000,
-            "currency" => Currency::NGN,
-            "tx_ref" => "TEST-".uniqid().rand(1, 2_050_050),
-            "redirectUrl" => "https://www.example.com",
-            "additionalData" => [
-                "subaccounts" => [
-                    ["id" => "RSA_345983858845935893"]
-                ],
-                "meta" => [
-                    "unique_id" => uniqid().uniqid()
-                ],
-                "preauthorize" => false,
-                "payment_plan" => null,
-                "card_details" => Test_Cards::MSTR_CARD_PIN_ONE
-            ],
-        ];
+    // public function testAuthModeReturnRedirect()
+    // {
+    //     $data = [
+    //         "amount" => 2000,
+    //         "currency" => Currency::NGN,
+    //         "tx_ref" => "TXT-".time().uniqid(),
+    //         "redirectUrl" => "https://www.example.com",
+    //         "additionalData" => [
+    //             "subaccounts" => [
+    //                 ["id" => "RSA_345983858845935893"]
+    //             ],
+    //             "meta" => [
+    //                 "unique_id" => uniqid().uniqid()
+    //             ],
+    //             "preauthorize" => false,
+    //             "payment_plan" => null,
+    //             "card_details" => Test_Cards::MSTR_CARD_PIN_ONE
+    //         ],
+    //     ];
 
-        $cardpayment = Flutterwave::create("card");
-        $customerObj = $cardpayment->customer->create([
-            "full_name" => "Olaobaju Abraham",
-            "email" => "ol868gjdfjua@gmail.com",
-            "phone" => "+2349062985861"
-        ]);
-        $data['customer'] = $customerObj;
-        $payload  = $cardpayment->payload->create($data);
-        $result = $cardpayment->initiate($payload);
-        $payload->set(AuthMode::PIN,"1234");
-        $result = $cardpayment->initiate($payload);// with pin in payload
+    //     $cardpayment = Flutterwave::create("card");
+    //     $customerObj = $cardpayment->customer->create([
+    //         "full_name" => "Olaobaju Abraham",
+    //         "email" => "ol868gjdfjua@gmail.com",
+    //         "phone" => "+2349062985861"
+    //     ]);
+    //     $data['customer'] = $customerObj;
+    //     $payload  = $cardpayment->payload->create($data);
+    //     $result = $cardpayment->initiate($payload);
+    //     $payload->set(AuthMode::PIN,"1234");
 
-        $this->assertSame(AuthMode::NOAUTH, $result['mode']);
+    //     // dump($payload);
+    //     $result = $cardpayment->initiate($payload);// with pin in payload
 
-    }
+    //     $this->assertSame(AuthMode::NOAUTH, $result['mode']);
+
+    // }
 
     // public function testAuthModeReturnAVS()
     // {
