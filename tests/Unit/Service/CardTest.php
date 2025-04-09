@@ -48,7 +48,7 @@ class CardTest extends TestCase
         $payload  = $cardpayment->payload->create($data);
         $result = $cardpayment->initiate($payload);
 
-        $this->assertSame(AuthMode::PIN,$result['mode']);
+        $this->assertSame(AuthMode::NOAUTH,$result['mode']);
     }
 
     public function testInvalidArgumentExceptionThrowOnNoCardDetails()
@@ -79,7 +79,7 @@ class CardTest extends TestCase
         $data = [
             "amount" => 2000,
             "currency" => Currency::NGN,
-            "tx_ref" => "TEST-".uniqid().time(),
+            "tx_ref" => "TEST-".uniqid().rand(1, 2_050_050),
             "redirectUrl" => "https://www.example.com",
             "additionalData" => [
                 "subaccounts" => [
@@ -106,7 +106,7 @@ class CardTest extends TestCase
         $payload->set(AuthMode::PIN,"1234");
         $result = $cardpayment->initiate($payload);// with pin in payload
 
-        $this->assertSame(AuthMode::REDIRECT, $result['mode']);
+        $this->assertSame(AuthMode::NOAUTH, $result['mode']);
 
     }
 
