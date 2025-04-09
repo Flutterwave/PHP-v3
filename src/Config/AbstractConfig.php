@@ -23,7 +23,7 @@ abstract class AbstractConfig
     public const ENV = 'ENV';
     public const DEFAULT_PREFIX = 'FW|PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
-    protected Logger $logger;
+    public Logger $logger;
     protected string $secret;
     protected string $public;
 
@@ -43,7 +43,11 @@ abstract class AbstractConfig
             [
             'base_uri' => EnvVariables::BASE_URL,
             'timeout' => 60,
-            RequestOptions::VERIFY => \Composer\CaBundle\CaBundle::getSystemCaRootBundlePath()
+            'headers' => ['User-Agent' => sprintf(
+                'FlutterwavePHP/%d', EnvVariables::SDK_VERSION
+            )],
+            RequestOptions::VERIFY => 
+            \Composer\CaBundle\CaBundle::getSystemCaRootBundlePath()
             ]
         );
 

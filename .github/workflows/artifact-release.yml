@@ -1,0 +1,44 @@
+name: Build and Upload PHP Artifacts
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'  # Match tags like 1.2.3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: ['7.4', '8.1', '8.2', '8.3', '8.4']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Get tag version
+        id: tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
+
+      - name: Create release artifact
+        run: |
+          mkdir -p build
+          cp -r vendor src tests assets composer.json composer.lock .gitignore LICENSE phpunit.xml.dist .env.example processPayment.php paymentForm.php setup.php README.md CHANGELOG.md build/
+          cd build && zip -r ../flutterwave-php-${VERSION}-php${{ matrix.php }}.zip . && cd ..
+
+      - name: Upload artifact to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: flutterwave-php-${{ env.VERSION }}-php${{ matrix.php }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -21,6 +21,7 @@
         "ext-openssl": "*",
         "guzzlehttp/guzzle": "^7.5",
         "psr/http-client": "^1.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0",
         "php-http/guzzle7-adapter": "^1.0",
         "composer/ca-bundle": "^1.3"
     },

@@ -131,6 +131,20 @@ class CardPayment extends Service implements Payment
      */
     public function handleAuthState(\stdClass $response, $payload): array
     {
+        // dd($response);
+        if(property_exists( $response, 'data' ) && property_exists( $response->data, 'status' ) && $response->data->status === 'successful') {
+            return [
+                'card_info' => $response->data->card,
+                'transaction_id' => $response->data->id,
+                'reference' => $response->data->tx_ref,
+                'amount' => $response->data->amount,
+                'mode' => $response->data->auth_model,
+                'currency' => $response->data->currency,
+                'customer' => $response->data->customer,
+                'fraud_status' => $response->data->fraud_status
+            ];
+        }
+
         $mode = $response->meta->authorization->mode;
         if ($mode === 'pin') {
             $data = $this->eventHandler->onAuthorization($response, ['logger' => $this->logger]);

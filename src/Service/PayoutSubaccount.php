@@ -8,20 +8,20 @@ use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\PayoutSubaccoutEventHandler;
 use Flutterwave\Payload;
 use Psr\Http\Client\ClientExceptionInterface;
+use Flutterwave\EventHandlers\EventTracker;
 use stdClass;
 
 class PayoutSubaccount extends Service
 {
+    use EventTracker;
     private string $name = 'payout-subaccounts';
     private array $requiredParams = [ 'email', 'mobilenumber','country' ];
-    private PayoutSubaccoutEventHandler $eventHandler;
 
     public function __construct(?ConfigInterface $config = null)
     {
         parent::__construct($config);
         $endpoint = $this->name;
         $this->url = $this->baseUrl . '/' . $endpoint;
-        $this->eventHandler = new PayoutSubaccoutEventHandler();
     }
 
     public function confirmPayload(Payload $payload): array
@@ -51,9 +51,9 @@ class PayoutSubaccount extends Service
         $this->logger->notice('PSA Service::Creating new Payout Subaccount.');
         $body = $this->confirmPayload($payload);
         $this->logger->notice('PSA Service::Payload Confirmed.');
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request($body, 'POST');
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -62,9 +62,9 @@ class PayoutSubaccount extends Service
      */
     public function list(): stdClass
     {
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request(null, 'GET');
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -73,9 +73,9 @@ class PayoutSubaccount extends Service
      */
     public function get(string $account_reference): \stdClass
     {
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request(null, 'GET', "/$account_reference");
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -90,9 +90,9 @@ class PayoutSubaccount extends Service
             throw new \InvalidArgumentException($msg);
         }
 
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request($payload->toArray(), 'PUT', "/{$account_reference}");
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -101,9 +101,9 @@ class PayoutSubaccount extends Service
      */
     public function fetchTransactions(string $account_reference): \stdClass
     {
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request(null, 'GET', "/{$account_reference}/transactions");
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -112,9 +112,9 @@ class PayoutSubaccount extends Service
      */
     public function fetchAvailableBalance(string $account_reference, string $currency = 'NGN'): \stdClass
     {
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request(null, 'GET', "/{$account_reference}/balances?currency={$currency}");
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 
@@ -123,9 +123,9 @@ class PayoutSubaccount extends Service
      */
     public function fetchStaticVirtualAccounts(string $account_reference, string $currency = 'NGN'): stdClass
     {
-        $this->eventHandler::startRecording();
+        self::startRecording();
         $response = $this->request(null, 'GET', "/{$account_reference}/static-account?currency={$currency}");
-        $this->eventHandler::setResponseTime();
+        self::setResponseTime();
         return $response;
     }
 }
