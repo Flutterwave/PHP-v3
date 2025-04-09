@@ -12,13 +12,6 @@ class Test_Cards
         "expiry_year" => "32"
     ];
 
-    const MSTR_CARD_PIN_TWO = [
-        "card_number" => "5399838383838381",
-        "cvv" => "470",
-        "expiry_month" => "10",
-        "expiry_year" => "31"
-    ];
-
     const MSTR_3DS = [
         "card_number" => "5438898014560229",
         "cvv" => "564",

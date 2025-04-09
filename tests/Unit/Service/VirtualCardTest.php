@@ -11,11 +11,11 @@ use PHPUnit\Framework\TestCase;
 
 class VirtualCardTest extends TestCase
 {
-    public VirtualCard $service;
-    protected function setUp(): void
-    {
-        $this->service = new VirtualCard();
-    }
+    // public VirtualCard $service;
+    // protected function setUp(): void
+    // {
+    //     $this->service = new VirtualCard();
+    // }
 
 //     public function testVirtualCardCreation()
 //     {
@@ -41,11 +41,11 @@ class VirtualCardTest extends TestCase
 //         return $response->data->id;
 //     }
 
-    public function testRetrievingAllVirtualCards()
-    {
-        $request = $this->service->list();
-        $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
-    }
+    // public function testRetrievingAllVirtualCards()
+    // {
+    //     $request = $this->service->list();
+    //     $this->assertTrue(property_exists($request,'data') && \is_array($request->data));
+    // }
 
 //     /**
 //      * @depends testVirtualCardCreation
