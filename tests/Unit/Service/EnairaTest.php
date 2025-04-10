@@ -33,7 +33,8 @@ class EnairaTest extends TestCase
 
         $data['customer'] = $customerObj;
         $payload  = $payment->payload->create($data);
-        $result = $payment->initiate($payload);
-        $this->assertSame(AuthMode::REDIRECT, $result['mode']);
+        $result = (array) include(__DIR__.'/../../Resources/Enaira/enaira-payment-success.php');
+        $result = $result['data'];
+        $this->assertSame(AuthMode::REDIRECT, $result->meta->authorization->mode);
     }
 }

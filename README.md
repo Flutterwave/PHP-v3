@@ -47,6 +47,9 @@ Available features include:
 
 ## Installation
 
+### Download Release Artifact
+If you do not want to make use of composer. each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip with all the dependencies installed. Simply download the one that supports your php version.
+
 ### Installation via Composer.
 
 To install the package via Composer, run the following command.
@@ -67,10 +70,11 @@ cp .env.example .env
 Your `.env` file should look this.
 
 ```env
-PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
-SECRET_KEY=FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
-ENCRYPTION_KEY=FLWSECK_XXXXXXXXXXXXXXXX
-ENV='staging/production'
+FLW_PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
+FLW_SECRET_KEY=FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
+FLW_ENCRYPTION_KEY=FLWSECK_XXXXXXXXXXXXXXXX
+FLW_ENV='staging/production'
+FLW_LOG_DIR=logs
 ```
 
 ### Render Payment Modal

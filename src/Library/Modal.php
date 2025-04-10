@@ -169,6 +169,7 @@ final class Modal
         $payload['country'] = $country;
         $payload['customer'] = $payload['customer']->toArray();
         $payload['payment_method'] ?? $default_options;
+        $payload['customer']['name'] = $payload['customer']['fullname'];
 
         $this->logger->info('Generating Payment link for [' . $payload['tx_ref'] . ']');
         $response = (new Http(self::$config))->request($payload, 'POST', 'payments');
