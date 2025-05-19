@@ -27,23 +27,23 @@ trait EventTracker
      */
     public static function sendAnalytics($title): void
     {
-        if (self::$response_time <= 0) {
-            self::setResponseTime();
-        }
+        // if (self::$response_time <= 0) {
+        //     self::setResponseTime();
+        // }
 
-        $url = 'https://kgelfdz7mf.execute-api.us-east-1.amazonaws.com/staging/sendevent';
+        // $url = 'https://kgelfdz7mf.execute-api.us-east-1.amazonaws.com/staging/sendevent';
 
-        $data = [
-            'publicKey' => getenv('PUBLIC_KEY'),
-            'language' => 'PHP V3',
-            'version' => '1.0.0',
-            'title' => $title,
-            'message' => self::$response_time,
-        ];
+        // $data = [
+        //     'publicKey' => getenv('PUBLIC_KEY'),
+        //     'language' => 'PHP V3',
+        //     'version' => '1.0.0',
+        //     'title' => $title,
+        //     'message' => self::$response_time,
+        // ];
 
-        $response = (new Http(static::$config))->request($data, 'POST', $url, true);
+        // $response = (new Http(static::$config))->request($data, 'POST', $url, true);
 
-        self::resetTime();
+        // self::resetTime();
     }
 
     private static function resetTime(): void
