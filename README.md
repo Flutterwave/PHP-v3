@@ -9,19 +9,19 @@
 ![GitHub stars](https://img.shields.io/github/stars/Flutterwave/Flutterwave-PHP-v3)
 ![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3)
 
-This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from php apps. It abstracts the complexity involved in direct integration and allows you to make quick calls to the APIs.
+This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from PHP application. It simplifies the complexities involved in direct integration and enables you to make quick API calls.
 
 Available features include:
 
-- Collections: Card, Account, Mobile money, Bank Transfers, USSD, Barter, NQR.
+- Collections: Supported Payment Methods are Card, Account, Mobile money, Bank Transfers, USSD, Barter, and NQR.
 - Payouts and Beneficiaries.
-- Recurring payments: Tokenization and Subscriptions.
-- Split payments
-- Card issuing
-- Transactions dispute management: Refunds.
-- Transaction reporting: Collections, Payouts, Settlements, and Refunds.
-- Bill payments: Airtime, Data bundle, Cable, Power, Toll, E-bills, and Remitta.
-- Identity verification: Resolve bank account, resolve BVN information.
+- Recurring Payments: Tokenization and Subscriptions.
+- Split Payments: Easily split payments among mutliple subaccounts(vendors).
+- Card Issuing.
+- Transactions Dispute Management: Handle refunds and manage disputes.
+- Transaction Reporting: Collections, Payouts, Settlements, and Refunds.
+- Bill Payments: Airtime, Data bundle, Cable, Power, Toll, E-bills, and Remitta.
+- Identity Verification:  Account Verification, and BVN Verification.
 
 ## Table of Contents
 1. [Requirements](#requirements)
@@ -39,8 +39,8 @@ Available features include:
 
 ## Requirements
 
-1. Flutterwave for business [API Keys](https://developer.flutterwave.com/docs/integration-guides/authentication)
-2. Acceptable PHP versions: >= 7.4.0. for older versions of PHP use the [Legacy Branch]( https://github.com/Flutterwave/PHP-v3/tree/legacy )
+1. Your Flutterwave [API Keys](https://developer.flutterwave.com/v3.0.0/docs/authentication).
+2. Acceptable PHP versions are 7.4.0 or higher. For older versions of PHP, please use the [Legacy Branch]( https://github.com/Flutterwave/PHP-v3/tree/legacy).
 
 
 <a id="installation"></a>
@@ -48,11 +48,11 @@ Available features include:
 ## Installation
 
 ### Download Release Artifact
-If you do not want to make use of composer. each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip with all the dependencies installed. Simply download the one that supports your php version.
+If you prefer not to use a composer. each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip file with all the necessary dependencies installed. Simply download the version that corresponds to your PHP version.
 
 ### Installation via Composer.
 
-To install the package via Composer, run the following command.
+To install the package via Composer, run the following command:
 ```shell
 composer require flutterwavedev/flutterwave-v3
 ```
@@ -61,8 +61,8 @@ composer require flutterwavedev/flutterwave-v3
 
 ## Initialization
 
-Create a .env file and follow the format of the `.env.example` file
-Save your PUBLIC_KEY, SECRET_KEY, ENV in the `.env` file
+Create a .env file by following the format provided in the `.env.example` file.
+Save your PUBLIC_KEY, SECRET_KEY, and ENV values in the `.env` file.
 
 ```bash
 cp .env.example .env
@@ -79,26 +79,25 @@ FLW_LOG_DIR=logs
 
 ### Render Payment Modal
 
-The SDK provides two easy methods of making collections via the famous payment modal. [Learn more](#)
+The SDK provides two easy methods of accepting collections via the popular payment modal. [Learn more](#)
 
-1. [Flutterwave Inline]( https://developer.flutterwave.com/docs/collecting-payments/inline )
-2. [Flutterwave Standard]( https://developer.flutterwave.com/docs/collecting-payments/standard )
+1. [Flutterwave Inline](https://developer.flutterwave.com/v3.0.0/docs/inline).
+2. [Flutterwave Standard](https://developer.flutterwave.com/v3.0.0/docs/flutterwave-standard-1).
+
 
 ### Get Started
 
+Edit the `paymentForm.php` and `processPayment.php` files to meet your needs. Both files are well documented for your convenience.
 
-
-Edit the `paymentForm.php` and `processPayment.php` files to suit your purpose. Both files are well documented.
-
-Simply redirect to the `paymentForm.php` file on your browser to process a payment.
+To process a payment, simply redirect to the `paymentForm.php` file in your browser .
 
 In this implementation, we are expecting a form encoded POST request to this script.
-The request will contain the following parameters.
+The request will contain the following parameters:
 
 ```json
 
  {
-    "amount": "The amount required to be charged. (*)",
+    "amount": "The amount to be charged. (*)",
     "currency": "The currency to charge in. (*)",
     "first_name": "The first name of the customer. (*)",
     "last_name" : "The last name of the customer. (*)",
@@ -106,12 +105,12 @@ The request will contain the following parameters.
     "phone_number": "The customer's phone number. (Optional).",
     "success_url": "The url to redirect customer to after successful payment.",
     "failure_url": "The url to redirect customer to after a failed payment.",
-    "tx_ref":"The unique transaction identifier. if ommited the apiclient would generate one"
+    "tx_ref":"The unique transaction identifier. if ommited the apiclient would generate one."
  }
 
 ```
 
-The script in `paymentProcess.php` handles the request data via the `PaymentController`. If you are using a Framework like Laravel or CodeIgniter you might want to take a look at the [PaymentController](#)
+The script in `paymentProcess.php` handles the request data via the `PaymentController`. If you are using a Framework like Laravel or CodeIgniter you might want to take a look at the [PaymentController](#).
 
 ```php
 <?php
@@ -170,7 +169,7 @@ use \Flutterwave\Flutterwave;
 Flutterwave::bootstrap(); # this will use the default configuration set in .env
 ```
 
-if you do not wish to use a .env, you can simply pass your API keys like the example below.
+if you prefer not to use a .env, you can simply pass your API keys directly like the example below.
 
 ```php
 use \Flutterwave\Helper\Config;
@@ -217,34 +216,41 @@ Flutterwave::bootstrap($myConfig);
 
 ## Testing
 
-All of the SDK's tests are written with PHP's ```phpunit``` module. The tests currently test:
+All of the SDK's tests are written with PHP's ```phpunit``` module. The tests currently cover the following features:
+
 ```Account```,
+
 ```Card```,
+
 ```Transfer```,
+
 ```Preauth```,
+
 ```Collection Subaccount```,
+
 ```Payout Subaccount```,
-```Subscriptions``` and
-```Paymentplan```
 
-They can be run like so:
+```Subscriptions``` ,
 
+```Paymentplan```.
+
+You can run the tests by exexuting the following command:
 ```sh
 phpunit
 ```
 
->**NOTE:** If the test fails for creating a subaccount, just change the ```account_number``` ```account_bank```  and ```businesss_email``` to something different
+>**NOTE:** If the test fails for subaccount creation, just change the values of the ```account_number``` ,```account_bank```  and ```businesss_email```.
 
->**NOTE:** The test may fail for account validation - ``` Pending OTP validation``` depending on whether the service is down or not
+>**NOTE:** The test may fail for account validation - ``` Pending OTP validation``` depending on whether the service is down or not.
 <br>
 
 
 <a id="debugging errors"></a>
 
 ## Debugging Errors
-We understand that you may run into some errors while integrating our library. You can read more about our error messages [here](https://developer.flutterwave.com/docs/integration-guides/errors).
+We understand that you may encounter errors while integrating our library. You can read more about our error messages [here](https://developer.flutterwave.com/v3.0.0/docs/common-errors).
 
-For `authorization` and `validation` error responses, double-check your API keys and request. If you get a `server` error, kindly engage the team for support.
+For `authorization` and `validation` error responses, please double-check your API keys and request. If you get a `server` error, kindly reach out to our support team for assistance.
 
 
 <a id="support"></a>
@@ -258,7 +264,7 @@ You can also follow us [@FlutterwaveEng](https://twitter.com/FlutterwaveEng) and
 <a id="contribution-guidelines"></a>
 
 ## Contribution guidelines
-Read more about our community contribution guidelines [here](/CONTRIBUTING.md)
+Read more about our community contribution guidelines [here](/CONTRIBUTING.md).
 
 
 <a id="license"></a>
@@ -273,5 +279,5 @@ Copyright (c) Flutterwave Inc.
 
 ## Flutterwave API  References
 
-- [Flutterwave API Documentation](https://developer.flutterwave.com)
-- [Flutterwave Dashboard](https://app.flutterwave.com)  
+- [Flutterwave API Documentation](https://developer.flutterwave.com/v3.0.0/docs).
+- [Flutterwave Dashboard](https://app.flutterwave.com).  
