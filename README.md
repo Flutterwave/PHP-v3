@@ -9,7 +9,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/Flutterwave/Flutterwave-PHP-v3)
 ![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3)
 
-This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from PHP application. It simplifies the complexities involved in direct integration and enables you to make quick API calls.
+This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from PHP applications. It simplifies the complexities involved in direct integration and enables you to make quick API calls.
 
 Available features include:
 
