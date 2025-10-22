@@ -9,14 +9,14 @@
 ![GitHub stars](https://img.shields.io/github/stars/Flutterwave/Flutterwave-PHP-v3)
 ![Packagist License](https://img.shields.io/packagist/l/flutterwavedev/flutterwave-v3)
 
-This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from PHP applications. It simplifies the complexities involved in direct integration and enables you to make quick API calls.
+This Flutterwave v3 PHP Library provides easy access to Flutterwave for Business (F4B) v3 APIs from PHP applications. It abstracts the complexity involved in direct integration,  enabling you to make quick API calls.
 
 Available features include:
 
 - Collections: Supported Payment Methods are Card, Account, Mobile money, Bank Transfers, USSD, Barter, and NQR.
 - Payouts and Beneficiaries.
 - Recurring Payments: Tokenization and Subscriptions.
-- Split Payments: Easily split payments among mutliple subaccounts(vendors).
+- Split Payments: Easily split payments among multiple subaccounts(vendors).
 - Card Issuing.
 - Transactions Dispute Management: Handle refunds and manage disputes.
 - Transaction Reporting: Collections, Payouts, Settlements, and Refunds.
@@ -48,12 +48,12 @@ Available features include:
 ## Installation
 
 ### Download Release Artifact
-If you prefer not to use a composer. each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip file with all the necessary dependencies installed. Simply download the version that corresponds to your PHP version.
+If you choose not to use a composer. Each [release](https://github.com/Flutterwave/PHP-v3/releases/) contains a zip file with all the necessary dependencies installed. Download the version that corresponds to your PHP version.
 
 ### Installation via Composer.
 
 To install the package via Composer, run the following command:
-```shell
+``` shell
 composer require flutterwavedev/flutterwave-v3
 ```
 
@@ -67,7 +67,7 @@ Save your PUBLIC_KEY, SECRET_KEY, and ENV values in the `.env` file.
 ```bash
 cp .env.example .env
 ```
-Your `.env` file should look this.
+Your `.env` file should look like this.
 
 ```env
 FLW_PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X
@@ -89,9 +89,9 @@ The SDK provides two easy methods of accepting collections via the popular payme
 
 Edit the `paymentForm.php` and `processPayment.php` files to meet your needs. Both files are well documented for your convenience.
 
-To process a payment, simply redirect to the `paymentForm.php` file in your browser .
+To process a payment, redirect to the `paymentForm.php` file in your browser.
 
-In this implementation, we are expecting a form encoded POST request to this script.
+In this implementation, we expect a form-encoded POST request to this script.
 The request will contain the following parameters:
 
 ```json
@@ -100,17 +100,17 @@ The request will contain the following parameters:
     "amount": "The amount to be charged. (*)",
     "currency": "The currency to charge in. (*)",
     "first_name": "The first name of the customer. (*)",
-    "last_name" : "The last name of the customer. (*)",
-    "email": "The customers email address. (*)",
+    "last_name": "The last name of the customer. (*)",
+    "email": "The customer's email address. (*)",
     "phone_number": "The customer's phone number. (Optional).",
-    "success_url": "The url to redirect customer to after successful payment.",
-    "failure_url": "The url to redirect customer to after a failed payment.",
-    "tx_ref":"The unique transaction identifier. if ommited the apiclient would generate one."
+    "success_url": "The url to redirect the  customer to after successful payment.",
+    "failure_url": "The url to redirect the customer to after a failed payment.",
+    "tx_ref": "The unique transaction identifier. If omitted, the apiclient would generate one."
  }
 
 ```
 
-The script in `paymentProcess.php` handles the request data via the `PaymentController`. If you are using a Framework like Laravel or CodeIgniter you might want to take a look at the [PaymentController](#).
+The script in `paymentProcess.php` handles the request data via the `PaymentController`. If you are using a Framework like Laravel or CodeIgniter, you should take a look at the [PaymentController](#).
 
 ```php
 <?php
@@ -169,7 +169,7 @@ use \Flutterwave\Flutterwave;
 Flutterwave::bootstrap(); # this will use the default configuration set in .env
 ```
 
-if you prefer not to use a .env, you can simply pass your API keys directly like the example below.
+If you prefer not to use a .env, you can pass your API keys directly. An example is found below:
 
 ```php
 use \Flutterwave\Helper\Config;
@@ -216,7 +216,7 @@ Flutterwave::bootstrap($myConfig);
 
 ## Testing
 
-All of the SDK's tests are written with PHP's ```phpunit``` module. The tests currently cover the following features:
+All of the SDK's tests are written with PHP's `phpunit` module. The tests currently cover the following features:
 
 ```Account```,
 
@@ -230,16 +230,16 @@ All of the SDK's tests are written with PHP's ```phpunit``` module. The tests cu
 
 ```Payout Subaccount```,
 
-```Subscriptions``` ,
+```Subscriptions```,
 
 ```Paymentplan```.
 
-You can run the tests by exexuting the following command:
+You can run the tests by executing the following command:
 ```sh
 phpunit
 ```
 
->**NOTE:** If the test fails for subaccount creation, just change the values of the ```account_number``` ,```account_bank```  and ```businesss_email```.
+>**NOTE:** If the test fails for subaccount creation, change the values of the ```account_number```,```account_bank```,  and ```business_email```.
 
 >**NOTE:** The test may fail for account validation - ``` Pending OTP validation``` depending on whether the service is down or not.
 <br>
@@ -264,7 +264,7 @@ You can also follow us [@FlutterwaveEng](https://twitter.com/FlutterwaveEng) and
 <a id="contribution-guidelines"></a>
 
 ## Contribution guidelines
-Read more about our community contribution guidelines [here](/CONTRIBUTING.md).
+You can read more about our community contribution guidelines [here](/CONTRIBUTING.md).
 
 
 <a id="license"></a>
