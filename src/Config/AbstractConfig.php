@@ -7,6 +7,7 @@ namespace Flutterwave\Config;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Flutterwave;
 use Flutterwave\Contract\ConfigInterface;
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
@@ -26,6 +27,7 @@ abstract class AbstractConfig
     public Logger $logger;
     protected string $secret;
     protected string $public;
+    public SignozServiceLogger $signoz;
 
     protected static ?ConfigInterface $instance = null;
     protected string $env;
@@ -53,6 +55,7 @@ abstract class AbstractConfig
 
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
+        $this->signoz = new SignozServiceLogger($this->http, $this->getPublicKey(), $this->getEnv(), null, EnvVariables::SDK_VERSION);
     }
 
     abstract public static function setUp(
@@ -83,5 +86,10 @@ abstract class AbstractConfig
     public static function getDefaultTransactionPrefix(): string
     {
         return self::DEFAULT_PREFIX;
+    }
+
+    public function getSignoz(): SignozServiceLogger
+    {
+        return $this->signoz;
     }
 }

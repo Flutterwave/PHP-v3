@@ -10,6 +10,7 @@ namespace Flutterwave\Library;
 
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Helper\CheckoutHelper;
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Flutterwave\Service\Service as Http;
 use Flutterwave\Entities\Payload;
 use Psr\Log\LoggerInterface;
@@ -107,6 +108,11 @@ final class Modal
             return $this->returnUrl();
         }
 
+        /** @var SignozServiceLogger $signoz */
+        $signoz = self::$config->getSignoz();
+        $appId = $signoz->getAppId();
+        $environment = $signoz->getCurrentEnvironment();
+
         $default_options = CheckoutHelper::getDefaultPaymentOptions();
 
         $payload = $this->payload->toArray('modal');
@@ -151,6 +157,7 @@ final class Modal
         $html .= '</html>';
 
         $this->logger->info('Rendered Payment Modal Successfully..');
+        $signoz->trackRequestSent($appId, $environment, 'GET', $payload['tx_ref'], '/inline');
         return $html;
     }
 
@@ -160,6 +167,11 @@ final class Modal
         if ($this->type !== self::STANDARD) {
             return $this->returnHtml();
         }
+
+        /** @var SignozServiceLogger $signoz */
+        $signoz = self::$config->getSignoz();
+        $appId = $signoz->getAppId();
+        $environment = $signoz->getCurrentEnvironment();
 
         $default_options = CheckoutHelper::getDefaultPaymentOptions();
         $payload         = $this->payload->toArray('modal');
@@ -172,6 +184,7 @@ final class Modal
         $payload['customer']['name'] = $payload['customer']['fullname'];
 
         $this->logger->info('Generating Payment link for [' . $payload['tx_ref'] . ']');
+        $signoz->trackRequestSent($appId, $environment, 'GET', $payload['tx_ref'], '/payments');
         $response = (new Http(self::$config))->request($payload, 'POST', 'payments');
         return $response->data->link;
     }
