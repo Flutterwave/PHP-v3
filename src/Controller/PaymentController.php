@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Flutterwave\Controller;
 
-use Flutterwave\EventHandlers\ModalEventHandler;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Flutterwave;
-use Flutterwave\Entities\Payload;
 use Flutterwave\Library\Modal;
 use Flutterwave\Service\Transactions;
 
@@ -43,7 +41,7 @@ final class PaymentController
 
     public function __call(string $name, array $args)
     {
-        if ($this->routes[$name] !== $this->$requestMethod) {
+        if ($this->routes[$name] !== $this->requestMethod) {
             // Todo: 404();
             echo "Unauthorized page!";
         }

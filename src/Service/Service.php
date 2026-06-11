@@ -12,6 +12,7 @@ use Flutterwave\Factories\CustomerFactory as Customer;
 use Flutterwave\Factories\PayloadFactory as Payload;
 use Flutterwave\Helper\Config;
 use Flutterwave\Helper\EnvVariables;
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Psr\Http\Client\ClientInterface;
 use InvalidArgumentException;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -27,6 +28,7 @@ class Service implements ServiceInterface
     public ?FactoryInterface $customer;
     protected string $baseUrl;
     protected LoggerInterface $logger;
+    protected SignozServiceLogger $signoz;
     protected ConfigInterface $config;
     protected string $url;
     protected string $secret;
@@ -42,6 +44,7 @@ class Service implements ServiceInterface
         $this->config = is_null($config) ? self::$spareConfig : $config;
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
+        $this->signoz = $this->config->getSignoz();
         $this->secret = $this->config->getSecretKey();
         $this->url = EnvVariables::BASE_URL . '/';
         $this->baseUrl = EnvVariables::BASE_URL;
@@ -68,6 +71,7 @@ class Service implements ServiceInterface
 
         $secret = $this->config->getSecretKey();
         $url = $this->getUrl($overrideUrl, $additionalurl);
+        $reference = $this->resolveSignozReference($data, $additionalurl, $verb);
 
         switch ($verb) {
         case 'POST':
@@ -119,6 +123,10 @@ class Service implements ServiceInterface
         }
 
         $body = $response->getBody()->getContents();
+        $appId = $this->signoz->getAppId();
+        $environment = $this->signoz->getCurrentEnvironment();
+        $this->signoz->trackRequestSent($appId, $environment, $verb, $reference, $additionalurl);
+
         return json_decode($body);
     }
 
@@ -165,5 +173,25 @@ class Service implements ServiceInterface
         }
 
         return $this->url . $additionalurl;
+    }
+
+    private function resolveSignozReference(?array $data, string $additionalurl, string $verb): string
+    {
+        if ($data !== null) {
+            foreach (['tx_ref', 'reference', 'order_ref', 'batch_id', 'id'] as $key) {
+                if (isset($data[$key]) && $data[$key] !== '') {
+                    return (string) $data[$key];
+                }
+            }
+
+            $encodedData = json_encode($data);
+            if ($encodedData === false) {
+                $encodedData = serialize($data);
+            }
+
+            return hash('sha256', $verb . '|' . $additionalurl . '|' . $encodedData);
+        }
+
+        return $verb . '|' . $additionalurl;
     }
 }

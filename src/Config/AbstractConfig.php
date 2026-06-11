@@ -22,7 +22,7 @@ abstract class AbstractConfig
     public const SECRET_KEY = 'SECRET_KEY';
     public const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
     public const ENV = 'ENV';
-    public const DEFAULT_PREFIX = 'FW|PHP';
+    public const DEFAULT_PREFIX = 'FW_PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
     public Logger $logger;
     protected string $secret;
@@ -56,6 +56,8 @@ abstract class AbstractConfig
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
         $this->signoz = new SignozServiceLogger($this->http, $this->getPublicKey(), $this->getEnv(), null, EnvVariables::SDK_VERSION);
+        // Track app initialization once per lifecycle
+        $this->signoz->trackAppCreated($this->getPublicKey());
     }
 
     abstract public static function setUp(
