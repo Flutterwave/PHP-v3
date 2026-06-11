@@ -1,0 +1,8 @@
+{
+  "name": "Ona",
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "ona automations update .ona/automations.yaml"
+}
