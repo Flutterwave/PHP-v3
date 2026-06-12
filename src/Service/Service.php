@@ -74,52 +74,60 @@ class Service implements ServiceInterface
         $reference = $this->resolveSignozReference($data, $additionalurl, $verb);
 
         switch ($verb) {
-        case 'POST':
-            $response = $this->http->request(
-                'POST', $url, [
-                'debug' => false, // TODO: turn to false  on release.
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $data,
+            case 'POST':
+                $response = $this->http->request(
+                    'POST',
+                    $url,
+                    [
+                        'debug' => false, // TODO: turn to false  on release.
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
+                        'json' => $data,
                     ]
-            );
-            break;
-        case 'PUT':
-            $response = $this->http->request(
-                'PUT', $url, [
-                'debug' => false, // TODO: turn to false  on release.
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $data ?? [],
+                );
+                break;
+            case 'PUT':
+                $response = $this->http->request(
+                    'PUT',
+                    $url,
+                    [
+                        'debug' => false, // TODO: turn to false  on release.
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
+                        'json' => $data ?? [],
                     ]
-            );
-            break;
-        case 'DELETE':
-            $response = $this->http->request(
-                'DELETE', $url, [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
+                );
+                break;
+            case 'DELETE':
+                $response = $this->http->request(
+                    'DELETE',
+                    $url,
+                    [
+                        'debug' => false,
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
                     ]
-            );
-            break;
-        default:
-            $response = $this->http->request(
-                'GET', $url, [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
+                );
+                break;
+            default:
+                $response = $this->http->request(
+                    'GET',
+                    $url,
+                    [
+                        'debug' => false,
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
                     ]
-            );
-            break;
+                );
+                break;
         }
 
         $body = $response->getBody()->getContents();
@@ -135,7 +143,7 @@ class Service implements ServiceInterface
         $pattern = '/([0-9]){7}/';
         $is_valid = preg_match_all($pattern, $transactionId);
 
-        if (! $is_valid) {
+        if (!$is_valid) {
             $this->logger->warning('Transaction Service::cannot verify invalid transaction id. ');
             throw new InvalidArgumentException('cannot verify invalid transaction id.');
         }
@@ -175,23 +183,30 @@ class Service implements ServiceInterface
         return $this->url . $additionalurl;
     }
 
-    private function resolveSignozReference(?array $data, string $additionalurl, string $verb): string
+    private function resolveSignozReference(?array $data, string $additionalurl): string
     {
-        if ($data !== null) {
-            foreach (['tx_ref', 'reference', 'order_ref', 'batch_id', 'id'] as $key) {
-                if (isset($data[$key]) && $data[$key] !== '') {
-                    return (string) $data[$key];
-                }
-            }
-
-            $encodedData = json_encode($data);
-            if ($encodedData === false) {
-                $encodedData = serialize($data);
-            }
-
-            return hash('sha256', $verb . '|' . $additionalurl . '|' . $encodedData);
+        if (!is_null($data) && isset($data['tx_ref'])) {
+            return (string) $data['tx_ref'];
         }
 
-        return $verb . '|' . $additionalurl;
+        foreach (['reference', 'order_ref', 'batch_id', 'id'] as $key) {
+            if (!empty($data[$key])) {
+                return (string) $data[$key];
+            }
+        }
+
+        $segments = array_values(array_filter(explode('/', trim($additionalurl, '/'))));
+
+        $segmentCount = count($segments);
+
+        if ($segmentCount === 4) {
+            return $segments[2];
+        }
+
+        if ($segmentCount === 3) {
+            return $segments[1];
+        }
+
+        return implode('-', $segments);
     }
 }

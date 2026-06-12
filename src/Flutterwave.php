@@ -28,6 +28,8 @@ class Flutterwave extends AbstractPayment
     use Configure;
     use PaymentFactory;
 
+    private SignozServiceLogger $signoz;
+
     /**
      * Flutterwave Construct
      *
@@ -41,6 +43,12 @@ class Flutterwave extends AbstractPayment
         $this->logger = self::$config->getLoggerInstance();
         $this->createReferenceNumber();
         $this->logger->notice('Main Class Initializes....');
+        
+        if (!method_exists(self::$config, 'getSignoz')) {
+            $this->signoz = self::getSignoz();
+        } else {
+            $this->signoz = self::$config->getSignoz();
+        }
     }
 
     private function checkPageIsSecure()
@@ -246,10 +254,9 @@ class Flutterwave extends AbstractPayment
         if (isset($this->handler)) {
             $this->handler->onRequery($this->txref);
         }
-        /** @var SignozServiceLogger $signoz */
-        $signoz = self::$config->getSignoz();
-        $appId = $signoz->getAppId();
-        $environment = $signoz->getCurrentEnvironment();
+
+        $appId = $this->signoz->getAppId();
+        $environment = $this->signoz->getCurrentEnvironment();
 
         $data = [
             'id' => (int) $referenceNumber,
@@ -264,15 +271,16 @@ class Flutterwave extends AbstractPayment
         if ($response->status === 'success') {
             if ($response->data && $response->data->status === 'successful') {
                 $this->logger->notice('Requeryed a successful transaction....' . json_encode($response->data));
-                $signoz->trackRequestSent($appId, $environment, 'GET', $referenceNumber, $url );
                 // Handle successful.
                 if (isset($this->handler)) {
+                    $final_tx_ref = $response->data->tx_ref;
+                    $this->signoz->trackRequestSent($appId, $environment, 'GET', $referenceNumber, $url );
                     if( 'production' === $environment ) {
                         $final_currency = $response->data->currency;
                         $final_amount = $response->data->amount;
                         $payment_type = $response->data->payment_type;
                         $final_fee = $response->data->app_fee;
-                        $signoz->trackTransaction($appId,$referenceNumber, $final_currency, (float) $final_amount, $payment_type, (float) $final_fee);
+                        $this->signoz->trackTransaction($appId,$final_tx_ref, $final_currency, (float) $final_amount, $payment_type, (float) $final_fee);
                     }
                     $this->handler->onSuccessful($response->data);
                 }
@@ -292,7 +300,7 @@ class Flutterwave extends AbstractPayment
                 if ($this->requeryCount > 4) {
                     // Now you have to setup a queue by force. We couldn't get a status in 5 requeries.
                     if (isset($this->handler)) {
-                        $signoz->trackError($appId, 'TIMEOUT_ERROR', 'timedout while requerying transaction with id: ' . $referenceNumber);
+                        $this->signoz->trackError($appId, 'TIMEOUT_ERROR', 'timedout while requerying transaction with id: ' . $referenceNumber);
                         $this->handler->onTimeout($this->txref, $response->data);
                     }
                 } else {
@@ -304,7 +312,7 @@ class Flutterwave extends AbstractPayment
             }
         } else {
             // Handle Requery Error.
-            $signoz->trackError($appId, 'REQUERY_ERROR', 'Failed to requery transaction with id: ' . $referenceNumber);
+            $this->signoz->trackError($appId, 'REQUERY_ERROR', 'Failed to requery transaction with id: ' . $referenceNumber);
             if (isset($this->handler)) {
                 $this->handler->onRequeryError($response->data);
             }
@@ -319,12 +327,10 @@ class Flutterwave extends AbstractPayment
     {
         $this->createCheckSum();
 
-        /** @var SignozServiceLogger $signoz */
-        $signoz = self::$config->getSignoz();
-        $appId = $signoz->getAppId();
-        $environment = $signoz->getCurrentEnvironment();
+        $appId = $this->signoz->getAppId();
+        $environment = $this->signoz->getCurrentEnvironment();
 
-        $signoz->trackRequestSent($appId, $environment, 'GET', $this->txref, '/inline');
+        $this->signoz->trackRequestSent($appId, $environment, 'GET', $this->txref, '/inline');
 
         $this->logger->info('Rendering Payment Modal..');
 

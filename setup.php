@@ -2,7 +2,6 @@
 
 use Flutterwave\Helper;
 use Dotenv\Dotenv;
-use Flutterwave\Monitoring\SignozServiceLogger;
 
 $flutterwave_installation = 'composer';
 

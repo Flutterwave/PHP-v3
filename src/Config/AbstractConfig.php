@@ -15,6 +15,8 @@ use Monolog\Handler\RotatingFileHandler;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use Flutterwave\Helper\EnvVariables;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 
 abstract class AbstractConfig
 {
@@ -55,7 +57,8 @@ abstract class AbstractConfig
 
         $log = new Logger('Flutterwave/PHP');
         $this->logger = $log;
-        $this->signoz = new SignozServiceLogger($this->http, $this->getPublicKey(), $this->getEnv(), null, EnvVariables::SDK_VERSION);
+        $cache = new Psr16Cache(new FilesystemAdapter('flutterwave_signoz'));
+        $this->signoz = new SignozServiceLogger($this->http, $this->getPublicKey(), $this->getEnv(), $cache, EnvVariables::SDK_VERSION);
         // Track app initialization once per lifecycle
         $this->signoz->trackAppCreated($this->getPublicKey());
     }

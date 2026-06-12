@@ -30,6 +30,13 @@ jobs:
         id: tag
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
 
+      - name: "Inject SigNoz API key"
+        shell: bash
+        env:
+          SIGNOZ_API_KEY: ${{ secrets.SIGNOZ_API_KEY }}
+        run: |
+          sed -i "s|%%SIGNOZ_API_KEY%%|${SIGNOZ_API_KEY}|g" src/Monitoring/SignozServiceLogger.php
+
       - name: Create release artifact
         run: |
           mkdir -p build

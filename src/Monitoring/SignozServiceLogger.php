@@ -80,8 +80,21 @@ class SignozServiceLogger
     public function trackAppCreated(
         string $publicKey
     ): void {
+        $cacheKey = sprintf('signoz:app_created:%s', hash('sha256', $publicKey));
+
         if (self::$appCreatedSent) {
             return;
+        }
+
+        if ($this->cache !== null) {
+            try {
+                if ($this->cache->has($cacheKey)) {
+                    self::$appCreatedSent = true;
+                    return;
+                }
+            } catch (\Throwable $e) {
+                // observability must never break payments
+            }
         }
 
         $merchantId = $this->getMerchantId($publicKey);
@@ -98,6 +111,14 @@ class SignozServiceLogger
             'library_version' => $this->libraryVersion,
         ]);
 
+        if ($this->cache !== null) {
+            try {
+                $this->cache->set($cacheKey, true);
+            } catch (\Throwable $e) {
+                // observability must never break payments
+            }
+        }
+
         self::$appCreatedSent = true;
     }
 
@@ -108,6 +129,8 @@ class SignozServiceLogger
         string $reference,
         string $path
     ): void {
+        $safeReference = $this->normalizeReference($reference);
+
         $payload = [
             'app_id'          => $this->normalizeAppId($appId),
             'environment'     => $environment,
@@ -115,12 +138,14 @@ class SignozServiceLogger
             'library_version' => $this->libraryVersion,
             'method'          => $method,
             'path'            => $path,
-            'reference'       => $reference,
+            'reference'       => $safeReference,
         ];
+
+        // error_log('Signoz Request Sent reference: ' . $reference);
 
         $cacheKey = sprintf(
             'signoz:request_sent:%s',
-            $reference
+            $safeReference
         );
 
         if ($this->cache !== null) {
@@ -135,7 +160,7 @@ class SignozServiceLogger
                 // observability must never break payments
             }
         }
-
+        
         $this->send('request.sent', $payload);
     }
 
@@ -192,14 +217,14 @@ class SignozServiceLogger
         } catch (RequestException $e) {
             $response = $e->getResponse();
 
-            if ($response !== null && $response->getStatusCode() === 422) {
-                $responseBody = (string) $response->getBody();
-                error_log(sprintf(
-                    'Signoz validation error (422) while sending %s: %s',
-                    $eventName,
-                    $responseBody
-                ));
-            }
+            // if ($response !== null && $response->getStatusCode() === 422) {
+            //     $responseBody = (string) $response->getBody();
+            //     error_log(sprintf(
+            //         'Signoz validation error (422) while sending %s: %s',
+            //         $eventName,
+            //         $responseBody
+            //     ));
+            // }
         } catch (\Throwable $e) {
             // observability must never break payments
         }
@@ -208,5 +233,16 @@ class SignozServiceLogger
     private function normalizeAppId(string $appId): string
     {
         return preg_replace('/\s+/', '-', trim($appId)) ?? $appId;
+    }
+
+    private function normalizeReference(string $reference): string
+    {
+        $normalized = preg_replace('/[^A-Za-z0-9_-]+/', '-', trim($reference));
+
+        if ($normalized === null) {
+            return $reference;
+        }
+
+        return trim($normalized, '-');
     }
 }
