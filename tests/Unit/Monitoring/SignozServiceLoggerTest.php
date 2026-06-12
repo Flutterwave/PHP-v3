@@ -14,7 +14,6 @@ use ReflectionProperty;
 
 class SignozServiceLoggerTest extends TestCase
 {
-    private const PUBLIC_KEY = getEnv('FW_PHP_PUBLIC_KEY', 'FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X');
 
     protected function tearDown(): void
     {
@@ -23,11 +22,12 @@ class SignozServiceLoggerTest extends TestCase
 
     // public function testAppCreatedIsSentOnlyOncePerPublicKey(): void
     // {
+    //     $publicKey = getEnv('PUBLIC_KEY');
     //     $firstHttpClient = $this->createMock(ClientInterface::class);
     //     $secondHttpClient = $this->createMock(ClientInterface::class);
     //     $cache = $this->createMock(CacheInterface::class);
 
-    //     $cacheKey = sprintf('signoz:app_created:%s', hash('sha256', self::PUBLIC_KEY));
+    //     $cacheKey = sprintf('signoz:app_created:%s', hash('sha256', $publicKey));
 
     //     $cache->expects($this->exactly(2))
     //         ->method('has')
@@ -43,7 +43,7 @@ class SignozServiceLoggerTest extends TestCase
     //         ->withConsecutive(
     //             [
     //                 'GET',
-    //                 'https://api.ravepay.co/flwv3-pug/getpaidx/api/mercinfo?PBFPubKey=' . self::PUBLIC_KEY,
+    //                 'https://api.ravepay.co/flwv3-pug/getpaidx/api/mercinfo?PBFPubKey=' . $publicKey,
     //                 $this->callback(static function (array $options): bool {
     //                     return isset($options['headers']['Content-Type']) && $options['headers']['Content-Type'] === 'application/json';
     //                 }),
@@ -57,7 +57,7 @@ class SignozServiceLoggerTest extends TestCase
     //                     }
 
     //                     return $options['json']['name'] === 'app.created'
-    //                         && $options['json']['data']['public_key'] === self::PUBLIC_KEY;
+    //                         && $options['json']['data']['public_key'] === $publicKey;
     //                 }),
     //             ]
     //         )
@@ -66,8 +66,8 @@ class SignozServiceLoggerTest extends TestCase
     //             new Response(200)
     //         );
 
-    //     $logger = new SignozServiceLogger($firstHttpClient, self::PUBLIC_KEY, 'sandbox', $cache, '1.0.7');
-    //     $logger->trackAppCreated(self::PUBLIC_KEY);
+    //     $logger = new SignozServiceLogger($firstHttpClient, $publicKey, 'sandbox', $cache, '1.0.7');
+    //     $logger->trackAppCreated($publicKey);
 
     //     $this->resetAppCreatedFlag();
 
@@ -83,8 +83,8 @@ class SignozServiceLoggerTest extends TestCase
     //     $cache->expects($this->never())
     //         ->method('set');
 
-    //     $secondLogger = new SignozServiceLogger($secondHttpClient, self::PUBLIC_KEY, 'sandbox', $cache, '1.0.7');
-    //     $secondLogger->trackAppCreated(self::PUBLIC_KEY);
+    //     $secondLogger = new SignozServiceLogger($secondHttpClient, $publicKey, 'sandbox', $cache, '1.0.7');
+    //     $secondLogger->trackAppCreated($publicKey);
     // }
 
     private function resetAppCreatedFlag(): void
