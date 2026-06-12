@@ -4,5 +4,9 @@
     "context": ".",
     "dockerfile": "Dockerfile"
   },
-  "postCreateCommand": "ona automations update .ona/automations.yaml"
+  "features": {
+    "ghcr.io/devcontainers/features/node:2": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:3.0.1": {}
+  }
 }
