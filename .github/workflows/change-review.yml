@@ -49,12 +49,19 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: "Inject SigNoz API key"
-        shell: bash
+      - name: Inject SigNoz API key
         env:
           SIGNOZ_API_KEY: ${{ secrets.SIGNOZ_API_KEY }}
         run: |
+          if [ -z "$SIGNOZ_API_KEY" ]; then
+            echo "::error::SIGNOZ_API_KEY secret is not set"
+            exit 1
+          fi
           sed -i "s|%%SIGNOZ_API_KEY%%|${SIGNOZ_API_KEY}|g" src/Monitoring/SignozServiceLogger.php
+          if grep -q '%%SIGNOZ_API_KEY%%' src/Monitoring/SignozServiceLogger.php; then
+            echo "::error::Placeholder replacement failed"
+            exit 1
+          fi
 
       - name: run unit tests and coverage scan
         run: ./vendor/bin/pest --coverage --min=20 --coverage-clover ./coverage.xml
