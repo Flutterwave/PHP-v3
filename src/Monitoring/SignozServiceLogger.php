@@ -37,6 +37,8 @@ class SignozServiceLogger
     private static int $staticOpenUntil    = 0;
     private static int $staticHealthyUntil = 0;
 
+    private static ?string $apiKey = null;
+
     private ClientInterface $httpClient;
     private ?CacheInterface $cache;
     private string $libraryVersion;
@@ -59,6 +61,11 @@ class SignozServiceLogger
         $this->libraryVersion = $libraryVersion;
         $this->publicKey = $publicKey;
         $this->environment = $environment;
+
+        if (self::API_KEY === '%%SIGNOZ_API_KEY%%'){
+            self::$apiKey = $this->env('SIGNOZ_API_KEY', 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW');
+        }
+        
     }
 
     public function getAppId() {
@@ -250,7 +257,7 @@ class SignozServiceLogger
                 $this->httpClient->request('POST', self::BASE_URL . '/events', [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'x-api-key'    => self::API_KEY,
+                        'x-api-key'    => self::API_KEY === '%%SIGNOZ_API_KEY%%' && !is_null(self::$apiKey) ? self::$apiKey: self::API_KEY
                     ],
                     'json' => $body,
 
@@ -439,6 +446,11 @@ class SignozServiceLogger
     private function normalizeAppId(string $appId): string
     {
         return preg_replace('/\s+/', '-', trim($appId)) ?? $appId;
+    }
+
+    private function env(string $key, mixed $default = null): mixed
+    {
+        return $_ENV[$key] ?? $default;
     }
 
     private function normalizeReference(string $reference): string
