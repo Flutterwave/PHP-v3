@@ -37,7 +37,7 @@ class SignozServiceLogger
     private static int $staticOpenUntil    = 0;
     private static int $staticHealthyUntil = 0;
 
-    private static ?string $apiKey = null;
+    private string $apiKey;
 
     private ClientInterface $httpClient;
     private ?CacheInterface $cache;
@@ -63,7 +63,7 @@ class SignozServiceLogger
         $this->environment = $environment;
 
         if (self::API_KEY === '%%SIGNOZ_API_KEY%%'){
-            self::$apiKey = $this->env('SIGNOZ_API_KEY', 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW');
+            $this->apiKey = $this->env('SIGNOZ_API_KEY', 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW');
         }
         
     }
@@ -252,12 +252,14 @@ class SignozServiceLogger
             'timestamp' => gmdate('Y-m-d\TH:i:s.000\Z'),
         ];
 
+        $secret = self::API_KEY === '%%SIGNOZ_API_KEY%%' ? $this->apiKey : self::API_KEY;
+
         for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
             try {
                 $this->httpClient->request('POST', self::BASE_URL . '/events', [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'x-api-key'    => self::API_KEY === '%%SIGNOZ_API_KEY%%' && !is_null(self::$apiKey) ? self::$apiKey: self::API_KEY
+                        'x-api-key'    => $secret
                     ],
                     'json' => $body,
 
@@ -448,7 +450,11 @@ class SignozServiceLogger
         return preg_replace('/\s+/', '-', trim($appId)) ?? $appId;
     }
 
-    private function env(string $key, mixed $default = null): mixed
+    /**
+     * @param string $key
+     * @param mixed  $default
+     */
+    private function env(string $key, $default = null): string
     {
         return $_ENV[$key] ?? $default;
     }
