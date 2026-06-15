@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     strategy:
       matrix:
@@ -29,6 +31,20 @@ jobs:
       - name: Get tag version
         id: tag
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
+
+      - name: Inject SigNoz API key
+        env:
+          SIGNOZ_API_KEY: ${{ secrets.SIGNOZ_API_KEY }}
+        run: |
+          if [ -z "$SIGNOZ_API_KEY" ]; then
+            echo "::error::SIGNOZ_API_KEY secret is not set"
+            exit 1
+          fi
+          sed -i "s|%%SIGNOZ_API_KEY%%|${SIGNOZ_API_KEY}|g" src/Monitoring/SignozServiceLogger.php
+          if grep -q '%%SIGNOZ_API_KEY%%' src/Monitoring/SignozServiceLogger.php; then
+            echo "::error::Placeholder replacement failed"
+            exit 1
+          fi
 
       - name: Create release artifact
         run: |

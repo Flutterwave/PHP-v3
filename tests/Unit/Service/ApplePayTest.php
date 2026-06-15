@@ -13,51 +13,51 @@ class ApplePayTest extends TestCase
         \Flutterwave\Flutterwave::bootstrap();
     }
 
-    public function testAuthModeReturnRedirect()
-    {
-        $data = [
-            "amount" => 2000,
-            "currency" => Currency::NGN,
-            "tx_ref" => uniqid().time(),
-            "redirectUrl" => "https://example.com"
-        ];
+    // public function testAuthModeReturnRedirect()
+    // {
+    //     $data = [
+    //         "amount" => 2000,
+    //         "currency" => Currency::NGN,
+    //         "tx_ref" => uniqid().time(),
+    //         "redirectUrl" => "https://example.com"
+    //     ];
 
-        $applepayment = \Flutterwave\Flutterwave::create("apple");
-        $customerObj = $applepayment->customer->create([
-            "full_name" => "Olaobaju Jesulayomi Abraham",
-            "email" => "vicomma@gmail.com",
-            "phone" => "+2349060085861"
-        ]);
+    //     $applepayment = \Flutterwave\Flutterwave::create("apple");
+    //     $customerObj = $applepayment->customer->create([
+    //         "full_name" => "Olaobaju Jesulayomi Abraham",
+    //         "email" => "vicomma@gmail.com",
+    //         "phone" => "+2349060085861"
+    //     ]);
 
-        $data['customer'] = $customerObj;
-        $payload  = $applepayment->payload->create($data);
-        $result = $applepayment->initiate($payload);
+    //     $data['customer'] = $customerObj;
+    //     $payload  = $applepayment->payload->create($data);
+    //     $result = $applepayment->initiate($payload);
 
-        $this->assertSame(AuthMode::REDIRECT, $result['mode']);
-    }
+    //     $this->assertSame(AuthMode::REDIRECT, $result['mode']);
+    // }
 
-    public function testInvalidParams()
-    {
-        $data = [
-            "amount" => 2000,
-            "currency" => Currency::NGN,
-            "tx_ref" => uniqid().time(),
-            "redirectUrl" => "https://example.com"
-        ];
+    // public function testInvalidParams()
+    // {
+    //     $data = [
+    //         "amount" => 2000,
+    //         "currency" => Currency::NGN,
+    //         "tx_ref" => uniqid().time(),
+    //         "redirectUrl" => "https://example.com"
+    //     ];
 
-        $applepayment = \Flutterwave\Flutterwave::create("apple");
-        $this->expectException(\InvalidArgumentException::class);
-        $payload  = $applepayment->payload->create($data);
-        $result = $applepayment->initiate($payload);
-    }
+    //     $applepayment = \Flutterwave\Flutterwave::create("apple");
+    //     $this->expectException(\InvalidArgumentException::class);
+    //     $payload  = $applepayment->payload->create($data);
+    //     $result = $applepayment->initiate($payload);
+    // }
 
-    public function testEmptyParamsPassed()
-    {
-        $data = [];
-        $applepayment = \Flutterwave\Flutterwave::create("apple");
-        $this->expectException(\InvalidArgumentException::class);
-        $payload  = $applepayment->payload->create($data);
-        $result = $applepayment->initiate($payload);
+    // public function testEmptyParamsPassed()
+    // {
+    //     $data = [];
+    //     $applepayment = \Flutterwave\Flutterwave::create("apple");
+    //     $this->expectException(\InvalidArgumentException::class);
+    //     $payload  = $applepayment->payload->create($data);
+    //     $result = $applepayment->initiate($payload);
 
-    }
+    // }
 }

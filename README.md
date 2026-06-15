@@ -52,7 +52,7 @@ If you do not want to make use of composer. each [release](https://github.com/Fl
 
 ### Installation via Composer.
 
-To install the package via Composer, run the following command.
+To install the package via Composer, run the following command:
 ```shell
 composer require flutterwavedev/flutterwave-v3
 ```
@@ -67,7 +67,7 @@ Save your PUBLIC_KEY, SECRET_KEY, ENV in the `.env` file
 ```bash
 cp .env.example .env
 ```
-Your `.env` file should look this.
+Your `.env` file should look this. Make sure to retrieve your API keys from your dashboard.
 
 ```env
 FLW_PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X

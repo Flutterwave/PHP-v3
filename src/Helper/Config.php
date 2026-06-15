@@ -24,7 +24,7 @@ class Config implements ConfigInterface
     public const SECRET_KEY = 'SECRET_KEY';
     public const ENCRYPTION_KEY = 'ENCRYPTION_KEY';
     public const ENV = 'ENV';
-    public const DEFAULT_PREFIX = 'FW|PHP';
+    public const DEFAULT_PREFIX = 'FW_PHP';
     public const LOG_FILE_NAME = 'flutterwave-php.log';
     protected Logger $logger;
     private string $secret;

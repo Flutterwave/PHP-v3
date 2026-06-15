@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Flutterwave\Controller;
 
-use Flutterwave\EventHandlers\ModalEventHandler;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Flutterwave;
-use Flutterwave\Entities\Payload;
 use Flutterwave\Library\Modal;
 use Flutterwave\Service\Transactions;
 
@@ -43,14 +41,14 @@ final class PaymentController
 
     public function __call(string $name, array $args)
     {
-        if ($this->routes[$name] !== $this->$requestMethod) {
+        if ($this->routes[$name] !== $this->requestMethod) {
             // Todo: 404();
             echo "Unauthorized page!";
         }
-        call_user_method_array($name, $this, $args);
+        call_user_func_array([$this, $name], $args);
     }
 
-    private function handleSessionData( array $request )
+    private function handleSessionData(array $request): void
     {
         $_SESSION['success_url'] = $request['success_url'];
         $_SESSION['failure_url'] = $request['failure_url'];
@@ -61,10 +59,8 @@ final class PaymentController
     public function process(array $request)
     {
         $this->handleSessionData($request);
-        
-        try {
-            $_SESSION['p'] = $this->client;
 
+        try {
             if('inline' === $this->modalType ) {
                 echo $this->client
                     ->eventHandler($this->handler)
@@ -87,23 +83,11 @@ final class PaymentController
         $status = $request['status'];
 
         if (empty($tx_ref)) {
-            session_destroy();
-        }
-
-        if (!isset($_SESSION['p'])) {
-            echo "session expired!. please refresh you browser.";
+            echo 'Missing transaction reference.';
             exit();
         }
 
-        $payment = $_SESSION['p'];
-
-        // $payment::setUp([
-        //     'secret_key' => 'FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
-        //     'public_key' => 'FLWPUBK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X',
-        //     'encryption_key' => 'FLWSECK_XXXXXXXXXXXXXXXX',
-        //     'environment' => 'staging'
-        // ]);
-
+        $payment = $this->client;
         $payment::bootstrap();
 
         if ('cancelled' === $status) {
