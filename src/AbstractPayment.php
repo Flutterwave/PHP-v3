@@ -7,6 +7,7 @@ namespace Flutterwave;
 use Flutterwave\Contract\ConfigInterface;
 use Flutterwave\EventHandlers\EventHandlerInterface;
 use Flutterwave\Helper\EnvVariables;
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Flutterwave\Traits\ApiOperations as Api;
 use Flutterwave\Traits\PayloadOperations as Payload;
 use Psr\Log\LoggerInterface;

@@ -11,7 +11,7 @@ use Flutterwave\Flutterwave;
 use Flutterwave\Library\Modal;
 use \Flutterwave\Config\ForkConfig;
 
-// start a session.
+// start a session for redirect metadata.
 session_start();
 
 // Define custom config.
@@ -39,9 +39,15 @@ try {
     $controller = new PaymentController( $client, $customHandler, $modalType );
 } catch(\Exception $e ) {
     echo $e->getMessage();
+    exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if ($controller === null) {
+        echo 'Unable to initialize payment controller.';
+        exit();
+    }
+
     $request = $_REQUEST;
     $request['redirect_url'] = $_SERVER['HTTP_ORIGIN'] . $_SERVER['REQUEST_URI'];
     try {
@@ -54,6 +60,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 $request = $_GET;
 # Confirming Payment.
 if(isset($request['tx_ref'])) {
+    if ($controller === null) {
+        echo 'Unable to initialize payment controller.';
+        exit();
+    }
+
     $controller->callback( $request );
 } else {
     
