@@ -321,62 +321,71 @@ class Flutterwave extends AbstractPayment
     }
 
     /**
-     * Generates the final json to be used in configuring the payment call to the rave payment gateway
+     * @deprecated Use render('inline')->getHtml() instead.
+     * Will be removed in a future version.
      */
     public function initialize(): void
     {
+        // $this->createCheckSum();
+
+        // $appId = $this->signoz->getAppId();
+        // $environment = $this->signoz->getCurrentEnvironment();
+
+        // $this->signoz->trackRequestSent($appId, $environment, 'GET', $this->txref, '/inline');
+
+        // $this->logger->info('Rendering Payment Modal..');
+
+        // $checkoutConfig = json_encode([
+        //     'public_key'                    => self::$config->getPublicKey(),
+        //     'tx_ref'            => $this->txref,
+        //     'amount'            => (float) $this->amount,
+        //     'currency'          => $this->currency,
+        //     'country'           => $this->country,
+        //     'payment_options'   => $this->paymentOptions,
+        //     'redirect_url'      => $this->redirectUrl,
+        //     'customer'          => [
+        //         'email'         => $this->customerEmail,
+        //         'phone_number'  => $this->customerPhone,
+        //         'name'          => $this->customerFirstname . ' ' . $this->customerLastname,
+        //     ],
+        //     'customizations'    => [
+        //         'title'         => $this->customTitle,
+        //         'description'   => $this->customDescription,
+        //         'logo'          => $this->customLogo,
+        //     ],
+        // ], JSON_HEX_TAG | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
+
+        // echo '<!DOCTYPE html>';
+        // echo '<html lang="en">';
+        // echo '<head><meta charset="UTF-8"></head>';
+        // echo '<body>';
+        // //        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
+        // echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
+        // Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
+        // //        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
+        // echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
+
+        // echo '<script>';
+        // echo 'document.addEventListener("DOMContentLoaded", function(event) {';
+        // echo '  var config = ' . $checkoutConfig . ';';
+        // echo '  config.callback = function(data) { console.log(data); };';
+        // echo '  config.onclose = function() {';
+        // echo '    window.location = "?cancelled=cancelled&cancel_ref=' . urlencode($this->txref) . '";';
+        // echo '  };';
+        // echo '  FlutterwaveCheckout(config);';
+        // echo '});';
+        // echo '</script>';
+        // echo '</body>';
+        // echo '</html>';
+        // $this->logger->info('Rendered Payment Modal Successfully..');
+
+        @trigger_error(
+            'initialize() is deprecated and will be removed in a future version. Use render(\'inline\')->with([...])->getHtml() instead.',
+            E_USER_DEPRECATED
+        );
+
         $this->createCheckSum();
-
-        $appId = $this->signoz->getAppId();
-        $environment = $this->signoz->getCurrentEnvironment();
-
-        $this->signoz->trackRequestSent($appId, $environment, 'GET', $this->txref, '/inline');
-
-        $this->logger->info('Rendering Payment Modal..');
-
-        $checkoutConfig = json_encode([
-            'public_key'                    => self::$config->getPublicKey(),
-            'tx_ref'            => $this->txref,
-            'amount'            => (float) $this->amount,
-            'currency'          => $this->currency,
-            'country'           => $this->country,
-            'payment_options'   => $this->paymentOptions,
-            'redirect_url'      => $this->redirectUrl,
-            'customer'          => [
-                'email'         => $this->customerEmail,
-                'phone_number'  => $this->customerPhone,
-                'name'          => $this->customerFirstname . ' ' . $this->customerLastname,
-            ],
-            'customizations'    => [
-                'title'         => $this->customTitle,
-                'description'   => $this->customDescription,
-                'logo'          => $this->customLogo,
-            ],
-        ], JSON_HEX_TAG | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
-
-        echo '<!DOCTYPE html>';
-        echo '<html lang="en">';
-        echo '<head><meta charset="UTF-8"></head>';
-        echo '<body>';
-        //        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
-        echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
-        Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
-        //        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
-        echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
-
-        echo '<script>';
-        echo 'document.addEventListener("DOMContentLoaded", function(event) {';
-        echo '  var config = ' . $checkoutConfig . ';';
-        echo '  config.callback = function(data) { console.log(data); };';
-        echo '  config.onclose = function() {';
-        echo '    window.location = "?cancelled=cancelled&cancel_ref=' . urlencode($this->txref) . '";';
-        echo '  };';
-        echo '  FlutterwaveCheckout(config);';
-        echo '});';
-        echo '</script>';
-        echo '</body>';
-        echo '</html>';
-        $this->logger->info('Rendered Payment Modal Successfully..');
+        echo $this->render(Modal::POPUP)->getHtml();
     }
 
     /**

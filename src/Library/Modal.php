@@ -121,36 +121,39 @@ final class Modal
         $payment_method = $payload['payment_method'] ?? $default_options;
 
         $this->logger->info('Rendering Payment Modal..');
+
+        $checkoutConfig = json_encode([
+            'public_key'        => self::$config->getPublicKey(),
+            'tx_ref'            => $payload['tx_ref'],
+            'amount'            => $payload['amount'],
+            'currency'          => $currency,
+            'country'           => $country,
+            'payment_options'   => $payment_method,
+            'redirect_url'      => $payload['redirect_url'],
+            'payload_hash'      => $payload['payload_hash'],
+            'customer'          => [
+                'email'         => $payload['email'],
+                'phone_number'  => $payload['phone_number'],
+                'name'          => $payload['fullname']
+            ]
+        ], JSON_HEX_TAG | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
+
         $html = '';
 
+        $html .= '<!DOCTYPE html>';
         $html .= '<html lang="en">';
         $html .= '<body>';
         $html .= '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
-        Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
+        Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
         $html .= '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
         $html .= '<script>';
-        $html .= 'document.addEventListener("DOMContentLoaded", function(event) {';
-        $html .= 'FlutterwaveCheckout({
-            public_key: "' . self::$config->getPublicKey() . '",
-            tx_ref: "' . $payload['tx_ref'] . '",
-            amount: ' . $payload['amount'] . ',
-            currency: "' . $currency . '",
-            country: "' . $country . '",
-            payment_options: "' . $payment_method . '",
-            redirect_url:"' . $payload['redirect_url'] . '",
-            payload_hash:"' . $payload['payload_hash'] . '",
-            customer: {
-              email: "' . $payload['email'] . '",
-              phone_number: "' . $payload['phone_number'] . '",
-              name: "' . $payload['fullname'] . '",
-            },
-            callback: function (data) {
-              console.log(data);
-            },
-            onclose: function() {
-                window.location = "?status=cancelled&tx_ref=' . $payload['tx_ref'] . '";
-            }
-        });';
+        $html .= 'document.addEventListener("DOMContentLoaded", function() {';
+        $html .= '  var config = ' . $checkoutConfig . ';';
+        $html .= '  config.callback = function(data) { console.log(data); };';
+        $html .= '  config.onclose = function() {';
+        $html .= '    window.location = "?status=cancelled&tx_ref=' . urlencode($payload['tx_ref']) . '";';
+        $html .= '  };';
+        $html .= '  FlutterwaveCheckout(config);';
         $html .= '});';
         $html .= '</script>';
         $html .= '</body>';
