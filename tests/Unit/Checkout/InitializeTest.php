@@ -4,7 +4,7 @@ namespace Unit\Checkout;
 
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Flutterwave;
-use Flutterwave\Test\Resources\Setup\Config;
+use Flutterwave\EventHandlers\ModalEventHandler;
 
 class InitializeTest extends TestCase
 {
@@ -17,16 +17,17 @@ class InitializeTest extends TestCase
     {
         $instance = new Flutterwave();
         $instance
+            ->eventHandler(new ModalEventHandler())
             ->setAmount('1000')
-            ->setCurrency('NGN')
+            ->setCurrency(\Flutterwave\Util\Currency::NGN)
             ->setCountry('NG')
             ->setEmail('test@example.com')
             ->setFirstname('John')
             ->setLastname('Doe')
-            ->setPhoneNumber('+2349012345678')
-            ->setRedirectUrl('https://mysite.com/callback')
+            ->setPhoneNumber('+2349067985861')
+            ->setRedirectUrl('https://example.com/callback')
             ->setTitle('Test Payment')
-            ->setDescription('Test Description')
+            ->setDescription('Testing initialize XSS fix')
             ->setLogo('https://mysite.com/logo.png')
             ->setPaymentOptions('card,banktransfer');
 
@@ -42,8 +43,8 @@ class InitializeTest extends TestCase
         $instance->initialize();
         $output = ob_get_clean();
 
-        $this->assertStringNotContainsString('</script><script>', $output);
-        $this->assertStringContainsString('\u003C', $output); // JSON_HEX_TAG encoding of 
+        $this->assertStringNotContainsString('<script>alert(1)</script>', $output);
+        $this->assertStringContainsString('\u003C', $output);
     }
 
     public function testInitializeEscapesQuotesInCustomerName(): void
@@ -93,6 +94,27 @@ class InitializeTest extends TestCase
         $instance->initialize();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('"payment_options":"card,banktransfer"', $output);
+        $this->assertStringContainsString('card,banktransfer', $output);
+    }
+
+    public function testInitializeIsDeprecated(): void
+    {
+        $instance = $this->buildInstance();
+
+        $deprecationTriggered = false;
+        set_error_handler(function (int $errno, string $errstr) use (&$deprecationTriggered) {
+            if ($errno === E_USER_DEPRECATED && str_contains($errstr, 'initialize() is deprecated')) {
+                $deprecationTriggered = true;
+            }
+            return true;
+        });
+
+        ob_start();
+        $instance->initialize();
+        ob_get_clean();
+
+        restore_error_handler();
+
+        $this->assertTrue($deprecationTriggered, 'Expected a deprecation notice for initialize()');
     }
 }

@@ -70,7 +70,7 @@ final class Modal
         }
 
         $this->customer = (new \Flutterwave\Factories\CustomerFactory())->create($args['customer']);
-
+        
         $args['customer'] = $this->customer;
 
         if (isset($args['tx_ref'])) {
@@ -83,10 +83,15 @@ final class Modal
         } else {
             $args = array_merge($args, $this->generatedTransactionData);
         }
-        $this->payload = (new \Flutterwave\Factories\PayloadFactory())->create($args);
 
+        $this->payload = (new \Flutterwave\Factories\PayloadFactory())->create($args);
+        
         $this->payload->set('redirect_url', $args['redirect_url']);
         $this->payload->set('payment_method', $args['payment_method']);
+        
+        $this->payload->set('custom_title', $args['customizations']['title'] ?? '');
+        $this->payload->set('custom_description', $args['customizations']['description'] ?? '');
+        $this->payload->set('custom_logo', $args['customizations']['logo'] ?? '');
 
         $dataToHash = [
             'amount' => $args['amount'],
@@ -135,9 +140,14 @@ final class Modal
                 'email'         => $payload['email'],
                 'phone_number'  => $payload['phone_number'],
                 'name'          => $payload['fullname']
-            ]
-        ], JSON_HEX_TAG | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
-
+            ],
+            'customizations'    => [
+                'title'         => $payload['custom_title'],
+                'description'   => $payload['custom_description'],
+                'logo'          => $payload['custom_logo'],
+            ],
+        ], JSON_HEX_TAG | JSON_PRESERVE_ZERO_FRACTION | JSON_HEX_QUOT | JSON_HEX_APOS | JSON_THROW_ON_ERROR);
+ 
         $html = '';
 
         $html .= '<!DOCTYPE html>';
@@ -147,7 +157,7 @@ final class Modal
         Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
         $html .= '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
         $html .= '<script>';
-        $html .= 'document.addEventListener("DOMContentLoaded", function() {';
+        $html .= 'document.addEventListener("DOMContentLoaded", function(event) {';
         $html .= '  var config = ' . $checkoutConfig . ';';
         $html .= '  config.callback = function(data) { console.log(data); };';
         $html .= '  config.onclose = function() {';
