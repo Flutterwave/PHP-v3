@@ -345,29 +345,29 @@ class Flutterwave extends AbstractPayment
         echo '<script>';
         echo 'document.addEventListener("DOMContentLoaded", function(event) {';
         echo 'FlutterwaveCheckout({
-            public_key: "' . self::$config->getPublicKey() . '",
-            tx_ref: "' . $this->txref . '",
-            amount: ' . $this->amount . ',
-            currency: "' . $this->currency . '",
-            country: "' . $this->country . '",
+            public_key: "' . addslashes(self::$config->getPublicKey()) . '",
+            tx_ref: "' . addslashes($this->txref) . '",
+            amount: ' . (float) $this->amount . ',
+            currency: "' . addslashes($this->currency) . '",
+            country: "' . addslashes($this->country) . '",
             payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,
             mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,banktransfer,account",
-            redirect_url:"' . $this->redirectUrl . '",
+            redirect_url:"' . addslashes($this->redirectUrl) . '",
             customer: {
-              email: "' . $this->customerEmail . '",
-              phone_number: "' . $this->customerPhone . '",
-              name: "' . $this->customerFirstname . ' ' . $this->customerLastname . '",
+              email: "' . addslashes($this->customerEmail) . '",
+              phone_number: "' . addslashes($this->customerPhone) . '",
+              name: "' . addslashes($this->customerFirstname) . ' ' . addslashes($this->customerLastname) . '",
             },
             callback: function (data) {
               console.log(data);
             },
             onclose: function() {
-                window.location = "?cancelled=cancelled&cancel_ref=' . $this->txref . '";
+                window.location = "?cancelled=cancelled&cancel_ref=' . addslashes($this->txref) . '";
               },
             customizations: {
-              title: "' . $this->customTitle . '",
-              description: "' . $this->customDescription . '",
-              logo: "' . $this->customLogo . '",
+              title: "' . addslashes($this->customTitle) . '",
+              description: "' . addslashes($this->customDescription) . '",
+              logo: "' . addslashes($this->customLogo) . '",
             }
         });';
         echo '});';
