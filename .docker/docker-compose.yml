@@ -1,6 +1,7 @@
 services:
     web:
         image: nginx:latest
+        platform: linux/amd64
         ports:
         - "80:80"
         volumes:
@@ -9,9 +10,15 @@ services:
         - app
     app:
         build:
-            context: .
-            dockerfile: ./php/Dockerfile
+            context: ..
+            dockerfile: .docker/php/Dockerfile
+        volumes:
+        - ..:/var/www/html
     db:
-        image: mysql:5.7
+        image: mysql:8.0
+        platform: linux/amd64
         volumes:
         - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: flutterwave

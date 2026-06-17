@@ -23,13 +23,13 @@ COPY --from=composer:2.4 /usr/bin/composer /usr/bin/composer
 # This is enough to take advantage of docker cache and composer install will
 # be executed only when composer.json or composer.lock have indeed changed!-
 # https://medium.com/@softius/faster-docker-builds-with-composer-install-b4d2b15d0fff
-COPY ./app/composer.* ./
+COPY composer.* ./
 
 # install
 RUN composer install --prefer-dist --no-dev --no-scripts --no-progress --no-interaction
 
 # copy application files to the working directory
-COPY ./app .
+COPY . .
 
 # run composer dump-autoload --optimize
 RUN composer dump-autoload --optimize
@@ -45,7 +45,7 @@ FROM app as app_dev
 ENV XDEBUG_MODE=off
 
 # Copy xdebug config file into container
-COPY ./php/conf.d/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY .docker/php/conf.d/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Install xdebug
 RUN set -eux; \
