@@ -334,42 +334,44 @@ class Flutterwave extends AbstractPayment
 
         $this->logger->info('Rendering Payment Modal..');
 
+        $checkoutConfig = json_encode([
+            'public_key'                    => self::$config->getPublicKey(),
+            'tx_ref'            => $this->txref,
+            'amount'            => (float) $this->amount,
+            'currency'          => $this->currency,
+            'country'           => $this->country,
+            'payment_options'   => $this->paymentOptions,
+            'redirect_url'      => $this->redirectUrl,
+            'customer'          => [
+                'email'         => $this->customerEmail,
+                'phone_number'  => $this->customerPhone,
+                'name'          => $this->customerFirstname . ' ' . $this->customerLastname,
+            ],
+            'customizations'    => [
+                'title'         => $this->customTitle,
+                'description'   => $this->customDescription,
+                'logo'          => $this->customLogo,
+            ],
+        ], JSON_HEX_TAG | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
+
+        echo '<!DOCTYPE html>';
         echo '<html lang="en">';
+        echo '<head><meta charset="UTF-8"></head>';
         echo '<body>';
         //        $loader_img_src = FLW_PHP_ASSET_DIR."js/v3.js";
         echo '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
-        Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
+        Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
         //        $script_src = FLW_PHP_ASSET_DIR."js/v3.js";
         echo '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
 
         echo '<script>';
         echo 'document.addEventListener("DOMContentLoaded", function(event) {';
-        echo 'FlutterwaveCheckout({
-            public_key: "' . addslashes(self::$config->getPublicKey()) . '",
-            tx_ref: "' . addslashes($this->txref) . '",
-            amount: ' . (float) $this->amount . ',
-            currency: "' . addslashes($this->currency) . '",
-            country: "' . addslashes($this->country) . '",
-            payment_options: "card,ussd,mpesa,barter,mobilemoneyghana,
-            mobilemoneyrwanda,mobilemoneyzambia,mobilemoneyuganda,banktransfer,account",
-            redirect_url:"' . addslashes($this->redirectUrl) . '",
-            customer: {
-              email: "' . addslashes($this->customerEmail) . '",
-              phone_number: "' . addslashes($this->customerPhone) . '",
-              name: "' . addslashes($this->customerFirstname) . ' ' . addslashes($this->customerLastname) . '",
-            },
-            callback: function (data) {
-              console.log(data);
-            },
-            onclose: function() {
-                window.location = "?cancelled=cancelled&cancel_ref=' . addslashes($this->txref) . '";
-              },
-            customizations: {
-              title: "' . addslashes($this->customTitle) . '",
-              description: "' . addslashes($this->customDescription) . '",
-              logo: "' . addslashes($this->customLogo) . '",
-            }
-        });';
+        echo '  var config = ' . $checkoutConfig . ';';
+        echo '  config.callback = function(data) { console.log(data); };';
+        echo '  config.onclose = function() {';
+        echo '    window.location = "?cancelled=cancelled&cancel_ref=' . urlencode($this->txref) . '";';
+        echo '  };';
+        echo '  FlutterwaveCheckout(config);';
         echo '});';
         echo '</script>';
         echo '</body>';
