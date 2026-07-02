@@ -70,7 +70,7 @@ final class Modal
         }
 
         $this->customer = (new \Flutterwave\Factories\CustomerFactory())->create($args['customer']);
-
+        
         $args['customer'] = $this->customer;
 
         if (isset($args['tx_ref'])) {
@@ -83,10 +83,15 @@ final class Modal
         } else {
             $args = array_merge($args, $this->generatedTransactionData);
         }
-        $this->payload = (new \Flutterwave\Factories\PayloadFactory())->create($args);
 
+        $this->payload = (new \Flutterwave\Factories\PayloadFactory())->create($args);
+        
         $this->payload->set('redirect_url', $args['redirect_url']);
         $this->payload->set('payment_method', $args['payment_method']);
+        
+        $this->payload->set('custom_title', $args['customizations']['title'] ?? '');
+        $this->payload->set('custom_description', $args['customizations']['description'] ?? '');
+        $this->payload->set('custom_logo', $args['customizations']['logo'] ?? '');
 
         $dataToHash = [
             'amount' => $args['amount'],
@@ -121,36 +126,44 @@ final class Modal
         $payment_method = $payload['payment_method'] ?? $default_options;
 
         $this->logger->info('Rendering Payment Modal..');
+
+        $checkoutConfig = json_encode([
+            'public_key'        => self::$config->getPublicKey(),
+            'tx_ref'            => $payload['tx_ref'],
+            'amount'            => $payload['amount'],
+            'currency'          => $currency,
+            'country'           => $country,
+            'payment_options'   => $payment_method,
+            'redirect_url'      => $payload['redirect_url'],
+            'payload_hash'      => $payload['payload_hash'],
+            'customer'          => [
+                'email'         => $payload['email'],
+                'phone_number'  => $payload['phone_number'],
+                'name'          => $payload['fullname']
+            ],
+            'customizations'    => [
+                'title'         => $payload['custom_title'],
+                'description'   => $payload['custom_description'],
+                'logo'          => $payload['custom_logo'],
+            ],
+        ], JSON_HEX_TAG | JSON_PRESERVE_ZERO_FRACTION | JSON_HEX_QUOT | JSON_HEX_APOS | JSON_THROW_ON_ERROR);
+ 
         $html = '';
 
+        $html .= '<!DOCTYPE html>';
         $html .= '<html lang="en">';
         $html .= '<body>';
         $html .= '<div style="display: flex; flex-direction: row;justify-content: center; align-content: center ">
-        Proccessing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
+        Processing...<img src="../assets/images/ajax-loader.gif"  alt="loading-gif"/></div>';
         $html .= '<script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>';
         $html .= '<script>';
         $html .= 'document.addEventListener("DOMContentLoaded", function(event) {';
-        $html .= 'FlutterwaveCheckout({
-            public_key: "' . self::$config->getPublicKey() . '",
-            tx_ref: "' . $payload['tx_ref'] . '",
-            amount: ' . $payload['amount'] . ',
-            currency: "' . $currency . '",
-            country: "' . $country . '",
-            payment_options: "' . $payment_method . '",
-            redirect_url:"' . $payload['redirect_url'] . '",
-            payload_hash:"' . $payload['payload_hash'] . '",
-            customer: {
-              email: "' . $payload['email'] . '",
-              phone_number: "' . $payload['phone_number'] . '",
-              name: "' . $payload['fullname'] . '",
-            },
-            callback: function (data) {
-              console.log(data);
-            },
-            onclose: function() {
-                window.location = "?status=cancelled&tx_ref=' . $payload['tx_ref'] . '";
-            }
-        });';
+        $html .= '  var config = ' . $checkoutConfig . ';';
+        $html .= '  config.callback = function(data) { console.log(data); };';
+        $html .= '  config.onclose = function() {';
+        $html .= '    window.location = "?status=cancelled&tx_ref=' . urlencode($payload['tx_ref']) . '";';
+        $html .= '  };';
+        $html .= '  FlutterwaveCheckout(config);';
         $html .= '});';
         $html .= '</script>';
         $html .= '</body>';
