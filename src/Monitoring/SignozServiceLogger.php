@@ -29,6 +29,8 @@ class SignozServiceLogger
     private const MAX_ATTEMPTS  = 3;     // total attempts (1 initial + 2 retries)
     private const BASE_DELAY_MS = 200;   // backoff base
     private const MAX_DELAY_MS  = 1500;  // per-retry delay cap
+    private const ERROR_MESSAGE_MAX_LENGTH = 4096;
+    private const ERROR_STACKTRACE_MAX_LENGTH = 16384;
 
     private static bool $appCreatedSent = false;
 
@@ -48,6 +50,9 @@ class SignozServiceLogger
     private string $publicKey;
 
     private string $environment;
+
+    private ?array $defaultTraceContext = null;
+    private array $traceContextsByReference = [];
 
     public function __construct(
         ClientInterface $httpClient,
@@ -84,6 +89,31 @@ class SignozServiceLogger
     public function getCurrentEnvironment(): string
     {
         return $this->environment !== 'production' ? 'sandbox' : 'production';
+    }
+
+    public function setDefaultTraceContext(?array $traceContext): void
+    {
+        $this->defaultTraceContext = $traceContext;
+    }
+
+    public function getDefaultTraceContext(): ?array
+    {
+        return $this->defaultTraceContext;
+    }
+
+    public function setTraceContextForReference(string $reference, ?array $traceContext): void
+    {
+        if ($traceContext === null) {
+            unset($this->traceContextsByReference[$reference]);
+            return;
+        }
+
+        $this->traceContextsByReference[$reference] = $traceContext;
+    }
+
+    public function getTraceContextForReference(string $reference): ?array
+    {
+        return $this->traceContextsByReference[$reference] ?? null;
     }
 
     public function getMerchantId(string $publicKey) {
@@ -155,7 +185,8 @@ class SignozServiceLogger
         string $environment,
         string $method,
         string $reference,
-        string $path
+        string $path,
+        ?array $traceContext = null
     ): void {
         $safeReference = $this->normalizeReference($reference);
 
@@ -163,11 +194,17 @@ class SignozServiceLogger
             'app_id'          => $this->normalizeAppId($appId),
             'environment'     => $environment,
             'api_version'     => EnvVariables::VERSION,
+            'library'         => self::LIBRARY,
             'library_version' => $this->libraryVersion,
             'method'          => $method,
             'path'            => $path,
             'reference'       => $safeReference,
         ];
+
+        $payload['trace_context'] = $traceContext ?? $this->resolveTraceContext($this->defaultTraceContext, $safeReference);
+        if ($payload['trace_context'] === null) {
+            unset($payload['trace_context']);
+        }
 
         $cacheKey = sprintf(
             'signoz:request_sent:%s',
@@ -196,30 +233,70 @@ class SignozServiceLogger
         string $currency,
         float $amount,
         string $method,
-        float $fee
+        float $fee,
+        ?array $traceContext = null
     ): void {
-        $this->send('app.transaction', [
+        $payload = [
             'app_id'    => $this->normalizeAppId($appId),
             'reference' => $reference,
+            'library'   => self::LIBRARY,
             'currency'  => $currency,
             'amount'    => $amount,
             'fee'       => $fee,
             'method'    => $method,
-        ]);
+        ];
+
+        $payload['trace_context'] = $traceContext ?? $this->resolveTraceContext($this->defaultTraceContext, $reference);
+        if ($payload['trace_context'] === null) {
+            unset($payload['trace_context']);
+        }
+
+        $this->send('app.transaction', $payload);
     }
 
     public function trackError(
         string $appId,
         string $errorCode,
-        string $errorMessage
+        string $errorMessage,
+        ?array $traceContext = null,
+        ?string $stackTrace = null
     ): void {
-        $this->send('app.error', [
+        $payload = [
             'app_id'          => $this->normalizeAppId($appId),
             'library'         => self::LIBRARY,
             'library_version' => $this->libraryVersion,
             'error_code'      => $errorCode,
-            'error_message'   => $errorMessage,
-        ]);
+            'error_message'   => $this->truncateValue($errorMessage, self::ERROR_MESSAGE_MAX_LENGTH),
+        ];
+
+        if ($stackTrace !== null && $stackTrace !== '') {
+            $payload['error_stacktrace'] = $this->truncateValue($stackTrace, self::ERROR_STACKTRACE_MAX_LENGTH);
+        }
+
+        $payload['trace_context'] = $traceContext ?? $this->resolveTraceContext($this->defaultTraceContext, $appId);
+        if ($payload['trace_context'] === null) {
+            unset($payload['trace_context']);
+        }
+
+        $this->send('app.error', $payload);
+    }
+
+    private function resolveTraceContext(?array $defaultTraceContext, string $reference): ?array
+    {
+        if ($defaultTraceContext !== null) {
+            return $defaultTraceContext;
+        }
+
+        return $this->traceContextsByReference[$reference] ?? null;
+    }
+
+    private function truncateValue(string $value, int $maxLength): string
+    {
+        if (mb_strlen($value) <= $maxLength) {
+            return $value;
+        }
+
+        return mb_substr($value, 0, $maxLength);
     }
 
     private function send(string $eventName, array $data): void

@@ -79,6 +79,46 @@ class SignozServiceLoggerTest extends TestCase
         $this->assertSame(self::EVENTS_URL, $calls[2]['uri']);
     }
 
+    public function testHealthCheckUsesResolvedApiKeyHeader(): void
+    {
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
+            if ($uri === self::HEALTH_URL) {
+                return $this->healthyResponse();
+            }
+
+            return new Response(200);
+        });
+
+        $logger = $this->makeLogger($httpClient);
+        $logger->trackError('app-1', 'ERR_TEST', 'Something went wrong');
+
+        $expectedApiKey = getenv('SIGNOZ_API_KEY') ?: 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW';
+
+        $this->assertSame($expectedApiKey, $calls[0]['options']['headers']['x-api-key']);
+    }
+
+    public function testTrackErrorIncludesTruncatedStacktraceAndMessage(): void
+    {
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
+            if ($uri === self::HEALTH_URL) {
+                return $this->healthyResponse();
+            }
+
+            return new Response(200);
+        });
+
+        $logger = $this->makeLogger($httpClient);
+        $message = str_repeat('E', 5000);
+        $stackTrace = str_repeat('S', 20000);
+
+        $logger->trackError('app-1', 'ERR_TEST', $message, null, $stackTrace);
+
+        $this->assertSame(str_repeat('E', 4096), $calls[1]['options']['json']['data']['error_message']);
+        $this->assertSame(str_repeat('S', 16384), $calls[1]['options']['json']['data']['error_stacktrace']);
+    }
+
     public function testEventIsDroppedWhenHealthStatusIsNotOk(): void
     {
         $calls = [];
@@ -234,6 +274,86 @@ class SignozServiceLoggerTest extends TestCase
     // -----------------------------------------------------------------
     // app.created flow (updated for the health-check gate)
     // -----------------------------------------------------------------
+
+    public function testTraceContextIsIncludedForRelevantEvents(): void
+    {
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
+            if ($uri === self::HEALTH_URL) {
+                return $this->healthyResponse();
+            }
+
+            return new Response(200);
+        });
+
+        $logger = $this->makeLogger($httpClient);
+        $traceContext = [
+            'trace_id' => '4bf92f3577b34da6a3ce929d0e0e4736',
+            'span_id' => 'a2fb4a1d1a96d312',
+            'parent_span_id' => '00f067aa0ba902b7',
+            'span_start_time' => '2024-01-01T00:00:00.010Z',
+            'span_end_time' => '2024-01-01T00:00:00.120Z',
+        ];
+
+        $logger->trackRequestSent('app-1', 'sandbox', 'GET', 'tx-ref', '/payments', $traceContext);
+        $logger->trackTransaction('app-1', 'tx-ref', 'USD', 100.0, 'card', 2.5, $traceContext);
+        $logger->trackError('app-1', 'ERR_TEST', 'Something went wrong', $traceContext);
+
+        $this->assertSame($traceContext, $calls[1]['options']['json']['data']['trace_context']);
+        $this->assertSame($traceContext, $calls[2]['options']['json']['data']['trace_context']);
+        $this->assertSame($traceContext, $calls[3]['options']['json']['data']['trace_context']);
+    }
+
+    public function testDefaultTraceContextIsUsedForRelevantEvents(): void
+    {
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
+            if ($uri === self::HEALTH_URL) {
+                return $this->healthyResponse();
+            }
+
+            return new Response(200);
+        });
+
+        $logger = $this->makeLogger($httpClient);
+        $traceContext = [
+            'trace_id' => '4bf92f3577b34da6a3ce929d0e0e4736',
+            'span_id' => 'a2fb4a1d1a96d312',
+            'parent_span_id' => '00f067aa0ba902b7',
+            'span_start_time' => '2024-01-01T00:00:00.010Z',
+            'span_end_time' => '2024-01-01T00:00:00.120Z',
+        ];
+
+        $logger->setDefaultTraceContext($traceContext);
+        $logger->trackRequestSent('app-1', 'sandbox', 'GET', 'tx-ref', '/payments');
+        $logger->trackTransaction('app-1', 'tx-ref', 'USD', 100.0, 'card', 2.5);
+        $logger->trackError('app-1', 'ERR_TEST', 'Something went wrong');
+
+        $this->assertSame($traceContext, $calls[1]['options']['json']['data']['trace_context']);
+        $this->assertSame($traceContext, $calls[2]['options']['json']['data']['trace_context']);
+        $this->assertSame($traceContext, $calls[3]['options']['json']['data']['trace_context']);
+    }
+
+    public function testTraceContextCanBeStoredAndRetrievedByReference(): void
+    {
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
+            return new Response(200);
+        });
+
+        $logger = $this->makeLogger($httpClient);
+        $traceContext = [
+            'trace_id' => '4bf92f3577b34da6a3ce929d0e0e4736',
+            'span_id' => 'a2fb4a1d1a96d312',
+            'parent_span_id' => null,
+            'span_start_time' => '2024-01-01T00:00:00.010Z',
+            'span_end_time' => '2024-01-01T00:00:00.120Z',
+        ];
+
+        $logger->setTraceContextForReference('tx-ref', $traceContext);
+
+        $this->assertSame($traceContext, $logger->getTraceContextForReference('tx-ref'));
+    }
 
     public function testAppCreatedIsSentOnlyOncePerPublicKey(): void
     {
