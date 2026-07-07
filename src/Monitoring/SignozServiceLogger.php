@@ -5,30 +5,31 @@ namespace Flutterwave\Monitoring;
 use Flutterwave\Helper\EnvVariables;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class SignozServiceLogger
 {
     private const BASE_URL = 'https://signozservice-prod.f4b-flutterwave.com';
     private const MERCHANT_INFO = 'https://api.ravepay.co/flwv3-pug/getpaidx/api/mercinfo?PBFPubKey=';
-    private const API_KEY  = '%%SIGNOZ_API_KEY%%';
-    private const LIBRARY  = 'PHP';
+    private const API_KEY = '%%SIGNOZ_API_KEY%%';
+    private const LIBRARY = 'PHP';
 
     // --- Health check ---
-    private const HEALTH_PATH      = '/health/ready';
+    private const HEALTH_PATH = '/health/ready';
     private const HEALTH_CACHE_TTL = 60;   // seconds a successful health check is trusted
 
     // --- Circuit breaker ---
     private const CB_FAILURE_THRESHOLD = 3;    // consecutive failures before opening
-    private const CB_OPEN_TTL          = 120;  // seconds the circuit stays open (cooldown)
-    private const CB_FAILURES_KEY      = 'signoz:cb:failures';
-    private const CB_OPEN_UNTIL_KEY    = 'signoz:cb:open_until';
-    private const HEALTH_OK_KEY        = 'signoz:health:ok_until';
+    private const CB_OPEN_TTL = 120;  // seconds the circuit stays open (cooldown)
+    private const CB_FAILURES_KEY = 'signoz:cb:failures';
+    private const CB_OPEN_UNTIL_KEY = 'signoz:cb:open_until';
+    private const HEALTH_OK_KEY = 'signoz:health:ok_until';
 
     // --- Retry / backoff (503 only) ---
-    private const MAX_ATTEMPTS  = 3;     // total attempts (1 initial + 2 retries)
+    private const MAX_ATTEMPTS = 3;     // total attempts (1 initial + 2 retries)
     private const BASE_DELAY_MS = 200;   // backoff base
-    private const MAX_DELAY_MS  = 1500;  // per-retry delay cap
+    private const MAX_DELAY_MS = 1500;  // per-retry delay cap
     private const ERROR_MESSAGE_MAX_LENGTH = 4096;
     private const ERROR_STACKTRACE_MAX_LENGTH = 16384;
 
@@ -36,7 +37,7 @@ class SignozServiceLogger
 
     // In-process fallbacks when no PSR cache is configured.
     private static int $staticFailureCount = 0;
-    private static int $staticOpenUntil    = 0;
+    private static int $staticOpenUntil = 0;
     private static int $staticHealthyUntil = 0;
 
     private string $apiKey;
@@ -44,6 +45,12 @@ class SignozServiceLogger
     private ClientInterface $httpClient;
     private ?CacheInterface $cache;
     private string $libraryVersion;
+    private bool $debug = false;
+
+    private ?array $lastResponse = null;
+    private ?string $lastResponseBody = null;
+    private ?int $lastResponseStatus = null;
+    private ?string $lastResponseReason = null;
 
     private ?string $appId = null;
 
@@ -67,22 +74,39 @@ class SignozServiceLogger
         $this->publicKey = $publicKey;
         $this->environment = $environment;
 
-        if (self::API_KEY === '%%SIGNOZ_API_KEY%%'){
+        if (self::API_KEY === '%%SIGNOZ_API_KEY%%') {
             $this->apiKey = $this->env('SIGNOZ_API_KEY', 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW');
         }
-        
+
+        $debugValue = $this->env('SIGNOZ_DEBUG', '0');
+        $this->debug = $debugValue === true || $debugValue === 'true' || $debugValue === '1';
     }
 
-    public function getAppId() {
-            if (!empty($this->appId)) {
-                return $this->appId;
-            }
+    public function getAppId()
+    {
+        if (!empty($this->appId)) {
+            return $this->appId;
+        }
 
-            $merchantId = $this->getMerchantId($this->publicKey);
-            if (!empty($merchantId)) {
-                $this->appId = $this->normalizeAppId($merchantId);
-                return $this->appId;
+        $cacheKey = sprintf('signoz:app_id:%s', hash('sha256', $this->publicKey));
+
+        if ($this->cache !== null) {
+            try {
+                $cachedAppId = $this->cache->get($cacheKey, null);
+                if (!empty($cachedAppId) && is_string($cachedAppId)) {
+                    $this->appId = $this->normalizeAppId($cachedAppId);
+                    return $this->appId;
+                }
+            } catch (\Throwable $e) {
+                // observability must never break payments
             }
+        }
+
+        // $merchantId = $this->getMerchantId($this->publicKey);
+        // if (!empty($merchantId)) {
+        //     $this->appId = $this->normalizeAppId($merchantId);
+        //     return $this->appId;
+        // }
         return $this->normalizeAppId($this->publicKey);
     }
 
@@ -101,22 +125,63 @@ class SignozServiceLogger
         return $this->defaultTraceContext;
     }
 
+
+    private function traceContextCacheKey(string $reference): string
+    {
+        return sprintf('signoz:trace_ctx:%s', $this->normalizeReference($reference));
+    }
+
     public function setTraceContextForReference(string $reference, ?array $traceContext): void
     {
+        $key = $this->normalizeReference($reference);
+
         if ($traceContext === null) {
-            unset($this->traceContextsByReference[$reference]);
+            unset($this->traceContextsByReference[$key]);
+            if ($this->cache !== null) {
+                try {
+                    $this->cache->delete($this->traceContextCacheKey($reference));
+                } catch (\Throwable $e) {
+                }
+            }
             return;
         }
 
-        $this->traceContextsByReference[$reference] = $traceContext;
+        $this->traceContextsByReference[$key] = $traceContext;
+
+        if ($this->cache !== null) {
+            try {
+                // TTL ~ payment session lifetime; 1h is a reasonable ceiling
+                $this->cache->set($this->traceContextCacheKey($reference), $traceContext, 3600);
+            } catch (\Throwable $e) {
+                // observability must never break payments
+            }
+        }
     }
 
     public function getTraceContextForReference(string $reference): ?array
     {
-        return $this->traceContextsByReference[$reference] ?? null;
+        $key = $this->normalizeReference($reference);
+
+        if (isset($this->traceContextsByReference[$key])) {
+            return $this->traceContextsByReference[$key];
+        }
+
+        if ($this->cache !== null) {
+            try {
+                $ctx = $this->cache->get($this->traceContextCacheKey($reference));
+                if (is_array($ctx)) {
+                    $this->traceContextsByReference[$key] = $ctx; // warm local
+                    return $ctx;
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+
+        return null;
     }
 
-    public function getMerchantId(string $publicKey) {
+    public function getMerchantId(string $publicKey)
+    {
         try {
             $response = $this->httpClient->request('GET', self::MERCHANT_INFO . $publicKey, [
                 'headers' => [
@@ -126,7 +191,7 @@ class SignozServiceLogger
 
             $result = json_decode($response->getBody()->getContents(), true);
 
-            if(!empty($result) && isset($result['mn'])) {
+            if (!empty($result) && isset($result['mn'])) {
                 return $result['mn'];
             }
         } catch (\Throwable $e) {
@@ -155,17 +220,10 @@ class SignozServiceLogger
             }
         }
 
-        $merchantId = $this->getMerchantId($publicKey);
-
-        if (empty($merchantId)) {
-            return;
-        }
-
         $this->send('app.created', [
-            'app_id'          => $this->normalizeAppId($merchantId),
-            'client_id'       => null,
-            'public_key'      => $publicKey,
-            'library'         => self::LIBRARY,
+            'client_id' => null,
+            'public_key' => $publicKey,
+            'library' => self::LIBRARY,
             'library_version' => $this->libraryVersion,
         ]);
 
@@ -191,14 +249,14 @@ class SignozServiceLogger
         $safeReference = $this->normalizeReference($reference);
 
         $payload = [
-            'app_id'          => $this->normalizeAppId($appId),
-            'environment'     => $environment,
-            'api_version'     => EnvVariables::VERSION,
-            'library'         => self::LIBRARY,
+            'app_id' => $this->normalizeAppId($appId),
+            'environment' => $environment,
+            'api_version' => EnvVariables::VERSION,
+            'library' => self::LIBRARY,
             'library_version' => $this->libraryVersion,
-            'method'          => $method,
-            'path'            => $path,
-            'reference'       => $safeReference,
+            'method' => $method,
+            'path' => $path,
+            'reference' => $safeReference,
         ];
 
         $payload['trace_context'] = $traceContext ?? $this->resolveTraceContext($this->defaultTraceContext, $safeReference);
@@ -237,13 +295,13 @@ class SignozServiceLogger
         ?array $traceContext = null
     ): void {
         $payload = [
-            'app_id'    => $this->normalizeAppId($appId),
+            'app_id' => $this->normalizeAppId($appId),
             'reference' => $reference,
-            'library'   => self::LIBRARY,
-            'currency'  => $currency,
-            'amount'    => $amount,
-            'fee'       => $fee,
-            'method'    => $method,
+            'library' => self::LIBRARY,
+            'currency' => $currency,
+            'amount' => $amount,
+            'fee' => $fee,
+            'method' => $method,
         ];
 
         $payload['trace_context'] = $traceContext ?? $this->resolveTraceContext($this->defaultTraceContext, $reference);
@@ -262,11 +320,11 @@ class SignozServiceLogger
         ?string $stackTrace = null
     ): void {
         $payload = [
-            'app_id'          => $this->normalizeAppId($appId),
-            'library'         => self::LIBRARY,
+            'app_id' => $this->normalizeAppId($appId),
+            'library' => self::LIBRARY,
             'library_version' => $this->libraryVersion,
-            'error_code'      => $errorCode,
-            'error_message'   => $this->truncateValue($errorMessage, self::ERROR_MESSAGE_MAX_LENGTH),
+            'error_code' => $errorCode,
+            'error_message' => $this->truncateValue($errorMessage, self::ERROR_MESSAGE_MAX_LENGTH),
         ];
 
         if ($stackTrace !== null && $stackTrace !== '') {
@@ -324,8 +382,8 @@ class SignozServiceLogger
     private function sendWithRetry(string $eventName, array $data): void
     {
         $body = [
-            'name'      => $eventName,
-            'data'      => $data,
+            'name' => $eventName,
+            'data' => $data,
             'timestamp' => gmdate('Y-m-d\TH:i:s.000\Z'),
         ];
 
@@ -333,23 +391,32 @@ class SignozServiceLogger
 
         for ($attempt = 1; $attempt <= self::MAX_ATTEMPTS; $attempt++) {
             try {
-                $this->httpClient->request('POST', self::BASE_URL . '/events', [
+                $response = $this->httpClient->request('POST', self::BASE_URL . '/events', [
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'x-api-key'    => $secret
+                        'x-api-key' => $secret
                     ],
                     'json' => $body,
 
                     // fire-and-forget-ish
-                    'timeout'         => 2,
+                    'timeout' => 2,
                     'connect_timeout' => 1,
                 ]);
 
+                $responseBody = (string) $response->getBody();
+                $this->maybeUpdateAppIdFromResponse($eventName, $responseBody);
+                $this->storeLastResponse($response, $responseBody);
                 $this->recordSuccess();
                 return;
             } catch (RequestException $e) {
-                $response   = $e->getResponse();
+                $response = $e->getResponse();
                 $statusCode = $response !== null ? $response->getStatusCode() : 0;
+
+                if ($response !== null) {
+                    $responseBody = (string) $response->getBody();
+                    $this->maybeUpdateAppIdFromResponse($eventName, $responseBody);
+                    $this->storeLastResponse($response, $responseBody);
+                }
 
                 // Only 503 (service temporarily unavailable) is retried.
                 if ($statusCode === 503 && $attempt < self::MAX_ATTEMPTS) {
@@ -416,7 +483,7 @@ class SignozServiceLogger
                 'headers' => [
                     'x-api-key' => self::API_KEY,
                 ],
-                'timeout'         => 1,
+                'timeout' => 1,
                 'connect_timeout' => 1,
             ]);
 
@@ -469,7 +536,7 @@ class SignozServiceLogger
     private function recordSuccess(): void
     {
         self::$staticFailureCount = 0;
-        self::$staticOpenUntil    = 0;
+        self::$staticOpenUntil = 0;
 
         if ($this->cache !== null) {
             try {
@@ -503,7 +570,7 @@ class SignozServiceLogger
     {
         $openUntil = time() + self::CB_OPEN_TTL;
 
-        self::$staticOpenUntil    = $openUntil;
+        self::$staticOpenUntil = $openUntil;
         self::$staticFailureCount = 0;
 
         if ($this->cache !== null) {
@@ -534,6 +601,54 @@ class SignozServiceLogger
     private function env(string $key, $default = null): string
     {
         return $_ENV[$key] ?? $default;
+    }
+
+    public function getLastResponse(): ?array
+    {
+        return $this->lastResponse;
+    }
+
+    private function maybeUpdateAppIdFromResponse(string $eventName, string $responseBody): void
+    {
+        if ($eventName !== 'app.created') {
+            return;
+        }
+
+        $decoded = json_decode($responseBody, true);
+        if (!is_array($decoded) || empty($decoded['app_id'])) {
+            return;
+        }
+
+        $this->appId = $this->normalizeAppId((string) $decoded['app_id']);
+
+        if ($this->cache !== null) {
+            try {
+                $cacheKey = sprintf('signoz:app_id:%s', hash('sha256', $this->publicKey));
+                $this->cache->set($cacheKey, $this->appId, 86400);
+            } catch (\Throwable $e) {
+                // observability must never break payments
+            }
+        }
+    }
+
+    private function storeLastResponse(ResponseInterface $response, ?string $responseBody = null): void
+    {
+        $this->lastResponseStatus = $response->getStatusCode();
+        $this->lastResponseReason = $response->getReasonPhrase();
+        $this->lastResponseBody = $responseBody ?? (string) $response->getBody();
+
+        $decoded = json_decode($this->lastResponseBody, true);
+        $this->lastResponse = is_array($decoded)
+            ? $decoded
+            : [
+                'status' => $this->lastResponseStatus,
+                'reason' => $this->lastResponseReason,
+                'body' => $this->lastResponseBody,
+            ];
+
+        if ($this->debug) {
+            error_log('SignozServiceLogger response: ' . json_encode($this->lastResponse));
+        }
     }
 
     private function normalizeReference(string $reference): string

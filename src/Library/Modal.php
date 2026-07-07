@@ -171,6 +171,7 @@ final class Modal
 
         $this->logger->info('Rendered Payment Modal Successfully..');
         $signoz->trackRequestSent($appId, $environment, 'GET', $payload['tx_ref'], '/inline');
+
         return $html;
     }
 

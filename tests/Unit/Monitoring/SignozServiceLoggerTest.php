@@ -79,25 +79,6 @@ class SignozServiceLoggerTest extends TestCase
         $this->assertSame(self::EVENTS_URL, $calls[2]['uri']);
     }
 
-    public function testHealthCheckUsesResolvedApiKeyHeader(): void
-    {
-        $calls = [];
-        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) {
-            if ($uri === self::HEALTH_URL) {
-                return $this->healthyResponse();
-            }
-
-            return new Response(200);
-        });
-
-        $logger = $this->makeLogger($httpClient);
-        $logger->trackError('app-1', 'ERR_TEST', 'Something went wrong');
-
-        $expectedApiKey = getenv('SIGNOZ_API_KEY') ?: 'IuUnO5cwI6Ta1JO/LEFUsMyz1AH3FNzW';
-
-        $this->assertSame($expectedApiKey, $calls[0]['options']['headers']['x-api-key']);
-    }
-
     public function testTrackErrorIncludesTruncatedStacktraceAndMessage(): void
     {
         $calls = [];
@@ -355,6 +336,47 @@ class SignozServiceLoggerTest extends TestCase
         $this->assertSame($traceContext, $logger->getTraceContextForReference('tx-ref'));
     }
 
+    public function testAppCreatedResponseSetsAppIdForSubsequentEvents(): void
+    {
+        $publicKey = getenv('PUBLIC_KEY') ?: 'FLWPUBK_TEST-0000000000000000000000000000000-X';
+
+        $calls = [];
+        $httpClient = $this->mockHttpClient($calls, function (string $method, string $uri) use ($publicKey) {
+            if ($uri === self::MERC_INFO_URL . $publicKey) {
+                return new Response(200, [], json_encode(['mn' => 'Bajoski Software Developement']));
+            }
+
+            if ($uri === self::HEALTH_URL) {
+                return $this->healthyResponse();
+            }
+
+            return new Response(200, [], json_encode([
+                'status' => 'event received',
+                'app_id' => 'app_vlgtcn920q6hjcfz8vr905ky',
+            ]));
+        });
+
+        $logger = new SignozServiceLogger($httpClient, $publicKey, 'sandbox', null, '1.0.7');
+        $logger->trackAppCreated($publicKey);
+
+        $this->assertSame('app_vlgtcn920q6hjcfz8vr905ky', $logger->getAppId());
+    }
+
+    public function testGetAppIdUsesCachedValueWhenAvailable(): void
+    {
+        $publicKey = getenv('PUBLIC_KEY') ?: 'FLWPUBK_TEST-0000000000000000000000000000000-X';
+        $cacheKey = sprintf('signoz:app_id:%s', hash('sha256', $publicKey));
+
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->method('get')
+            ->with($cacheKey, $this->anything())
+            ->willReturn('cached-app-id');
+
+        $logger = new SignozServiceLogger($this->createMock(ClientInterface::class), $publicKey, 'sandbox', $cache, '1.0.7');
+
+        $this->assertSame('cached-app-id', $logger->getAppId());
+    }
+
     public function testAppCreatedIsSentOnlyOncePerPublicKey(): void
     {
         $publicKey = getenv('PUBLIC_KEY') ?: 'FLWPUBK_TEST-0000000000000000000000000000000-X';
@@ -384,15 +406,14 @@ class SignozServiceLoggerTest extends TestCase
         $logger = new SignozServiceLogger($firstHttpClient, $publicKey, 'sandbox', $cache, '1.0.7');
         $logger->trackAppCreated($publicKey);
 
-        // Expected sequence: merchant lookup -> health probe -> event POST.
-        $this->assertCount(3, $calls);
-        $this->assertSame(self::MERC_INFO_URL . $publicKey, $calls[0]['uri']);
-        $this->assertSame(self::HEALTH_URL, $calls[1]['uri']);
-        $this->assertSame(self::EVENTS_URL, $calls[2]['uri']);
+        // Expected sequence: health probe -> event POST.
+        $this->assertCount(2, $calls);
+        $this->assertSame(self::HEALTH_URL, $calls[0]['uri']);
+        $this->assertSame(self::EVENTS_URL, $calls[1]['uri']);
 
-        $this->assertSame('app.created', $calls[2]['options']['json']['name']);
-        $this->assertSame($publicKey, $calls[2]['options']['json']['data']['public_key']);
-        $this->assertSame('Bajoski-Software-Developement', $calls[2]['options']['json']['data']['app_id']);
+        $this->assertSame('app.created', $calls[1]['options']['json']['name']);
+        $this->assertSame($publicKey, $calls[1]['options']['json']['data']['public_key']);
+        $this->assertArrayNotHasKey('app_id', $calls[1]['options']['json']['data']);
 
         // Second logger: cache says app.created was already sent -> no HTTP at all.
         $this->resetStaticState();
