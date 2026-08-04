@@ -29,6 +29,7 @@ class Flutterwave extends AbstractPayment
     use PaymentFactory;
 
     private SignozServiceLogger $signoz;
+    private ?array $traceContext = null;
 
     /**
      * Flutterwave Construct
@@ -49,6 +50,9 @@ class Flutterwave extends AbstractPayment
         } else {
             $this->signoz = self::$config->getSignoz();
         }
+
+        $this->traceContext = $this->buildTraceContext();
+        $this->signoz->setDefaultTraceContext($this->traceContext);
     }
 
     private function checkPageIsSecure()
@@ -56,6 +60,40 @@ class Flutterwave extends AbstractPayment
         if(!CheckCompatibility::isSsl() && 'production' === $this->getConfig()->getEnv()) {
             throw new \Exception('Flutterwave: cannot load checkout modal on an unsecure page - no SSL detected. ');
         }
+    }
+
+    private function buildTraceContext(?array $parentContext = null): array
+    {
+        $timestamp = gmdate('Y-m-d\TH:i:s.v\Z');
+        $traceId = $parentContext['trace_id'] ?? $this->generateTraceId();
+        $parentSpanId = $parentContext['span_id'] ?? null;
+
+        return [
+            'trace_id' => $traceId,
+            'span_id' => $this->generateSpanId(),
+            'parent_span_id' => $parentSpanId,
+            'span_start_time' => $timestamp,
+            'span_end_time' => $timestamp,
+        ];
+    }
+
+    private function getTraceContextForEvent(): array
+    {
+        $nextContext = $this->buildTraceContext($this->traceContext);
+        $this->traceContext = $nextContext;
+        $this->signoz->setDefaultTraceContext($this->traceContext);
+
+        return $nextContext;
+    }
+
+    private function generateTraceId(): string
+    {
+        return bin2hex(random_bytes(16));
+    }
+
+    private function generateSpanId(): string
+    {
+        return bin2hex(random_bytes(8));
     }
 
     /**
@@ -228,6 +266,16 @@ class Flutterwave extends AbstractPayment
     }
 
     /**
+     * Enforce the same trace context for request, transaction, and error events.
+     */
+    public function setTraceContext(array $traceContext): object
+    {
+        $this->traceContext = $this->buildTraceContext($traceContext);
+        $this->signoz->setDefaultTraceContext($this->traceContext);
+        return $this;
+    }
+
+    /**
      * Sets the event hooks for all available triggers
      *
      * @param EventHandlerInterface $handler This is a class that implements the
@@ -257,6 +305,7 @@ class Flutterwave extends AbstractPayment
 
         $appId = $this->signoz->getAppId();
         $environment = $this->signoz->getCurrentEnvironment();
+        $traceContext = $this->getTraceContextForEvent();
 
         $data = [
             'id' => (int) $referenceNumber,
@@ -274,13 +323,13 @@ class Flutterwave extends AbstractPayment
                 // Handle successful.
                 if (isset($this->handler)) {
                     $final_tx_ref = $response->data->tx_ref;
-                    $this->signoz->trackRequestSent($appId, $environment, 'GET', $referenceNumber, $url );
+                    $this->signoz->trackRequestSent($appId, $environment, 'GET', $final_tx_ref, $url, $traceContext);
                     if( 'production' === $environment ) {
                         $final_currency = $response->data->currency;
                         $final_amount = $response->data->amount;
                         $payment_type = $response->data->payment_type;
                         $final_fee = $response->data->app_fee;
-                        $this->signoz->trackTransaction($appId,$final_tx_ref, $final_currency, (float) $final_amount, $payment_type, (float) $final_fee);
+                        $this->signoz->trackTransaction($appId,$final_tx_ref, $final_currency, (float) $final_amount, $payment_type, (float) $final_fee, $traceContext);
                     }
                     $this->handler->onSuccessful($response->data);
                 }
@@ -300,7 +349,7 @@ class Flutterwave extends AbstractPayment
                 if ($this->requeryCount > 4) {
                     // Now you have to setup a queue by force. We couldn't get a status in 5 requeries.
                     if (isset($this->handler)) {
-                        $this->signoz->trackError($appId, 'TIMEOUT_ERROR', 'timedout while requerying transaction with id: ' . $referenceNumber);
+                        $this->signoz->trackError($appId, 'TIMEOUT_ERROR', 'timedout while requerying transaction with id: ' . $referenceNumber, $traceContext);
                         $this->handler->onTimeout($this->txref, $response->data);
                     }
                 } else {
@@ -312,7 +361,7 @@ class Flutterwave extends AbstractPayment
             }
         } else {
             // Handle Requery Error.
-            $this->signoz->trackError($appId, 'REQUERY_ERROR', 'Failed to requery transaction with id: ' . $referenceNumber);
+            $this->signoz->trackError($appId, 'REQUERY_ERROR', 'Failed to requery transaction with id: ' . $referenceNumber, $traceContext);
             if (isset($this->handler)) {
                 $this->handler->onRequeryError($response->data);
             }
@@ -326,6 +375,9 @@ class Flutterwave extends AbstractPayment
      */
     public function initialize(): void
     {
+        $this->traceContext = $this->buildTraceContext($this->traceContext);
+        $this->signoz->setDefaultTraceContext($this->traceContext);
+
         @trigger_error(
             'initialize() is deprecated and will be removed in a future version. Use render(\'inline\')->with([...])->getHtml() instead.',
             E_USER_DEPRECATED

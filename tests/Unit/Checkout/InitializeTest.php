@@ -5,6 +5,7 @@ namespace Unit\Checkout;
 use PHPUnit\Framework\TestCase;
 use Flutterwave\Flutterwave;
 use Flutterwave\EventHandlers\ModalEventHandler;
+use ReflectionClass;
 
 class InitializeTest extends TestCase
 {
@@ -97,6 +98,21 @@ class InitializeTest extends TestCase
         $this->assertStringContainsString('card,banktransfer', $output);
     }
 
+    public function testTransactionTraceContextCreatesSpanChainAcrossLifecycleEvents(): void
+    {
+        $instance = $this->buildInstance();
+        $reflection = new ReflectionClass($instance);
+
+        $firstContext = $this->getPrivateProperty($reflection, $instance, 'traceContext');
+        $secondContext = $this->invokePrivateMethod($reflection, $instance, 'getTraceContextForEvent');
+
+        $this->assertSame($firstContext['trace_id'], $secondContext['trace_id']);
+        $this->assertNotSame($firstContext['span_id'], $secondContext['span_id']);
+        $this->assertSame($firstContext['span_id'], $secondContext['parent_span_id']);
+        $this->assertNotEmpty($firstContext['span_start_time']);
+        $this->assertNotEmpty($secondContext['span_start_time']);
+    }
+
     public function testInitializeIsDeprecated(): void
     {
         $instance = $this->buildInstance();
@@ -116,5 +132,21 @@ class InitializeTest extends TestCase
         restore_error_handler();
 
         $this->assertTrue($deprecationTriggered, 'Expected a deprecation notice for initialize()');
+    }
+
+    private function invokePrivateMethod(ReflectionClass $reflection, object $instance, string $methodName): array
+    {
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invoke($instance);
+    }
+
+    private function getPrivateProperty(ReflectionClass $reflection, object $instance, string $propertyName): array
+    {
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
+
+        return $property->getValue($instance);
     }
 }
