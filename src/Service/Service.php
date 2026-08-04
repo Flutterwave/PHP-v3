@@ -32,6 +32,7 @@ class Service implements ServiceInterface
     protected ConfigInterface $config;
     protected string $url;
     protected string $secret;
+    protected ?array $traceContext = null;
     private static string $name = 'service';
     private static ?ConfigInterface $spareConfig = null;
     private ClientInterface $http;
@@ -47,6 +48,7 @@ class Service implements ServiceInterface
         $this->signoz = $this->config->getSignoz();
         $this->secret = $this->config->getSecretKey();
         $this->url = EnvVariables::BASE_URL . '/';
+        $this->traceContext = $this->signoz->getDefaultTraceContext();
         $this->baseUrl = EnvVariables::BASE_URL;
     }
 
@@ -133,9 +135,31 @@ class Service implements ServiceInterface
         $body = $response->getBody()->getContents();
         $appId = $this->signoz->getAppId();
         $environment = $this->signoz->getCurrentEnvironment();
-        $this->signoz->trackRequestSent($appId, $environment, $verb, $reference, $additionalurl);
+        $this->signoz->trackRequestSent(
+            $appId,
+            $environment,
+            $verb,
+            $reference,
+            $additionalurl,
+            $this->getTraceContextForCurrentEvent()
+        );
 
         return json_decode($body);
+    }
+
+    protected function setTraceContext(?array $traceContext): void
+    {
+        $this->traceContext = $traceContext;
+        $this->signoz->setDefaultTraceContext($traceContext);
+    }
+
+    protected function getTraceContextForCurrentEvent(): ?array
+    {
+        if ($this->traceContext !== null) {
+            return $this->traceContext;
+        }
+
+        return $this->signoz->getDefaultTraceContext();
     }
 
     protected function checkTransactionId($transactionId): void
