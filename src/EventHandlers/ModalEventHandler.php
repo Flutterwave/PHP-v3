@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Flutterwave\EventHandlers;
 
+use Flutterwave\Service\Transactions;
+
 class ModalEventHandler implements EventHandlerInterface
 {
+    private ?string $success_url = null;
+    private ?string $failure_url = null;
+
     /**
      * This is called when the Rave class is initialized
      * */
@@ -13,6 +18,26 @@ class ModalEventHandler implements EventHandlerInterface
     {
         echo "This Event Handler is an Implementation of " . __NAMESPACE__ . "\EventHandlerInterface";
         // Save the transaction to your DB.
+    }
+
+    public function getSuccessUrl(): ?string
+    {
+        return $this->success_url;
+    }
+
+    public function setSuccessUrl(?string $success_url): void
+    {
+        $this->success_url = $success_url;
+    }
+
+    public function getFailureUrl(): ?string
+    {
+        return $this->failure_url;
+    }
+
+    public function setFailureUrl(?string $failure_url): void
+    {
+        $this->failure_url = $failure_url;
     }
 
     /**
@@ -31,26 +56,34 @@ class ModalEventHandler implements EventHandlerInterface
         // Update the transaction to note that you have given value for the transaction.
         // You can also redirect to your success page from here.
         if ($transactionData->status === 'successful') {
-            $currency = $_SESSION['currency'];
-            $amount   = $_SESSION['amount'];
+            $currency = $_SESSION['currency'] ?? ($transactionData->currency ?? null);
+            $amount   = $_SESSION['amount'] ?? ($transactionData->amount ?? null);
 
-            if ($transactionData->currency === $currency && floatval($transactionData->amount)  === floatval($amount)) {
-                header('Location: ' . $_SESSION['success_url']);
-                session_destroy();
-            }
+            if ($currency !== null && $amount !== null) {
+                if ($transactionData->currency === $currency && floatval($transactionData->amount)  === floatval($amount)) {
+                    if (!empty($_SESSION['success_url'])) {
+                        header('Location: ' . $_SESSION['success_url']);
+                    }
+                    session_destroy();
+                }
 
-            if ($transactionData->currency === $currency && floatval($transactionData->amount) < floatval($amount)) {
-                // TODO: replace this a custom action.
+                if ($transactionData->currency === $currency && floatval($transactionData->amount) < floatval($amount)) {
+                    // TODO: replace this a custom action.
+                    echo "This Event Handler is an Implementation of " . __NAMESPACE__ . "\EventHandlerInterface </br>";
+                    echo "Partial Payment Made ! replace this with your own action! ";
+                    session_destroy();
+                }
+
+                if ($transactionData->currency !== $currency && floatval($transactionData->amount) === floatval($amount)) {
+                    // TODO: replace this a custom action.
+                    echo "This Event Handler is an Implementation of " . __NAMESPACE__ . "\EventHandlerInterface </br>";
+                    echo "Currency mismatch. please look into it ! replace this with your own action ";
+                    session_destroy();
+                }
+            } else {
+                // Fallback when session metadata is unavailable.
                 echo "This Event Handler is an Implementation of " . __NAMESPACE__ . "\EventHandlerInterface </br>";
-                echo "Partial Payment Made ! replace this with your own action! ";
-                session_destroy();
-            }
-
-            if ($transactionData->currency !== $currency && floatval($transactionData->amount) === floatval($amount)) {
-                // TODO: replace this a custom action.
-                echo "This Event Handler is an Implementation of " . __NAMESPACE__ . "\EventHandlerInterface </br>";
-                echo "Currency mismatch. please look into it ! replace this with your own action ";
-                session_destroy();
+                echo "Transaction successful.";
             }
         } else {
             $this->onFailure($transactionData);
@@ -66,7 +99,9 @@ class ModalEventHandler implements EventHandlerInterface
         // Update the db transaction record (includeing parameters that didn't exist before the transaction is completed. for audit purpose)
         // You can also redirect to your failure page from here.
         // TODO: replace this a custom action.
-        header('Location: ' . $_SESSION['failure_url']);
+        if (!empty($_SESSION['failure_url'])) {
+            header('Location: ' . $_SESSION['failure_url']);
+        }
         session_destroy();
     }
 
@@ -85,8 +120,12 @@ class ModalEventHandler implements EventHandlerInterface
     {
         echo "Flutterwave: error querying the transaction.";
         // trigger webhook notification from Flutterwave.
-        $service = new Flutterwave\Service\Transaction();
-        $service->resendFailedHooks($data->id);
+        $service = new Transactions();
+        $transactionId = is_object($requeryResponse) && isset($requeryResponse->id)
+            ? (string) $requeryResponse->id
+            : (string) $requeryResponse;
+
+        $service->resendFailedHooks($transactionId);
         header('Location: ' . $_SERVER['HTTP_ORIGIN']);
     }
 
@@ -107,8 +146,8 @@ class ModalEventHandler implements EventHandlerInterface
     public function onTimeout($transactionReference, $data): void
     {
         // trigger webhook notification from Flutterwave.
-        $service = new Flutterwave\Service\Transaction();
-        $service->resendFailedHooks($data->id);
+        $service = new Transactions();
+        $service->resendFailedHooks((string) ($data->id ?? ''));
         header('Location: ' . $_SERVER['HOST']);
     }
 }

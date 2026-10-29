@@ -30,7 +30,7 @@
         "mockery/mockery": ">=1.2",
         "symfony/var-dumper": "5.4.13",
         "phpstan/phpstan": "^1.9",
-        "pestphp/pest": "^1.22",
+        "pestphp/pest": "1.22",
         "nunomaduro/phpinsights": "^2.6",
         "eloquent/liberator": "^3.0",
         "squizlabs/php_codesniffer": "3.*",
@@ -45,6 +45,9 @@
         }
     ],
     "config": {
+        "platform": {
+            "php": "7.4"
+        },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "dealerdirect/phpcodesniffer-composer-installer": true

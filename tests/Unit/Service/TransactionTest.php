@@ -21,7 +21,7 @@ class TransactionTest extends TestCase
     {
         $result = $this->service->verifyWithTxref($tx_ref);
         $data = $result->data;
-        $this->assertSame($data->customer->email, "developers@flutterwavego.com");
+        $this->assertSame($data->customer->email, "cornelius@flutterwavego.com");
         return [ "id" => $data->id, "amount" => $data->amount, "currency" => $data->currency ];
     }
 
@@ -34,7 +34,7 @@ class TransactionTest extends TestCase
 
         $result = $this->service->verify($tx_id);
         $data = $result->data;
-        $this->assertSame($data->customer->email, "developers@flutterwavego.com");
+        $this->assertSame($data->customer->email, "cornelius@flutterwavego.com");
     }
 
     /**

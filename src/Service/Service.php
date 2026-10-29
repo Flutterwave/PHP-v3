@@ -12,6 +12,7 @@ use Flutterwave\Factories\CustomerFactory as Customer;
 use Flutterwave\Factories\PayloadFactory as Payload;
 use Flutterwave\Helper\Config;
 use Flutterwave\Helper\EnvVariables;
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Psr\Http\Client\ClientInterface;
 use InvalidArgumentException;
 use Psr\Http\Client\ClientExceptionInterface;
@@ -27,9 +28,11 @@ class Service implements ServiceInterface
     public ?FactoryInterface $customer;
     protected string $baseUrl;
     protected LoggerInterface $logger;
+    protected SignozServiceLogger $signoz;
     protected ConfigInterface $config;
     protected string $url;
     protected string $secret;
+    protected ?array $traceContext = null;
     private static string $name = 'service';
     private static ?ConfigInterface $spareConfig = null;
     private ClientInterface $http;
@@ -42,8 +45,10 @@ class Service implements ServiceInterface
         $this->config = is_null($config) ? self::$spareConfig : $config;
         $this->http = $this->config->getHttp();
         $this->logger = $this->config->getLoggerInstance();
+        $this->signoz = $this->config->getSignoz();
         $this->secret = $this->config->getSecretKey();
         $this->url = EnvVariables::BASE_URL . '/';
+        $this->traceContext = $this->signoz->getDefaultTraceContext();
         $this->baseUrl = EnvVariables::BASE_URL;
     }
 
@@ -68,58 +73,93 @@ class Service implements ServiceInterface
 
         $secret = $this->config->getSecretKey();
         $url = $this->getUrl($overrideUrl, $additionalurl);
+        $reference = $this->resolveSignozReference($data, $additionalurl, $verb);
 
         switch ($verb) {
-        case 'POST':
-            $response = $this->http->request(
-                'POST', $url, [
-                'debug' => false, // TODO: turn to false  on release.
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $data,
+            case 'POST':
+                $response = $this->http->request(
+                    'POST',
+                    $url,
+                    [
+                        'debug' => false, // TODO: turn to false  on release.
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
+                        'json' => $data,
                     ]
-            );
-            break;
-        case 'PUT':
-            $response = $this->http->request(
-                'PUT', $url, [
-                'debug' => false, // TODO: turn to false  on release.
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => $data ?? [],
+                );
+                break;
+            case 'PUT':
+                $response = $this->http->request(
+                    'PUT',
+                    $url,
+                    [
+                        'debug' => false, // TODO: turn to false  on release.
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
+                        'json' => $data ?? [],
                     ]
-            );
-            break;
-        case 'DELETE':
-            $response = $this->http->request(
-                'DELETE', $url, [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
+                );
+                break;
+            case 'DELETE':
+                $response = $this->http->request(
+                    'DELETE',
+                    $url,
+                    [
+                        'debug' => false,
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
                     ]
-            );
-            break;
-        default:
-            $response = $this->http->request(
-                'GET', $url, [
-                'debug' => false,
-                'headers' => [
-                    'Authorization' => "Bearer $secret",
-                    'Content-Type' => 'application/json',
-                ],
+                );
+                break;
+            default:
+                $response = $this->http->request(
+                    'GET',
+                    $url,
+                    [
+                        'debug' => false,
+                        'headers' => [
+                            'Authorization' => "Bearer $secret",
+                            'Content-Type' => 'application/json',
+                        ],
                     ]
-            );
-            break;
+                );
+                break;
         }
 
         $body = $response->getBody()->getContents();
+        $appId = $this->signoz->getAppId();
+        $environment = $this->signoz->getCurrentEnvironment();
+        $this->signoz->trackRequestSent(
+            $appId,
+            $environment,
+            $verb,
+            $reference,
+            $additionalurl,
+            $this->getTraceContextForCurrentEvent()
+        );
+
         return json_decode($body);
+    }
+
+    protected function setTraceContext(?array $traceContext): void
+    {
+        $this->traceContext = $traceContext;
+        $this->signoz->setDefaultTraceContext($traceContext);
+    }
+
+    protected function getTraceContextForCurrentEvent(): ?array
+    {
+        if ($this->traceContext !== null) {
+            return $this->traceContext;
+        }
+
+        return $this->signoz->getDefaultTraceContext();
     }
 
     protected function checkTransactionId($transactionId): void
@@ -127,7 +167,7 @@ class Service implements ServiceInterface
         $pattern = '/([0-9]){7}/';
         $is_valid = preg_match_all($pattern, $transactionId);
 
-        if (! $is_valid) {
+        if (!$is_valid) {
             $this->logger->warning('Transaction Service::cannot verify invalid transaction id. ');
             throw new InvalidArgumentException('cannot verify invalid transaction id.');
         }
@@ -165,5 +205,32 @@ class Service implements ServiceInterface
         }
 
         return $this->url . $additionalurl;
+    }
+
+    private function resolveSignozReference(?array $data, string $additionalurl): string
+    {
+        if (!is_null($data) && isset($data['tx_ref'])) {
+            return (string) $data['tx_ref'];
+        }
+
+        foreach (['reference', 'order_ref', 'batch_id', 'id'] as $key) {
+            if (!empty($data[$key])) {
+                return (string) $data[$key];
+            }
+        }
+
+        $segments = array_values(array_filter(explode('/', trim($additionalurl, '/'))));
+
+        $segmentCount = count($segments);
+
+        if ($segmentCount === 4) {
+            return $segments[2];
+        }
+
+        if ($segmentCount === 3) {
+            return $segments[1];
+        }
+
+        return implode('-', $segments);
     }
 }

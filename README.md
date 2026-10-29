@@ -67,7 +67,7 @@ Save your PUBLIC_KEY, SECRET_KEY, and ENV values in the `.env` file.
 ```bash
 cp .env.example .env
 ```
-Your `.env` file should look like this.
+Your `.env` file should look this. Make sure to retrieve your API keys from your dashboard.
 
 ```env
 FLW_PUBLIC_KEY=FLWSECK_TEST-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-X

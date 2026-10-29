@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Flutterwave\Contract;
 
+use Flutterwave\Monitoring\SignozServiceLogger;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 

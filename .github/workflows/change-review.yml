@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [7.4, 8.1, 8.2, 8.3]
+        php: [7.4, 8.1, 8.2, 8.3, 8.4]
 
     env:
       XDEBUG_MODE: coverage
@@ -22,6 +22,7 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       ENV: ${{ secrets.ENV }}
+      SIGNOZ_API_KEY: ${{ secrets.SIGNOZ_API_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -48,6 +49,20 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Inject SigNoz API key
+        env:
+          SIGNOZ_API_KEY: ${{ secrets.SIGNOZ_API_KEY }}
+        run: |
+          if [ -z "$SIGNOZ_API_KEY" ]; then
+            echo "::error::SIGNOZ_API_KEY secret is not set"
+            exit 1
+          fi
+          sed -i "s|%%SIGNOZ_API_KEY%%|${SIGNOZ_API_KEY}|g" src/Monitoring/SignozServiceLogger.php
+          if grep -q '%%SIGNOZ_API_KEY%%' src/Monitoring/SignozServiceLogger.php; then
+            echo "::error::Placeholder replacement failed"
+            exit 1
+          fi
+
       - name: run unit tests and coverage scan
         run: ./vendor/bin/pest --coverage --min=20 --coverage-clover ./coverage.xml
         env:
@@ -55,7 +70,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
           ENV: ${{ secrets.ENV }}
-
       - name: Upload to Codecov
         uses: codecov/codecov-action@v2
         with:
